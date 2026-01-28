@@ -796,6 +796,67 @@ section {
     font-size: 0.85rem;
     color: var(--text-muted);
     margin-left: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.hero-note::before {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    background: var(--success);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--success);
+}
+
+.landing-features {
+    padding: 6rem 0;
+    background: linear-gradient(to bottom, transparent, rgba(15, 23, 42, 0.5));
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+.feature-card.glass {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 2rem;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+}
+
+.feature-card.glass:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--primary);
+    box-shadow: 0 10px 30px rgba(99, 102, 241, 0.1);
+}
+
+.landing-footer {
+    padding: 4rem 0 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    background: rgba(15, 23, 42, 0.8);
+}
+
+.footer-logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.delayed {
+    animation-delay: 2s !important;
+    top: 55% !important;
+    right: 5% !important;
 }
 
 .btn-login {
@@ -853,27 +914,62 @@ section {
 }
 
 /* Freemium Banner */
+/* Freemium Banner - Floating Glass Pill */
 .freemium-banner {
     position: fixed;
-    top: 0;
-    left: 260px;
-    /* Offset for sidebar */
-    right: 0;
-    background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+    bottom: 2rem;
+    right: 2rem;
+    left: auto;
+    top: auto;
+    width: auto;
+    max-width: 400px;
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     color: var(--white);
-    padding: 0.4rem 1.5rem;
-    /* Reduced padding */
+    padding: 0.8rem 1.2rem;
+    border-radius: 50px;
     display: flex;
     justify-content: space-between;
-    /* Better spacing */
     align-items: center;
     gap: 1rem;
     font-weight: 500;
-    font-size: 0.8rem;
-    /* Smaller font */
-    z-index: 40;
-    /* Below sidebar if sidebar is full height, or adjust sidebar z-index */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    font-size: 0.85rem;
+    z-index: 1000;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+    animation: slideInUp 0.5s ease 1s backwards;
+}
+
+.freemium-banner:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(99, 102, 241, 0.2);
+    border-color: var(--primary);
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 768px) {
+    .freemium-banner {
+        left: 1rem;
+        right: 1rem;
+        bottom: 1rem;
+        max-width: none;
+        justify-content: center;
+        flex-direction: column;
+        gap: 0.5rem;
+        text-align: center;
+        border-radius: 15px;
+    }
 }
 
 @media (max-width: 1024px) {
