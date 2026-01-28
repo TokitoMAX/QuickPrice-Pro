@@ -46,6 +46,12 @@ const Clients = {
                                     <td>${App.formatDate(client.createdAt)}</td>
                                     <td>
                                         <div class="action-buttons">
+                                            <button class="btn-icon" onclick="Clients.createQuoteFor('${client.id}')" title="Créer un devis">
+                                                📋
+                                            </button>
+                                            <button class="btn-icon" onclick="Clients.createInvoiceFor('${client.id}')" title="Créer une facture">
+                                                🧾
+                                            </button>
                                             <button class="btn-icon" onclick="Clients.edit('${client.id}')" title="Modifier">
                                                 ✏️
                                             </button>
@@ -62,11 +68,21 @@ const Clients = {
             ` : `
                 <div class="empty-state">
                     <div class="empty-icon">👥</div>
-                    <p>Aucun client enregistré</p>
-                    <button class="button-primary" onclick="Clients.showAddForm()">Ajouter mon premier client</button>
+                    <p>Commencez par ajouter vos clients</p>
+                    <button class="button-primary" onclick="Clients.showAddForm()">Ajouter un client</button>
                 </div>
             `}
         `;
+    },
+
+    createQuoteFor(clientId) {
+        App.navigateTo('quotes');
+        if (typeof Quotes !== 'undefined') Quotes.showAddForm(clientId);
+    },
+
+    createInvoiceFor(clientId) {
+        App.navigateTo('invoices');
+        if (typeof Invoices !== 'undefined') Invoices.showAddForm(clientId);
     },
 
     showAddForm() {
@@ -185,6 +201,45 @@ const Clients = {
         if (confirm('Êtes-vous sûr de vouloir supprimer ce client ?')) {
             Storage.deleteClient(id);
             App.showNotification('✅ Client supprimé', 'success');
+            this.render();
+        }
+    },
+
+    // Quick Add Features
+    quickAddCallback: null,
+
+    openQuickAdd(callback) {
+        this.quickAddCallback = callback;
+        const modal = document.getElementById('quick-client-modal');
+        if (modal) modal.classList.add('active');
+        document.getElementById('quick-client-form').reset();
+    },
+
+    closeQuickAdd() {
+        const modal = document.getElementById('quick-client-modal');
+        if (modal) modal.classList.remove('active');
+        this.quickAddCallback = null;
+    },
+
+    handleQuickAdd(e) {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+
+        const clientData = {
+            name: formData.get('name'),
+            email: formData.get('email'),
+            city: formData.get('city'),
+            type: 'company' // Default
+        };
+
+        const newClient = Storage.addClient(clientData);
+        App.showNotification('✅ Client créé rapidement', 'success');
+
+        this.closeQuickAdd();
+
+        if (this.quickAddCallback) {
+            this.quickAddCallback(newClient);
+        } else {
             this.render();
         }
     },

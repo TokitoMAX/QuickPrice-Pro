@@ -104,7 +104,7 @@ const Quotes = {
         }
     },
 
-    showAddForm() {
+    showAddForm(preselectedClientId = null) {
         const limits = App.checkFreemiumLimits();
         if (!limits.canAddQuote) {
             App.showUpgradeModal('limit');
@@ -112,11 +112,7 @@ const Quotes = {
         }
 
         const clients = Storage.getClients();
-        if (clients.length === 0) {
-            App.showNotification('⚠️ Veuillez d\'abord créer un client', 'error');
-            App.navigateTo('clients');
-            return;
-        }
+        // Removed the check "if clients.length === 0 return" to allow adding first client via Quick Add inside form
 
         this.editingId = null;
 
@@ -138,11 +134,11 @@ const Quotes = {
         }
 
         const container = document.getElementById('quote-form-container');
-        container.innerHTML = this.renderForm(clients);
+        container.innerHTML = this.renderForm(clients, null, preselectedClientId);
         container.scrollIntoView({ behavior: 'smooth' });
     },
 
-    renderForm(clients, quote = null) {
+    renderForm(clients, quote = null, preselectedClientId = null) {
         const settings = Storage.get(Storage.KEYS.SETTINGS);
         const items = quote ? quote.items : this.currentItems;
         const services = Storage.getServices(); // Fetch services
@@ -161,14 +157,19 @@ const Quotes = {
                     <div class="form-grid">
                         <div class="form-group">
                             <label class="form-label">Client *</label>
-                            <select name="clientId" class="form-input" required>
-                                <option value="">Sélectionner un client</option>
-                                ${clients.map(c => `
-                                    <option value="${c.id}" ${quote?.clientId === c.id ? 'selected' : ''}>
-                                        ${c.name}
-                                    </option>
-                                `).join('')}
-                            </select>
+                            <div style="display: flex; gap: 10px;">
+                                <select name="clientId" id="quote-client-select" class="form-input" required style="flex: 1;">
+                                    <option value="">Sélectionner un client</option>
+                                    ${clients.map(c => `
+                                        <option value="${c.id}" ${(quote?.clientId === c.id || preselectedClientId === c.id) ? 'selected' : ''}>
+                                            ${c.name}
+                                        </option>
+                                    `).join('')}
+                                </select>
+                                <button type="button" class="button-secondary" onclick="Quotes.openQuickClientAdd()" title="Nouveau Client Rapide">
+                                    ➕
+                                </button>
+                            </div>
                         </div>
 
                         <div class="form-group">
@@ -469,6 +470,22 @@ const Quotes = {
         container.innerHTML = '';
         this.editingId = null;
         this.currentItems = [];
+    },
+
+    openQuickClientAdd() {
+        if (typeof Clients !== 'undefined') {
+            Clients.openQuickAdd((newClient) => {
+                const select = document.getElementById('quote-client-select');
+                if (select) {
+                    const option = document.createElement('option');
+                    option.value = newClient.id;
+                    option.text = newClient.name;
+                    option.selected = true;
+                    select.add(option);
+                    select.value = newClient.id; // Force selection
+                }
+            });
+        }
     },
 
     getStatusLabel(status) {
