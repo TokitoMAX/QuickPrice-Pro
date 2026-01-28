@@ -31,6 +31,12 @@ const App = {
     },
 
     enterApp(animate = true) {
+        // Enforce Mandatory Auth
+        if (!Auth.user) {
+            Auth.showLoginModal();
+            return;
+        }
+
         const landing = document.getElementById('landing-page');
         const appWrapper = document.getElementById('app-wrapper');
 
@@ -51,6 +57,11 @@ const App = {
         document.querySelectorAll('[data-nav]').forEach(link => {
             link.addEventListener('click', (e) => {
                 e.preventDefault();
+                // Check auth on every navigation attempt (optional but safer)
+                if (!Auth.user) {
+                    Auth.showLoginModal();
+                    return;
+                }
                 const page = e.currentTarget.dataset.nav;
                 this.navigateTo(page);
             });
@@ -59,6 +70,11 @@ const App = {
 
     // Navigation entre pages
     navigateTo(page) {
+        // Double check auth
+        if (!Auth.user && page !== 'landing') {
+            // Maybe redirect to landing?
+        }
+
         // Cacher toutes les pages
         document.querySelectorAll('.page').forEach(p => {
             p.classList.remove('active');
