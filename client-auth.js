@@ -73,6 +73,7 @@ const Auth = {
             return { success: true };
         } catch (error) {
             console.error('Login error:', error);
+            alert("Erreur de connexion: " + (error.message || "Inconnue"));
             App.showNotification(error.message || 'Erreur de connexion', 'error');
             return { success: false, message: error.message };
         }
@@ -98,6 +99,7 @@ const Auth = {
             return { success: true };
         } catch (error) {
             console.error('Register error:', error);
+            alert("Erreur d'inscription: " + (error.message || "Inconnue"));
             App.showNotification(error.message || 'Erreur d\'inscription', 'error');
             return { success: false, message: error.message };
         }
