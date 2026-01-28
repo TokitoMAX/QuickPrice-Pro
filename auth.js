@@ -127,9 +127,14 @@ const Auth = {
 };
 
 // Initialize on page load
-document.addEventListener('DOMContentLoaded', () => {
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        Auth.init();
+    });
+} else {
+    // DOM already loaded
     Auth.init();
-});
+}
 
 // Make Auth available globally
 window.Auth = Auth;
