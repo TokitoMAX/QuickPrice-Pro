@@ -81,8 +81,11 @@ const Storage = {
     },
 
     isPro() {
+        return true; // TEMPORARY: Force Pro mode for demo
+        /*
         const user = this.getUser();
         return user && user.isPro === true;
+        */
     },
 
     activatePro(licenseKey) {
