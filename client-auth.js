@@ -1,16 +1,32 @@
 const Auth = {
     user: null,
 
-    async init() {
-        // Check for existing session
-        const { data: { session } } = await supabase.auth.getSession();
-        this.updateAuthState(session);
+    get supabase() {
+        return window.supabaseClient || window.supabase;
+    },
 
-        // Listen for auth changes
-        supabase.auth.onAuthStateChange((event, session) => {
-            console.log("Auth state change:", event, session);
+    async init() {
+        try {
+            console.log("Auth initializing...");
+            if (!this.supabase) {
+                console.error("Supabase client not found!");
+                return;
+            }
+
+            // Check for existing session
+            const { data: { session }, error } = await this.supabase.auth.getSession();
+            if (error) throw error;
+
             this.updateAuthState(session);
-        });
+
+            // Listen for auth changes
+            this.supabase.auth.onAuthStateChange((event, session) => {
+                console.log("Auth state change:", event, session);
+                this.updateAuthState(session);
+            });
+        } catch (err) {
+            console.error("Auth Init Error:", err);
+        }
     },
 
     updateAuthState(session) {
@@ -22,17 +38,14 @@ const Auth = {
 
         if (this.user) {
             console.log("User logged in:", this.user.email);
-            // User is logged in
-            // If we are on landing page, user might want to go to app or stay
-            // But usually we update UI to show "Enter App" instead of "Login"
             if (landingAuthButtons) {
                 landingAuthButtons.innerHTML = `
                     <button class="cta-button small" onclick="App.enterApp()">Accéder au Dashboard</button>
+                    <button class="btn-login" onclick="Auth.logout()" style="margin-left: 0.5rem; font-size: 0.8rem; padding: 0.5rem 1rem;">Déconnexion</button>
                 `;
             }
         } else {
             console.log("User logged out");
-            // User is logged out
             if (landingAuthButtons) {
                 landingAuthButtons.innerHTML = `
                    <button class="btn-login" onclick="Auth.showLoginModal()">Se connecter</button>
@@ -41,20 +54,16 @@ const Auth = {
                 `;
             }
 
-            // Force landing page if currently in app
-            // Check if App is visible (simple check via display style or class)
-            if (appWrapper && appWrapper.style.display !== 'none' && !landingPage.style.display === 'none') {
-                // Determine if we need to kick them out. 
-                // App.enterApp() handles showing appWrapper. 
-                // We should probably reload or hide appWrapper manually if we want strict logout.
+            if (appWrapper && appWrapper.style.display !== 'none') {
                 window.location.reload();
             }
         }
     },
 
     async login(email, password) {
+        if (!this.supabase) return { success: false, message: "Supabase not initialized" };
         try {
-            const { data, error } = await supabase.auth.signInWithPassword({
+            const { data, error } = await this.supabase.auth.signInWithPassword({
                 email,
                 password,
             });
@@ -71,8 +80,9 @@ const Auth = {
     },
 
     async register(name, email, password, companyName) {
+        if (!this.supabase) return { success: false, message: "Supabase not initialized" };
         try {
-            const { data, error } = await supabase.auth.signUp({
+            const { data, error } = await this.supabase.auth.signUp({
                 email,
                 password,
                 options: {
@@ -95,35 +105,60 @@ const Auth = {
     },
 
     async logout() {
+        if (!this.supabase) return;
         try {
-            const { error } = await supabase.auth.signOut();
+            const { error } = await this.supabase.auth.signOut();
             if (error) throw error;
-
             App.showNotification('Déconnecté', 'info');
-            // UI update handled by onAuthStateChange
-            window.location.reload(); // Hard reload to clear any app state
+            window.location.reload();
         } catch (error) {
             console.error('Logout error:', error);
             App.showNotification('Erreur lors de la déconnexion', 'error');
         }
     },
 
-    // UI Helpers
     showLoginModal() {
-        document.getElementById('login-modal').classList.add('active');
-        document.getElementById('register-modal').classList.remove('active');
+        console.log("Opening login modal");
+        const modal = document.getElementById('login-modal');
+        if (modal) {
+            modal.classList.add('active');
+            // Force display in case CSS class isn't working
+            modal.style.display = 'flex';
+        } else {
+            alert("Erreur: Modal de connexion introuvable");
+        }
+
+        const regModal = document.getElementById('register-modal');
+        if (regModal) {
+            regModal.classList.remove('active');
+            regModal.style.display = 'none';
+        }
     },
 
     showRegisterModal() {
-        document.getElementById('register-modal').classList.add('active');
-        document.getElementById('login-modal').classList.remove('active');
+        console.log("Opening register modal");
+        const modal = document.getElementById('register-modal');
+        if (modal) {
+            modal.classList.add('active');
+            modal.style.display = 'flex';
+        } else {
+            alert("Erreur: Modal d'inscription introuvable");
+        }
+
+        const loginModal = document.getElementById('login-modal');
+        if (loginModal) {
+            loginModal.classList.remove('active');
+            loginModal.style.display = 'none';
+        }
     },
 
     closeModals() {
-        document.querySelectorAll('.modal-overlay').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.modal-overlay').forEach(el => {
+            el.classList.remove('active');
+            el.style.display = 'none';
+        });
     },
 
-    // Check if authenticated, otherwise prompt login
     requireAuth() {
         if (!this.user) {
             this.showLoginModal();
@@ -133,12 +168,11 @@ const Auth = {
     }
 };
 
-// Initialize on load
-document.addEventListener('DOMContentLoaded', () => {
-    // Auth.init is called inside App.init or independently? 
-    // Let's call it here to be sure it runs early
+// Initialize
+// Wait for window load to ensure everything is ready
+window.addEventListener('load', () => {
     Auth.init();
 });
 
-// Expose to window for inline HTML handlers
+// Expose to window immediately
 window.Auth = Auth;
