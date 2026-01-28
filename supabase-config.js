@@ -5,7 +5,7 @@ let savedConfig = JSON.parse(localStorage.getItem(CONFIG_KEY) || '{}');
 console.log("Loading Supabase Config...");
 
 // 1. Check if hardcoded values are valid (not placeholders)
-let url = 'YOUR_SUPABASE_URL_HERE';
+let url = 'https://kisldntelhrnilrihelr.supabase.co';
 let key = 'sb_publishable_Fy9VImo4K_Xlqbx4d-L8jw_B3VwLm_8'; // User provided key
 
 // 2. Override with saved config if available
