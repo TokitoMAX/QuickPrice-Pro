@@ -9,7 +9,18 @@ const App = {
         this.setupNavigation();
         this.checkFreemiumLimits();
         this.renderProBadge();
-        this.navigateTo('dashboard');
+
+        // Router / Landing Logic
+        const savedPage = localStorage.getItem('qp_last_page') || 'dashboard';
+        const inApp = sessionStorage.getItem('qp_in_app');
+
+        if (inApp) {
+            this.enterApp(false);
+            this.navigateTo(savedPage);
+        } else {
+            // Stay on Landing Page
+            // Optionally check URL hash
+        }
 
         // Event listener pour fermeture de modales
         document.addEventListener('click', (e) => {
@@ -17,6 +28,22 @@ const App = {
                 this.closeModal();
             }
         });
+    },
+
+    enterApp(animate = true) {
+        const landing = document.getElementById('landing-page');
+        const appWrapper = document.getElementById('app-wrapper');
+
+        if (landing) landing.style.display = 'none';
+        if (appWrapper) {
+            appWrapper.style.display = 'block';
+            if (animate) {
+                appWrapper.style.animation = 'fadeIn 0.5s ease';
+            }
+        }
+
+        sessionStorage.setItem('qp_in_app', 'true');
+        this.navigateTo('dashboard');
     },
 
     // Configuration de la navigation
