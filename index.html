@@ -17,9 +17,8 @@
                 <span class="logo-icon">💰</span>
                 <span class="logo-text">QuickPrice Pro</span>
             </div>
-            <div class="landing-actions" id="landing-auth-buttons">
-                <button class="btn-login" onclick="Auth.openLoginModal()">Se connecter</button>
-                <button class="cta-button small" onclick="Auth.openRegisterModal()">S'inscrire</button>
+            <div class="landing-actions">
+                <!-- Navigation simple sans authentification -->
             </div>
         </nav>
 
@@ -379,78 +378,12 @@
             <!-- NOTIFICATION CONTAINER (moved here for global access) -->
             <div id="notification-container"></div>
 
-            <!-- Login Modal -->
-            <div id="login-modal" class="modal-overlay">
-                <div class="modal-content">
-                    <button class="modal-close" onclick="Auth.closeModals()">✕</button>
-                    <div class="modal-header">
-                        <h2>Connexion</h2>
-                    </div>
-                    <div class="modal-body">
-                        <form id="login-form">
-                            <div class="form-group">
-                                <label class="form-label">Email</label>
-                                <input type="email" id="login-email" class="form-input" required>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Mot de passe</label>
-                                <input type="password" id="login-password" class="form-input" required>
-                            </div>
-                            <div class="modal-actions">
-                                <button type="submit" class="button-primary">Se connecter</button>
-                            </div>
-                        </form>
-                        <p style="text-align: center; margin-top: 1rem;">
-                            <a href="#" onclick="Auth.closeModals(); Auth.openRegisterModal(); return false;"
-                                style="color: var(--primary-light);">
-                                Pas de compte ? S'inscire
-                            </a>
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Register Modal -->
-            <div id="register-modal" class="modal-overlay">
-                <div class="modal-content">
-                    <button class="modal-close" onclick="Auth.closeModals()">✕</button>
-                    <div class="modal-header">
-                        <h2>Créer un compte</h2>
-                    </div>
-                    <div class="modal-body">
-                        <form id="register-form">
-                            <div class="form-group">
-                                <label class="form-label">Nom</label>
-                                <input type="text" id="register-name" class="form-input" required>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Email</label>
-                                <input type="email" id="register-email" class="form-input" required>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Mot de passe</label>
-                                <input type="password" id="register-password" class="form-input" required>
-                            </div>
-                            <div class="modal-actions">
-                                <button type="submit" class="button-primary">S'inscrire</button>
-                            </div>
-                        </form>
-                        <p style="text-align: center; margin-top: 1rem;">
-                            <a href="#" onclick="Auth.closeModals(); Auth.openLoginModal(); return false;"
-                                style="color: var(--primary-light);">
-                                Déjà un compte ? Se connecter
-                            </a>
-                        </p>
-                    </div>
-                </div>
-            </div>
-
         </div> <!-- End App Wrapper -->
+
 
 
         <!-- Scripts -->
         <script src="storage.js"></script>
-        <script src="auth.js"></script>
         <script src="app.js"></script>
         <script src="dashboard.js"></script>
         <script src="clients.js"></script>
@@ -460,42 +393,6 @@
         <script src="quotes.js"></script>
         <script src="scoper.js"></script>
         <script src="calculator.js"></script>
-
-        <!-- Form Handlers -->
-        <script>
-            // Login form handler
-            document.addEventListener('DOMContentLoaded', () => {
-                const loginForm = document.getElementById('login-form');
-                if (loginForm) {
-                    loginForm.addEventListener('submit', async (e) => {
-                        e.preventDefault();
-                        const email = document.getElementById('login-email').value;
-                        const password = document.getElementById('login-password').value;
-
-                        const result = await Auth.login(email, password);
-                        if (!result.success) {
-                            alert(result.message);
-                        }
-                    });
-                }
-
-                // Register form handler
-                const registerForm = document.getElementById('register-form');
-                if (registerForm) {
-                    registerForm.addEventListener('submit', async (e) => {
-                        e.preventDefault();
-                        const name = document.getElementById('register-name').value;
-                        const email = document.getElementById('register-email').value;
-                        const password = document.getElementById('register-password').value;
-
-                        const result = await Auth.register(name, email, password);
-                        if (!result.success) {
-                            alert(result.message);
-                        }
-                    });
-                }
-            });
-        </script>
 </body>
 
 </html>

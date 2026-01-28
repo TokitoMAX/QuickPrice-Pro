@@ -31,12 +31,6 @@ const App = {
     },
 
     enterApp(animate = true) {
-        // Check if user is authenticated
-        if (!Auth || !Auth.isAuthenticated()) {
-            Auth.openLoginModal();
-            return;
-        }
-
         const landing = document.getElementById('landing-page');
         const appWrapper = document.getElementById('app-wrapper');
 
