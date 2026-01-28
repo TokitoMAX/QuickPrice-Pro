@@ -140,7 +140,7 @@ const Auth = {
     showRegisterModal() {
         console.log("Opening register modal");
         // DEBUG: Alert to prove click works
-        // alert("DEBUG: Opening Register Modal");
+        alert("DEBUG: Click received - Opening Register Modal");
 
         const modal = document.getElementById('register-modal');
         if (modal) {
