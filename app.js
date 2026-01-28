@@ -93,6 +93,9 @@ const App = {
                 // Déjà chargé dans calculator.js
                 if (typeof loadCalculatorInputs === 'function') loadCalculatorInputs();
                 break;
+            case 'services':
+                if (typeof Services !== 'undefined') Services.render();
+                break;
             case 'scoper':
                 if (typeof Scoper !== 'undefined') Scoper.render();
                 break;

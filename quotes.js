@@ -57,6 +57,9 @@ const Quotes = {
                                                         title="${quote.status === 'accepted' ? 'Convertir en facture' : 'Valider et Facturer'}">
                                                     🧾
                                                 </button>
+                                                <button class="btn-icon" onclick="Quotes.duplicate('${quote.id}')" title="Dupliquer">
+                                                    ❐
+                                                </button>
                                                 <button class="btn-icon" onclick="Quotes.downloadPDF('${quote.id}')" title="PDF">
                                                     📄
                                                 </button>
@@ -79,6 +82,26 @@ const Quotes = {
                 </div>
             `}
         `;
+    },
+
+    duplicate(id) {
+        const quote = Storage.getQuote(id);
+        if (!quote) return;
+
+        if (confirm('Voulez-vous dupliquer ce devis (créer une copie) ?')) {
+            const newQuoteData = {
+                clientId: quote.clientId,
+                status: 'draft',
+                items: JSON.parse(JSON.stringify(quote.items)), // Deep copy
+                subtotal: quote.subtotal,
+                tax: quote.tax,
+                total: quote.total
+            };
+
+            Storage.addQuote(newQuoteData);
+            App.showNotification('✅ Devis dupliqué avec succès', 'success');
+            this.render();
+        }
     },
 
     showAddForm() {
@@ -122,9 +145,14 @@ const Quotes = {
     renderForm(clients, quote = null) {
         const settings = Storage.get(Storage.KEYS.SETTINGS);
         const items = quote ? quote.items : this.currentItems;
+        const services = Storage.getServices(); // Fetch services
 
         return `
             <div class="form-card">
+                <datalist id="quote-services-list">
+                    ${services.map(s => `<option value="${s.label}">${App.formatCurrency(s.unitPrice)}</option>`).join('')}
+                </datalist>
+
                 <div class="form-header">
                     <h3>${quote ? 'Modifier le Devis' : 'Nouveau Devis'}</h3>
                     <button class="btn-close" onclick="Quotes.hideForm()">✕</button>
@@ -197,10 +225,11 @@ const Quotes = {
                 <div class="item-field item-description">
                     <input type="text" 
                            name="items[${index}][description]" 
-                           placeholder="Description" 
+                           placeholder="Description (ou choisir dans la liste)" 
                            class="form-input" 
+                           list="quote-services-list"
                            value="${item.description || ''}"
-                           onchange="Quotes.updateTotals()"
+                           oninput="Quotes.handleServiceSelect(this, ${index})"
                            required>
                 </div>
                 <div class="item-field item-quantity">
@@ -254,6 +283,23 @@ const Quotes = {
         this.currentItems.splice(index, 1);
         document.querySelector(`.item-row[data-index="${index}"]`).remove();
         this.updateTotals();
+    },
+
+    handleServiceSelect(input, index) {
+        const val = input.value;
+        const services = Storage.getServices();
+        const found = services.find(s => s.label === val);
+
+        if (found) {
+            const row = document.querySelector(`.item-row[data-index="${index}"]`);
+            if (row) {
+                const priceInput = row.querySelector('[name*="[unitPrice]"]');
+                if (priceInput) {
+                    priceInput.value = found.unitPrice;
+                    this.updateTotals();
+                }
+            }
+        }
     },
 
     updateTotals() {

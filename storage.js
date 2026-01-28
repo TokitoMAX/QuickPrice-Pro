@@ -8,6 +8,7 @@ const Storage = {
         CLIENTS: 'qp_clients',
         QUOTES: 'qp_quotes',
         INVOICES: 'qp_invoices',
+        SERVICES: 'qp_services', // New Key
         REVENUES: 'qp_revenues',
         EXPENSES: 'qp_expenses',
         SETTINGS: 'qp_settings'
@@ -42,7 +43,7 @@ const Storage = {
         }
 
         // Initialiser les collections vides si nécessaire
-        ['CLIENTS', 'QUOTES', 'INVOICES', 'REVENUES', 'EXPENSES'].forEach(key => {
+        ['CLIENTS', 'QUOTES', 'INVOICES', 'SERVICES', 'REVENUES', 'EXPENSES'].forEach(key => {
             if (!this.get(this.KEYS[key])) {
                 this.set(this.KEYS[key], []);
             }
@@ -215,6 +216,28 @@ const Storage = {
     deleteInvoice(id) {
         const invoices = this.getInvoices().filter(i => i.id !== id);
         this.set(this.KEYS.INVOICES, invoices);
+    },
+
+    // Méthodes Service Catalog
+    getServices() {
+        return this.get(this.KEYS.SERVICES) || [];
+    },
+
+    addService(service) {
+        const services = this.getServices();
+        const newService = {
+            id: this.generateId(),
+            ...service,
+            createdAt: new Date().toISOString()
+        };
+        services.push(newService);
+        this.set(this.KEYS.SERVICES, services);
+        return newService;
+    },
+
+    deleteService(id) {
+        const services = this.getServices().filter(s => s.id !== id);
+        this.set(this.KEYS.SERVICES, services);
     },
 
     // Statistiques

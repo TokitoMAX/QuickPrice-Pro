@@ -59,6 +59,9 @@ const Invoices = {
                                                 <button class="btn-icon" onclick="Invoices.changeStatus('${invoice.id}')" title="Changer statut">
                                                     🔄
                                                 </button>
+                                                <button class="btn-icon" onclick="Invoices.duplicate('${invoice.id}')" title="Dupliquer (Facture récurrente)">
+                                                    ❐
+                                                </button>
                                                 <button class="btn-icon" onclick="Invoices.downloadPDF('${invoice.id}')" title="PDF">
                                                     📄
                                                 </button>
@@ -108,6 +111,7 @@ const Invoices = {
     renderForm(clients, invoice = null) {
         const settings = Storage.get(Storage.KEYS.SETTINGS);
         const items = invoice ? invoice.items : this.currentItems;
+        const services = Storage.getServices(); // Fetch services
 
         // Calcul du due date par défaut (30 jours)
         const defaultDueDate = new Date();
@@ -116,6 +120,10 @@ const Invoices = {
 
         return `
             <div class="form-card">
+                <datalist id="invoice-services-list">
+                    ${services.map(s => `<option value="${s.label}">${App.formatCurrency(s.unitPrice)}</option>`).join('')}
+                </datalist>
+
                 <div class="form-header">
                     <h3>${invoice ? 'Modifier la Facture' : 'Nouvelle Facture'}</h3>
                     <button class="btn-close" onclick="Invoices.hideForm()">✕</button>
@@ -194,10 +202,11 @@ const Invoices = {
                 <div class="item-field item-description">
                     <input type="text" 
                            name="items[${index}][description]" 
-                           placeholder="Description" 
+                           placeholder="Description (ou choisir dans la liste)" 
                            class="form-input" 
+                           list="invoice-services-list"
                            value="${item.description || ''}"
-                           onchange="Invoices.updateTotals()"
+                           oninput="Invoices.handleServiceSelect(this, ${index})"
                            required>
                 </div>
                 <div class="item-field item-quantity">
@@ -279,6 +288,23 @@ const Invoices = {
         document.getElementById('subtotal-display').textContent = App.formatCurrency(subtotal);
         document.getElementById('tax-display').textContent = App.formatCurrency(tax);
         document.getElementById('total-display').textContent = App.formatCurrency(total);
+    },
+
+    handleServiceSelect(input, index) {
+        const val = input.value;
+        const services = Storage.getServices();
+        const found = services.find(s => s.label === val);
+
+        if (found) {
+            const row = document.querySelector(`.item-row[data-index="${index}"]`);
+            if (row) {
+                const priceInput = row.querySelector('[name*="[unitPrice]"]');
+                if (priceInput) {
+                    priceInput.value = found.unitPrice;
+                    this.updateTotals();
+                }
+            }
+        }
     },
 
     save(e) {
@@ -373,6 +399,31 @@ const Invoices = {
             PDFGenerator.generateInvoice(invoice, client, user);
         } else {
             App.showNotification('⚠️ Module PDF en cours de chargement...', 'error');
+        }
+    },
+
+    duplicate(id) {
+        const invoice = Storage.getInvoice(id);
+        if (!invoice) return;
+
+        if (confirm('Voulez-vous dupliquer cette facture ?')) {
+            // Recalculate echeance for new invoice
+            const dueDate = new Date();
+            dueDate.setDate(dueDate.getDate() + 30);
+
+            const newInvoiceData = {
+                clientId: invoice.clientId,
+                status: 'draft',
+                items: JSON.parse(JSON.stringify(invoice.items)), // Deep copy
+                subtotal: invoice.subtotal,
+                tax: invoice.tax,
+                total: invoice.total,
+                dueDate: dueDate.toISOString()
+            };
+
+            Storage.addInvoice(newInvoiceData);
+            App.showNotification('✅ Facture dupliquée !', 'success');
+            this.render();
         }
     },
 
