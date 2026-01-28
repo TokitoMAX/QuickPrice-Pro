@@ -34,7 +34,6 @@ const Auth = {
 
         const landingAuthButtons = document.getElementById('landing-auth-buttons');
         const appWrapper = document.getElementById('app-wrapper');
-        const landingPage = document.getElementById('landing-page');
 
         if (this.user) {
             console.log("User logged in:", this.user.email);
@@ -118,16 +117,11 @@ const Auth = {
     },
 
     showLoginModal() {
-        console.log("Opening login modal");
-        // DEBUG: Alert to prove click works
-        // alert("DEBUG: Opening Login Modal");
-
+        // console.log("Opening login modal");
         const modal = document.getElementById('login-modal');
         if (modal) {
             modal.classList.add('active');
             modal.style.display = 'flex';
-        } else {
-            alert("Erreur: Modal de connexion introuvable dans le HTML");
         }
 
         const regModal = document.getElementById('register-modal');
@@ -138,16 +132,11 @@ const Auth = {
     },
 
     showRegisterModal() {
-        console.log("Opening register modal");
-        // DEBUG: Alert to prove click works
-        alert("DEBUG: Click received - Opening Register Modal");
-
+        // console.log("Opening register modal");
         const modal = document.getElementById('register-modal');
         if (modal) {
             modal.classList.add('active');
             modal.style.display = 'flex';
-        } else {
-            alert("Erreur: Modal d'inscription introuvable dans le HTML");
         }
 
         const loginModal = document.getElementById('login-modal');
