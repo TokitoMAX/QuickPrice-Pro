@@ -1,9 +1,26 @@
+// QuickPrice Pro - Calculator Module
+// Handles TJM and Hourly Rate calculations
 
+function initCalculator() {
+    loadCalculatorInputs();
+
+    // Add event listeners for auto-calculation
+    const inputs = ['monthlyRevenue', 'workingDays', 'hoursPerDay', 'monthlyCharges', 'taxRate'];
+    inputs.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.addEventListener('input', calculatePrice);
+        }
+    });
+
+    // Run initial calculation
+    calculatePrice();
+}
 
 function calculatePrice() {
     // Check if calculator exists on this page
     const revenueInput = document.getElementById('monthlyRevenue');
-    if (!revenueInput) return; // Exit if calculator inputs are not present
+    if (!revenueInput) return;
 
     // Get input values
     const monthlyRevenue = parseFloat(revenueInput.value) || 0;
@@ -13,22 +30,30 @@ function calculatePrice() {
     const taxRate = parseFloat(document.getElementById('taxRate')?.value) || 0;
 
     // Validation
-    if (workingDays === 0 || hoursPerDay === 0) {
-        return;
+    if (workingDays === 0 || hoursPerDay === 0) return;
+
+    // Calculate total needed before taxes
+    // Formula: RevenueNeeded = (NetGoal + Charges) / (1 - TaxRate)
+
+    const targetNet = monthlyRevenue;
+    const charges = monthlyCharges;
+    const rate = taxRate / 100;
+
+    // Total a facturer pour avoir le net voulu + payer les charges
+    // Rev - (Rev * Rate) - Charges = Net
+    // Rev(1 - Rate) = Net + Charges
+    // Rev = (Net + Charges) / (1 - Rate)
+
+    let revenueNeeded = 0;
+    if (rate < 1) {
+        revenueNeeded = (targetNet + charges) / (1 - rate);
     }
 
-    // ... rest of calculation ...
     // Calculate total monthly hours
     const monthlyHours = workingDays * hoursPerDay;
 
-    // Calculate total needed before taxes
-    const totalNeeded = monthlyRevenue + monthlyCharges;
-
-    // Calculate revenue needed after taxes
-    const revenueNeeded = totalNeeded / (1 - (taxRate / 100));
-
     // Calculate hourly rate
-    const hourlyRate = revenueNeeded / monthlyHours;
+    const hourlyRate = monthlyHours > 0 ? revenueNeeded / monthlyHours : 0;
 
     // Calculate daily rate
     const dailyRate = hourlyRate * hoursPerDay;
@@ -36,240 +61,106 @@ function calculatePrice() {
     // Calculate annual revenue
     const annualRevenue = revenueNeeded * 12;
 
-    // Save inputs to storage specific for calculator
+    // Save inputs to storage
     saveCalculatorInputs({
         monthlyRevenue, workingDays, hoursPerDay, monthlyCharges, taxRate
     });
 
-    // Update UI (with checks)
+    // Update UI
     const hourlyEl = document.getElementById('hourlyRate');
-    if (hourlyEl) hourlyEl.textContent = `${Math.ceil(hourlyRate)}€/h`;
+    if (hourlyEl) hourlyEl.textContent = `${Math.ceil(hourlyRate)} €/h`;
 
     const dailyEl = document.getElementById('dailyRate');
-    if (dailyEl) dailyEl.textContent = `${Math.ceil(dailyRate)}€/j`;
+    if (dailyEl) dailyEl.textContent = `${Math.ceil(dailyRate)} €/j`;
 
     const annualEl = document.getElementById('annualRevenue');
-    if (annualEl) annualEl.textContent = `${Math.ceil(annualRevenue).toLocaleString('fr-FR')}€`;
+    if (annualEl) annualEl.textContent = `${Math.ceil(annualRevenue).toLocaleString('fr-FR')} €`;
 
     // Update breakdown
-    const taxAmount = revenueNeeded * (taxRate / 100);
-    const bdNet = document.getElementById('breakdownNet');
-    if (bdNet) bdNet.textContent = `${Math.ceil(monthlyRevenue).toLocaleString('fr-FR')}€`;
+    const taxAmount = revenueNeeded * rate;
 
-    const bdTax = document.getElementById('breakdownTax');
-    if (bdTax) bdTax.textContent = `${Math.ceil(taxAmount).toLocaleString('fr-FR')}€`;
+    updateElement('breakdownNet', Math.ceil(targetNet));
+    updateElement('breakdownTax', Math.ceil(taxAmount));
+    updateElement('breakdownCharges', Math.ceil(charges));
+    updateElement('breakdownTotal', Math.ceil(revenueNeeded));
 
-    const bdCharges = document.getElementById('breakdownCharges');
-    if (bdCharges) bdCharges.textContent = `${Math.ceil(monthlyCharges).toLocaleString('fr-FR')}€`;
-
-    const bdTotal = document.getElementById('breakdownTotal');
-    if (bdTotal) bdTotal.textContent = `${Math.ceil(revenueNeeded).toLocaleString('fr-FR')}€`;
-
-    // Update comparison marker position
+    // Update comparison marker
     updateComparisonMarker(hourlyRate);
 
-    // Add animation to results
-    animateResults();
+    // Show results
+    const resultsPanel = document.getElementById('resultsPanel');
+    if (resultsPanel) resultsPanel.style.display = 'block';
 }
-// ...
+
+function updateElement(id, value) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = `${value.toLocaleString('fr-FR')} €`;
+}
+
+function saveCalculatorInputs(data) {
+    localStorage.setItem('qp_calculator_inputs', JSON.stringify(data));
+}
+
+function loadCalculatorInputs() {
+    const data = JSON.parse(localStorage.getItem('qp_calculator_inputs'));
+    if (data) {
+        setInputValue('monthlyRevenue', data.monthlyRevenue);
+        setInputValue('workingDays', data.workingDays);
+        setInputValue('hoursPerDay', data.hoursPerDay);
+        setInputValue('monthlyCharges', data.monthlyCharges);
+        setInputValue('taxRate', data.taxRate);
+    }
+}
+
+function setInputValue(id, value) {
+    const el = document.getElementById(id);
+    if (el && value !== undefined) el.value = value;
+}
+
 function updateComparisonMarker(hourlyRate) {
     const marker = document.getElementById('yourMarker');
-    if (!marker) return; // Exit if marker doesn't exist
+    if (!marker) return;
 
-    const bar = marker.parentElement;
-
-    // Market ranges
+    // Market ranges (Arbitrary for visual aid)
     const min = 30;
-    const max = 80;
+    const max = 150;
 
-    // Calculate position (clamp between 10% and 90%)
-    let position = ((hourlyRate - min) / (max - min)) * 80 + 10;
-    position = Math.max(10, Math.min(90, position));
+    // Calculate position (clamp between 5% and 95%)
+    let position = ((hourlyRate - min) / (max - min)) * 100;
+    position = Math.max(5, Math.min(95, position));
 
     marker.style.left = `${position}%`;
 
-    // Update marker text
-    marker.querySelector('.marker-label').textContent = `Vous: ${Math.ceil(hourlyRate)}€/h`;
+    const label = marker.querySelector('.marker-label');
+    if (label) label.textContent = `Vous: ${Math.ceil(hourlyRate)}€`;
 }
 
-function animateResults() {
-    const cards = document.querySelectorAll('.result-card');
-    cards.forEach((card, index) => {
-        card.style.animation = 'none';
+// Integration with Quotes
+function useRate(type) {
+    const dailyRateText = document.getElementById('dailyRate').textContent;
+    const dailyRate = parseFloat(dailyRateText.replace(/[^0-9]/g, ''));
+
+    if (dailyRate > 0) {
+        // Create a draft item
+        const draftItem = {
+            description: 'Prestation (base TJM calculé)',
+            quantity: 1,
+            unitPrice: dailyRate
+        };
+
+        // Save to storage to be picked up by quotes.js
+        Storage.set('qp_draft_quote_item', draftItem);
+
+        // Navigate to quotes
+        App.navigateTo('quotes');
+        // Quotes will auto-detect the draft item in init
         setTimeout(() => {
-            card.style.animation = `fadeInUp 0.5s ease ${index * 0.1}s backwards`;
-        }, 10);
-    });
-}
-
-function exportResults() {
-    // Get current values
-    const hourlyRate = document.getElementById('hourlyRate').textContent;
-    const dailyRate = document.getElementById('dailyRate').textContent;
-    const annualRevenue = document.getElementById('annualRevenue').textContent;
-
-    const monthlyRevenue = document.getElementById('monthlyRevenue').value;
-    const workingDays = document.getElementById('workingDays').value;
-    const hoursPerDay = document.getElementById('hoursPerDay').value;
-    const monthlyCharges = document.getElementById('monthlyCharges').value;
-    const taxRate = document.getElementById('taxRate').value;
-
-    // Create detailed report
-    const report = `
-═══════════════════════════════════════════════════
-                   QUICKPRICE RAPPORT
-           Analyse de Tarification Freelance
-═══════════════════════════════════════════════════
-
-📊 VOS PARAMÈTRES
-────────────────────────────────────────────────────
-• Revenu mensuel souhaité : ${monthlyRevenue}€
-• Jours travaillés/mois : ${workingDays} jours
-• Heures facturables/jour : ${hoursPerDay}h
-• Charges mensuelles : ${monthlyCharges}€
-• Taux charges sociales : ${taxRate}%
-
-💰 VOS TARIFS RECOMMANDÉS
-────────────────────────────────────────────────────
-• Tarif Horaire Minimum : ${hourlyRate}
-• Tarif Journalier (TJM) : ${dailyRate}
-• Revenu Annuel Potentiel : ${annualRevenue}
-
-📈 RÉPARTITION MENSUELLE
-────────────────────────────────────────────────────
-• Revenu net : ${document.getElementById('breakdownNet').textContent}
-• Charges sociales : ${document.getElementById('breakdownTax').textContent}
-• Charges professionnelles : ${document.getElementById('breakdownCharges').textContent}
-• Total à facturer : ${document.getElementById('breakdownTotal').textContent}
-
-💡 RECOMMANDATIONS
-────────────────────────────────────────────────────
-✓ Ne descendez jamais en dessous de ce tarif horaire
-✓ Prévoyez une marge pour les périodes creuses
-✓ Ajustez selon votre expérience et votre secteur
-✓ Révisez vos tarifs tous les 6-12 mois
-
-────────────────────────────────────────────────────
-Généré avec QuickPrice le ${new Date().toLocaleDateString('fr-FR')}
-www.quickprice.com
-═══════════════════════════════════════════════════
-    `;
-
-    // Create and download file
-    const blob = new Blob([report], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `QuickPrice_Rapport_${new Date().toISOString().split('T')[0]}.txt`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-
-    // Show success message
-    showNotification('✅ Rapport téléchargé avec succès !');
-}
-
-function shareResults() {
-    const hourlyRate = document.getElementById('hourlyRate').textContent;
-    const dailyRate = document.getElementById('dailyRate').textContent;
-
-    const text = `💰 QuickPrice m'a aidé à calculer mes tarifs freelance !\n\n• Tarif horaire : ${hourlyRate}\n• TJM : ${dailyRate}\n\nCalculez vos tarifs gratuitement avec QuickPrice !`;
-
-    // Try to use Web Share API
-    if (navigator.share) {
-        navigator.share({
-            title: 'Mes tarifs QuickPrice',
-            text: text
-        }).catch(() => {
-            copyToClipboard(text);
-        });
-    } else {
-        copyToClipboard(text);
+            if (typeof Quotes !== 'undefined') Quotes.showAddForm();
+        }, 100);
     }
 }
 
-function copyToClipboard(text) {
-    const textarea = document.createElement('textarea');
-    textarea.value = text;
-    textarea.style.position = 'fixed';
-    textarea.style.opacity = '0';
-    document.body.appendChild(textarea);
-    textarea.select();
-
-    try {
-        document.execCommand('copy');
-        showNotification('📋 Copié dans le presse-papier !');
-    } catch (err) {
-        showNotification('❌ Erreur lors de la copie');
-    }
-
-    document.body.removeChild(textarea);
-}
-
-function showNotification(message) {
-    // Create notification element
-    const notification = document.createElement('div');
-    notification.textContent = message;
-    notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: linear-gradient(135deg, #6366f1, #4f46e5);
-        color: white;
-        padding: 1rem 1.5rem;
-        border-radius: 12px;
-        font-weight: 600;
-        box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
-        z-index: 10000;
-        animation: slideInRight 0.5s ease, slideOutRight 0.5s ease 2.5s;
-    `;
-
-    document.body.appendChild(notification);
-
-    // Remove after 3 seconds
-    setTimeout(() => {
-        notification.remove();
-    }, 3000);
-}
-
-// Add slide animations
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes slideInRight {
-        from {
-            transform: translateX(400px);
-            opacity: 0;
-        }
-        to {
-            transform: translateX(0);
-            opacity: 1;
-        }
-    }
-    
-    @keyframes slideOutRight {
-        from {
-            transform: translateX(0);
-            opacity: 1;
-        }
-        to {
-            transform: translateX(400px);
-            opacity: 0;
-        }
-    }
-`;
-document.head.appendChild(style);
-
-// Smooth scroll for navigation
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-            target.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            });
-        }
-    });
-});
+// Global Exports
+window.calculatePrice = calculatePrice;
+window.useRate = useRate;
+window.loadCalculatorInputs = initCalculator; // Alias for app.js loading
