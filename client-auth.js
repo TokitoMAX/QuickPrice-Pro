@@ -1,151 +1,133 @@
 const Auth = {
+    // Current User State
     user: null,
 
-    get supabase() {
-        return window.supabaseClient || window.supabase;
+    // --- INITIALIZATION ---
+    init() {
+        console.log("Auth (Local) initializing...");
+        this.checkSession();
     },
 
-    async init() {
-        try {
-            console.log("Auth initializing...");
-            if (!this.supabase) {
-                console.error("Supabase client not found!");
-                return;
+    // --- CORE ACTIONS ---
+
+    // Check if user is already logged in (from LocalStorage)
+    checkSession() {
+        const storedUser = localStorage.getItem('qp_user_session');
+        if (storedUser) {
+            try {
+                this.user = JSON.parse(storedUser);
+                console.log("Session restored for:", this.user.email);
+            } catch (e) {
+                console.error("Session corrupted, clearing.");
+                localStorage.removeItem('qp_user_session');
+                this.user = null;
             }
+        }
+        this.updateUI();
+    },
 
-            // Check for existing session
-            const { data: { session }, error } = await this.supabase.auth.getSession();
-            if (error) throw error;
+    // Login checks against 'qp_users_db' in LocalStorage
+    async login(email, password) {
+        // Simulate network delay for realism
+        await new Promise(r => setTimeout(r, 500));
 
-            this.updateAuthState(session);
+        const usersDB = JSON.parse(localStorage.getItem('qp_users_db') || '[]');
+        const foundUser = usersDB.find(u => u.email === email && u.password === password);
 
-            // Listen for auth changes
-            this.supabase.auth.onAuthStateChange((event, session) => {
-                console.log("Auth state change:", event, session);
-                this.updateAuthState(session);
-            });
-        } catch (err) {
-            console.error("Auth Init Error:", err);
+        if (foundUser) {
+            this.startSession(foundUser);
+            App.showNotification('Connexion réussie !', 'success');
+            return { success: true };
+        } else {
+            return { success: false, message: "Email ou mot de passe incorrect." };
         }
     },
 
-    updateAuthState(session) {
-        this.user = session ? session.user : null;
+    // Register saves new user to 'qp_users_db'
+    async register(company, email, password) {
+        await new Promise(r => setTimeout(r, 500));
 
-        const landingAuthButtons = document.getElementById('landing-auth-buttons');
+        const usersDB = JSON.parse(localStorage.getItem('qp_users_db') || '[]');
+
+        // Check if exists
+        if (usersDB.find(u => u.email === email)) {
+            return { success: false, message: "Cet email est déjà utilisé." };
+        }
+
+        const newUser = {
+            id: Date.now(),
+            company,
+            email,
+            password, // In a real app never store cleartext passwords!
+            createdAt: new Date().toISOString()
+        };
+
+        usersDB.push(newUser);
+        localStorage.setItem('qp_users_db', JSON.stringify(usersDB));
+
+        this.startSession(newUser);
+        App.showNotification('Compte créé avec succès !', 'success');
+        return { success: true };
+    },
+
+    // Logout clears session
+    async logout() {
+        localStorage.removeItem('qp_user_session');
+        this.user = null;
+        App.showNotification('Déconnecté.', 'info');
+        window.location.reload();
+    },
+
+    // --- INTERNALS ---
+
+    startSession(userObj) {
+        this.user = userObj;
+        localStorage.setItem('qp_user_session', JSON.stringify(userObj));
+        this.updateUI();
+    },
+
+    updateUI() {
+        const landingButtons = document.getElementById('landing-auth-buttons');
         const appWrapper = document.getElementById('app-wrapper');
 
+        // 1. Logged In State
         if (this.user) {
-            console.log("User logged in:", this.user.email);
-            if (landingAuthButtons) {
-                landingAuthButtons.innerHTML = `
+            if (landingButtons) {
+                landingButtons.innerHTML = `
                     <button class="cta-button small" onclick="App.enterApp()">Accéder au Dashboard</button>
                     <button class="btn-login" onclick="Auth.logout()" style="margin-left: 0.5rem; font-size: 0.8rem; padding: 0.5rem 1rem;">Déconnexion</button>
                 `;
             }
-        } else {
-            console.log("User logged out");
-            if (landingAuthButtons) {
-                landingAuthButtons.innerHTML = `
-                   <button class="btn-login" onclick="Auth.showLoginModal()">Se connecter</button>
-                    <button class="cta-button small" onclick="Auth.showRegisterModal()"
-                        style="padding: 0.8rem 1.5rem; font-size: 0.9rem;">S'inscrire</button>
+        }
+        // 2. Guest State
+        else {
+            if (landingButtons) {
+                landingButtons.innerHTML = `
+                    <button class="btn-login" onclick="Auth.showLoginModal()">Se connecter</button>
+                    <button class="cta-button small" onclick="Auth.showRegisterModal()" style="padding: 0.8rem 1.5rem; font-size: 0.9rem;">S'inscrire</button>
                 `;
             }
-
+            // If user is inside app but logged out -> Reload to kick them out
             if (appWrapper && appWrapper.style.display !== 'none') {
                 window.location.reload();
             }
         }
     },
 
-    async login(email, password) {
-        if (!this.supabase) return { success: false, message: "Supabase not initialized" };
-        try {
-            const { data, error } = await this.supabase.auth.signInWithPassword({
-                email,
-                password,
-            });
-
-            if (error) throw error;
-
-            App.showNotification('Connexion réussie !', 'success');
-            return { success: true };
-        } catch (error) {
-            console.error('Login error:', error);
-            alert("Erreur de connexion: " + (error.message || "Inconnue"));
-            App.showNotification(error.message || 'Erreur de connexion', 'error');
-            return { success: false, message: error.message };
-        }
-    },
-
-    async register(name, email, password, companyName) {
-        if (!this.supabase) return { success: false, message: "Supabase not initialized" };
-        try {
-            const { data, error } = await this.supabase.auth.signUp({
-                email,
-                password,
-                options: {
-                    data: {
-                        name: name,
-                        company: companyName
-                    }
-                }
-            });
-
-            if (error) throw error;
-
-            App.showNotification('Inscription réussie !', 'success');
-            return { success: true };
-        } catch (error) {
-            console.error('Register error:', error);
-            alert("Erreur d'inscription: " + (error.message || "Inconnue"));
-            App.showNotification(error.message || 'Erreur d\'inscription', 'error');
-            return { success: false, message: error.message };
-        }
-    },
-
-    async logout() {
-        if (!this.supabase) return;
-        try {
-            const { error } = await this.supabase.auth.signOut();
-            if (error) throw error;
-            App.showNotification('Déconnecté', 'info');
-            window.location.reload();
-        } catch (error) {
-            console.error('Logout error:', error);
-            App.showNotification('Erreur lors de la déconnexion', 'error');
-        }
-    },
+    // --- MODAL HELPERS ---
 
     showLoginModal() {
-        // console.log("Opening login modal");
         const modal = document.getElementById('login-modal');
-        if (modal) {
-            modal.classList.add('active');
-            modal.style.display = 'flex';
-        }
-
         const regModal = document.getElementById('register-modal');
-        if (regModal) {
-            regModal.classList.remove('active');
-            regModal.style.display = 'none';
-        }
+        if (regModal) { regModal.classList.remove('active'); regModal.style.display = 'none'; }
+        if (modal) { modal.classList.add('active'); modal.style.display = 'flex'; }
     },
 
     showRegisterModal() {
-        // console.log("Opening register modal");
-        const modal = document.getElementById('register-modal');
-        if (modal) {
-            modal.classList.add('active');
-            modal.style.display = 'flex';
-        }
-
-        const loginModal = document.getElementById('login-modal');
-        if (loginModal) {
-            loginModal.classList.remove('active');
-            loginModal.style.display = 'none';
-        }
+        const modal = document.getElementById('login-modal');
+        const regModal = document.getElementById('register-modal');
+        if (modal) { modal.classList.remove('active'); modal.style.display = 'none'; }
+        if (regModal) { regModal.classList.add('active'); regModal.style.display = 'flex'; }
     },
 
     closeModals() {
@@ -155,6 +137,7 @@ const Auth = {
         });
     },
 
+    // Gatekeeper for App.js
     requireAuth() {
         if (!this.user) {
             this.showLoginModal();
@@ -164,11 +147,6 @@ const Auth = {
     }
 };
 
-// Initialize
-// Wait for window load to ensure everything is ready
-window.addEventListener('load', () => {
-    Auth.init();
-});
-
-// Expose to window immediately
+// Auto-init
+window.addEventListener('load', () => { Auth.init(); });
 window.Auth = Auth;

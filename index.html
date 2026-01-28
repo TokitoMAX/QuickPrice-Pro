@@ -460,52 +460,61 @@
 
     <script>
         async function handleLoginSubmit() {
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
-            const btn = document.querySelector('#login-modal button[type="submit"]');
+            try {
+                const email = document.getElementById('login-email').value;
+                const password = document.getElementById('login-password').value;
+                const btn = document.querySelector('#login-modal button[type="submit"]');
 
-            const originalText = btn.textContent;
-            btn.textContent = 'Connexion...';
-            btn.disabled = true;
+                const originalText = btn.textContent;
+                btn.textContent = 'Connexion...';
+                btn.disabled = true;
 
-            const res = await Auth.login(email, password);
+                const res = await Auth.login(email, password);
 
-            btn.textContent = originalText;
-            btn.disabled = false;
+                btn.textContent = originalText;
+                btn.disabled = false;
 
-            if (res.success) {
-                Auth.closeModals();
-            } else {
-                alert(res.message);
+                if (res.success) {
+                    Auth.closeModals();
+                } else {
+                    alert(res.message);
+                }
+            } catch (e) {
+                alert("CRASH Login: " + e.message);
+                console.error(e);
             }
         }
 
         async function handleRegisterSubmit() {
-            const company = document.getElementById('register-company').value;
-            const email = document.getElementById('register-email').value;
-            const password = document.getElementById('register-password').value;
-            const btn = document.querySelector('#register-modal button[type="submit"]');
+            try {
+                const company = document.getElementById('register-company').value;
+                const email = document.getElementById('register-email').value;
+                const password = document.getElementById('register-password').value;
+                const btn = document.querySelector('#register-modal button[type="submit"]');
 
-            const originalText = btn.textContent;
-            btn.textContent = 'Inscription...';
-            btn.disabled = true;
+                const originalText = btn.textContent;
+                btn.textContent = 'Inscription...';
+                btn.disabled = true;
 
-            const res = await Auth.register(company, email, password, company); // using company name as name for now
+                const res = await Auth.register(company, email, password, company); // using company name as name for now
 
-            btn.textContent = originalText;
-            btn.disabled = false;
+                btn.textContent = originalText;
+                btn.disabled = false;
 
-            if (res.success) {
-                Auth.closeModals();
-            } else {
-                alert(res.message);
+                if (res.success) {
+                    Auth.closeModals();
+                } else {
+                    alert(res.message);
+                }
+            } catch (e) {
+                alert("CRASH Register: " + e.message);
+                console.error(e);
             }
         }
     </script>
 
     <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="supabase-config.js"></script>
+    <!-- Local Auth (Simple) -->
     <script src="storage.js"></script>
     <script src="client-auth.js"></script>
     <script src="app.js"></script>
