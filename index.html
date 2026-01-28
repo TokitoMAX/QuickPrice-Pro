@@ -10,6 +10,17 @@
 </head>
 
 <body>
+    <div id="sys-status"
+        style="background:#0f172a; color:#fff; padding:5px; text-align:center; font-size:12px; border-bottom:1px solid #334155;">
+        System Status: <span id="sys-msg">Loading...</span>
+    </div>
+    <script>
+        window.updateStatus = (msg, color = 'white') => {
+            const el = document.getElementById('sys-msg');
+            if (el) { el.textContent = msg; el.style.color = color; }
+        };
+        window.onerror = (e) => window.updateStatus("ERROR: " + e, "#ef4444");
+    </script>
     <!-- LANDING PAGE -->
     <div id="landing-page" class="landing-container">
         <nav class="landing-nav container">

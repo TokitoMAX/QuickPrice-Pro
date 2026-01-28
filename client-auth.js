@@ -5,6 +5,7 @@ const Auth = {
     // --- INITIALIZATION ---
     init() {
         console.log("Auth (Local) initializing...");
+        if (window.updateStatus) window.updateStatus("Auth System Active", "#4ade80");
         this.checkSession();
     },
 
@@ -148,5 +149,6 @@ const Auth = {
 };
 
 // Auto-init
-window.addEventListener('load', () => { Auth.init(); });
+// Initialize immediately to avoid race conditions with App.js
+Auth.init();
 window.Auth = Auth;
