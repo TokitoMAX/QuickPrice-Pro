@@ -18,9 +18,7 @@
                 <span class="logo-text">QuickPrice Pro</span>
             </div>
             <div class="landing-actions" id="landing-auth-buttons">
-                <button class="btn-login" onclick="Auth.showLoginModal()">Se connecter</button>
-                <button class="cta-button small" onclick="Auth.showRegisterModal()"
-                    style="padding: 0.8rem 1.5rem; font-size: 0.9rem;">S'inscrire</button>
+                <!-- Injected by client-auth.js -->
             </div>
         </nav>
 
@@ -377,155 +375,23 @@
                     <p class="text-sm text-muted">Format attendu: QPPRO-XXXXX-XXXXX-XXXXX</p>
                 </div>
             </div>
-        </div>
+            <!-- NOTIFICATION CONTAINER (moved here for global access) -->
+            <div id="notification-container"></div>
 
-        <!-- NOTIFICATION CONTAINER (moved here for global access) -->
-        <div id="notification-container"></div>
+        </div> <!-- End App Wrapper -->
 
-        <!-- Modal Login -->
-        <div id="login-modal" class="modal-overlay">
-            <div class="modal-content">
-                <button class="modal-close" onclick="Auth.closeModals()">✕</button>
-                <div class="modal-header">
-                    <h2>Connexion</h2>
-                </div>
-                <div class="modal-body">
-                    <form onsubmit="event.preventDefault(); handleLoginSubmit();">
-                        <div class="form-group">
-                            <label class="form-label">Email</label>
-                            <input type="email" id="login-email" class="form-input" required>
-                        </div>
-                        <div class="form-group" style="margin-top: 1rem;">
-                            <label class="form-label">Mot de passe</label>
-                            <input type="password" id="login-password" class="form-input" required>
-                        </div>
-
-                        <div class="modal-actions">
-                            <button type="submit" class="button-primary" style="width: 100%;">
-                                Se connecter
-                            </button>
-                        </div>
-
-                        <div style="text-align: center; margin-top: 1rem;">
-                            <a href="#" onclick="Auth.showRegisterModal()"
-                                style="color: var(--primary-light); text-decoration: none;">
-                                Pas encore de compte ? Créer un compte
-                            </a>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <!-- Modal Register -->
-        <div id="register-modal" class="modal-overlay">
-            <div class="modal-content">
-                <button class="modal-close" onclick="Auth.closeModals()">✕</button>
-                <div class="modal-header">
-                    <h2>Créer un compte</h2>
-                </div>
-                <div class="modal-body">
-                    <form onsubmit="event.preventDefault(); handleRegisterSubmit();">
-                        <div class="form-group">
-                            <label class="form-label">Nom de l'entreprise (ou Votre Nom)</label>
-                            <input type="text" id="register-company" class="form-input" required>
-                        </div>
-                        <div class="form-group" style="margin-top: 1rem;">
-                            <label class="form-label">Email</label>
-                            <input type="email" id="register-email" class="form-input" required>
-                        </div>
-                        <div class="form-group" style="margin-top: 1rem;">
-                            <label class="form-label">Mot de passe</label>
-                            <input type="password" id="register-password" class="form-input" required>
-                        </div>
-
-                        <div class="modal-actions">
-                            <button type="submit" class="button-primary" style="width: 100%;">
-                                S'inscrire gratuitement
-                            </button>
-                        </div>
-
-                        <div style="text-align: center; margin-top: 1rem;">
-                            <a href="#" onclick="Auth.showLoginModal()"
-                                style="color: var(--primary-light); text-decoration: none;">
-                                Déjà un compte ? Se connecter
-                            </a>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-    </div> <!-- End App Wrapper -->
-
-    <script>
-        async function handleLoginSubmit() {
-            try {
-                const email = document.getElementById('login-email').value;
-                const password = document.getElementById('login-password').value;
-                const btn = document.querySelector('#login-modal button[type="submit"]');
-
-                const originalText = btn.textContent;
-                btn.textContent = 'Connexion...';
-                btn.disabled = true;
-
-                const res = await Auth.login(email, password);
-
-                btn.textContent = originalText;
-                btn.disabled = false;
-
-                if (res.success) {
-                    Auth.closeModals();
-                } else {
-                    alert(res.message);
-                }
-            } catch (e) {
-                alert("CRASH Login: " + e.message);
-                console.error(e);
-            }
-        }
-
-        async function handleRegisterSubmit() {
-            try {
-                const company = document.getElementById('register-company').value;
-                const email = document.getElementById('register-email').value;
-                const password = document.getElementById('register-password').value;
-                const btn = document.querySelector('#register-modal button[type="submit"]');
-
-                const originalText = btn.textContent;
-                btn.textContent = 'Inscription...';
-                btn.disabled = true;
-
-                const res = await Auth.register(company, email, password, company); // using company name as name for now
-
-                btn.textContent = originalText;
-                btn.disabled = false;
-
-                if (res.success) {
-                    Auth.closeModals();
-                } else {
-                    alert(res.message);
-                }
-            } catch (e) {
-                alert("CRASH Register: " + e.message);
-                console.error(e);
-            }
-        }
-    </script>
-
-    <!-- Scripts -->
-    <!-- Local Auth (Simple) -->
-    <script src="storage.js"></script>
-    <script src="client-auth.js"></script>
-    <script src="app.js"></script>
-    <script src="dashboard.js"></script>
-    <script src="clients.js"></script>
-    <script src="invoices.js"></script>
-    <script src="settings.js"></script>
-    <script src="pdf-generator.js"></script>
-    <script src="quotes.js"></script>
-    <script src="scoper.js"></script>
-    <script src="calculator.js"></script>
+        <!-- Scripts -->
+        <!-- Local Auth (Simple) -->
+        <script src="storage.js"></script>
+        <script src="app.js"></script>
+        <script src="dashboard.js"></script>
+        <script src="clients.js"></script>
+        <script src="invoices.js"></script>
+        <script src="settings.js"></script>
+        <script src="pdf-generator.js"></script>
+        <script src="quotes.js"></script>
+        <script src="scoper.js"></script>
+        <script src="calculator.js"></script>
 </body>
 
 </html>
