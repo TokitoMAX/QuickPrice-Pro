@@ -43,8 +43,8 @@ if (!url || url === 'YOUR_SUPABASE_URL_HERE' || !key || key === 'YOUR_SUPABASE_A
 }
 
 // Initialize
-const supabase = window.supabase.createClient(url, key);
+window.supabase = window.supabase.createClient(url, key);
 console.log("✅ Supabase initialized with:", url);
 
 // Export for global usage if needed (though window.supabase is used internally by createClient)
-window.supabaseClient = supabase;
+window.supabaseClient = window.supabase;
