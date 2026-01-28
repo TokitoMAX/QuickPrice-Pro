@@ -19,7 +19,18 @@
             const el = document.getElementById('sys-msg');
             if (el) { el.textContent = msg; el.style.color = color; }
         };
-        window.onerror = (e) => window.updateStatus("ERROR: " + e, "#ef4444");
+        <script>
+        window.updateStatus = (msg, color='white') => {
+            const el = document.getElementById('sys-msg');
+            if(el) {el.textContent = msg; el.style.color = color; }
+        };
+        window.onerror = (e) => window.updateStatus("JS ERROR: " + e, "#ef4444");
+
+        // DEBUG CLICKS
+        document.addEventListener('click', (e) => {
+            const target = e.target.tagName + (e.target.id ? '#' + e.target.id : '') + (e.target.className ? '.' + e.target.className.split(' ')[0] : '');
+            window.updateStatus(`Clicked: ${target} (${e.clientX},${e.clientY})`, '#fbbf24');
+        });
     </script>
     <!-- LANDING PAGE -->
     <div id="landing-page" class="landing-container">
@@ -473,53 +484,53 @@
         async function handleLoginSubmit() {
             try {
                 const email = document.getElementById('login-email').value;
-                const password = document.getElementById('login-password').value;
-                const btn = document.querySelector('#login-modal button[type="submit"]');
+        const password = document.getElementById('login-password').value;
+        const btn = document.querySelector('#login-modal button[type="submit"]');
 
-                const originalText = btn.textContent;
-                btn.textContent = 'Connexion...';
-                btn.disabled = true;
+        const originalText = btn.textContent;
+        btn.textContent = 'Connexion...';
+        btn.disabled = true;
 
-                const res = await Auth.login(email, password);
+        const res = await Auth.login(email, password);
 
-                btn.textContent = originalText;
-                btn.disabled = false;
+        btn.textContent = originalText;
+        btn.disabled = false;
 
-                if (res.success) {
-                    Auth.closeModals();
+        if (res.success) {
+            Auth.closeModals();
                 } else {
-                    alert(res.message);
+            alert(res.message);
                 }
             } catch (e) {
-                alert("CRASH Login: " + e.message);
-                console.error(e);
+            alert("CRASH Login: " + e.message);
+        console.error(e);
             }
         }
 
         async function handleRegisterSubmit() {
             try {
                 const company = document.getElementById('register-company').value;
-                const email = document.getElementById('register-email').value;
-                const password = document.getElementById('register-password').value;
-                const btn = document.querySelector('#register-modal button[type="submit"]');
+        const email = document.getElementById('register-email').value;
+        const password = document.getElementById('register-password').value;
+        const btn = document.querySelector('#register-modal button[type="submit"]');
 
-                const originalText = btn.textContent;
-                btn.textContent = 'Inscription...';
-                btn.disabled = true;
+        const originalText = btn.textContent;
+        btn.textContent = 'Inscription...';
+        btn.disabled = true;
 
-                const res = await Auth.register(company, email, password, company); // using company name as name for now
+        const res = await Auth.register(company, email, password, company); // using company name as name for now
 
-                btn.textContent = originalText;
-                btn.disabled = false;
+        btn.textContent = originalText;
+        btn.disabled = false;
 
-                if (res.success) {
-                    Auth.closeModals();
+        if (res.success) {
+            Auth.closeModals();
                 } else {
-                    alert(res.message);
+            alert(res.message);
                 }
             } catch (e) {
-                alert("CRASH Register: " + e.message);
-                console.error(e);
+            alert("CRASH Register: " + e.message);
+        console.error(e);
             }
         }
     </script>
