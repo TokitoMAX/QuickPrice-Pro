@@ -31,9 +31,9 @@ const App = {
     },
 
     enterApp(animate = true) {
-        // Enforce Mandatory Auth
-        if (!Auth.user) {
-            Auth.showLoginModal();
+        // Check if user is authenticated
+        if (!Auth || !Auth.isAuthenticated()) {
+            Auth.openLoginModal();
             return;
         }
 
