@@ -128,9 +128,9 @@ const Dashboard = {
                             <span class="action-icon">📋</span>
                             <span class="action-label">Nouveau Devis</span>
                         </button>
-                        <button class="action-card" onclick="App.navigateTo('invoices'); if(typeof Invoices !== 'undefined') Invoices.showAddForm();">
+                        <button class="action-card" onclick="alert('Process Sécurisé : Veuillez créer un devis puis le convertir en facture.'); App.navigateTo('quotes');">
                             <span class="action-icon">🧾</span>
-                            <span class="action-label">Nouvelle Facture</span>
+                            <span class="action-label">Facturer</span>
                         </button>
                         <button class="action-card" onclick="App.navigateTo('calculator')">
                             <span class="action-icon">⚡</span>

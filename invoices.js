@@ -17,8 +17,8 @@ const Invoices = {
                     <h1 class="page-title">Factures</h1>
                     <p class="page-subtitle">${invoices.length} facture(s) ${!limits.canAddInvoice ? `(limite: ${limits.maxInvoices})` : ''}</p>
                 </div>
-                <button class="button-primary" onclick="Invoices.showAddForm()" ${!limits.canAddInvoice ? 'disabled' : ''}>
-                    <span>➕</span> Nouvelle Facture
+                <button class="button-primary" onclick="alert('Pour créer une facture, convertissez un devis dans le menu Devis.')" title="Créez d'abord un devis pour sécuriser le process">
+                    <span>⚠️</span> Nouvelle Facture
                 </button>
             </div>
 
@@ -357,9 +357,16 @@ const Invoices = {
             return;
         }
 
+        const user = Storage.getUser();
+        if (!user.company.name || !user.company.address) {
+            if (confirm('⚠️ Vos informations entreprise sont incomplètes.\n\nVoulez-vous les remplir maintenant pour qu\'elles apparaissent sur la facture ?')) {
+                App.navigateTo('settings');
+            }
+            return;
+        }
+
         const invoice = Storage.getInvoice(id);
         const client = Storage.getClient(invoice.clientId);
-        const user = Storage.getUser();
 
         // Utiliser le module PDF si disponible
         if (typeof PDFGenerator !== 'undefined') {

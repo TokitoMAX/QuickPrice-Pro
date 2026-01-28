@@ -383,9 +383,16 @@ const Quotes = {
             return;
         }
 
+        const user = Storage.getUser();
+        if (!user.company.name || !user.company.address) {
+            if (confirm('⚠️ Vos informations entreprise sont incomplètes.\n\nVoulez-vous les remplir maintenant pour qu\'elles apparaissent sur le devis ?')) {
+                App.navigateTo('settings');
+            }
+            return;
+        }
+
         const quote = Storage.getQuote(id);
         const client = Storage.getClient(quote.clientId);
-        const user = Storage.getUser();
 
         if (typeof PDFGenerator !== 'undefined' && PDFGenerator.generateQuote) {
             PDFGenerator.generateQuote(quote, client, user);

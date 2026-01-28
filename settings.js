@@ -54,39 +54,44 @@ const Settings = {
                     `}
                 </div>
 
-                <!-- Informations entreprise -->
+                <!-- Informations entreprise (Profil Utilisateur) -->
                 <div class="settings-section">
-                    <h2 class="section-title-small">Informations Entreprise</h2>
+                    <h2 class="section-title-small">Mon Profil Entreprise (Affiché sur les devis)</h2>
                     <form id="company-form" onsubmit="Settings.saveCompany(event)">
                         <div class="form-grid">
                             <div class="form-group full-width">
-                                <label class="form-label">Nom / Raison sociale</label>
-                                <input type="text" name="name" class="form-input" value="${user.company.name || ''}">
+                                <label class="form-label">Nom de votre entreprise / Votre Nom *</label>
+                                <input type="text" name="name" class="form-input" value="${user.company.name || ''}" required placeholder="Ex: Studio Web Design">
                             </div>
 
                             <div class="form-group">
-                                <label class="form-label">Email</label>
-                                <input type="email" name="email" class="form-input" value="${user.company.email || ''}">
+                                <label class="form-label">Email de contact *</label>
+                                <input type="email" name="email" class="form-input" value="${user.company.email || ''}" required placeholder="contact@maboite.com">
                             </div>
 
                             <div class="form-group">
                                 <label class="form-label">Téléphone</label>
-                                <input type="tel" name="phone" class="form-input" value="${user.company.phone || ''}">
+                                <input type="tel" name="phone" class="form-input" value="${user.company.phone || ''}" placeholder="06 00 00 00 00">
                             </div>
 
                             <div class="form-group full-width">
-                                <label class="form-label">Adresse</label>
-                                <input type="text" name="address" class="form-input" value="${user.company.address || ''}">
+                                <label class="form-label">Adresse complète *</label>
+                                <input type="text" name="address" class="form-input" value="${user.company.address || ''}" required placeholder="123 Rue de la Startup, 75000 Paris">
                             </div>
 
                             <div class="form-group">
-                                <label class="form-label">SIRET</label>
-                                <input type="text" name="siret" class="form-input" value="${user.company.siret || ''}">
+                                <label class="form-label">Numéro SIRET</label>
+                                <input type="text" name="siret" class="form-input" value="${user.company.siret || ''}" placeholder="123 456 789 00012">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Mentions légales (Bas de page)</label>
+                                <input type="text" name="footer_mentions" class="form-input" value="${user.company.footer_mentions || ''}" placeholder="TVA non applicable, art. 293 B du CGI">
                             </div>
                         </div>
 
                         <div class="form-actions">
-                            <button type="submit" class="button-primary">Enregistrer</button>
+                            <button type="submit" class="button-primary">Enregistrer mon profil</button>
                         </div>
                     </form>
                 </div>
@@ -151,7 +156,8 @@ const Settings = {
             email: formData.get('email'),
             phone: formData.get('phone'),
             address: formData.get('address'),
-            siret: formData.get('siret')
+            siret: formData.get('siret'),
+            footer_mentions: formData.get('footer_mentions')
         };
 
         Storage.updateUser({ company: companyData });
