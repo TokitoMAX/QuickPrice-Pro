@@ -77,7 +77,7 @@ const Invoices = {
                 <div class="empty-state">
                     <div class="empty-icon">🧾</div>
                     <p>Aucune facture pour le moment</p>
-                    <button class="button-primary" onclick="Invoices.showAddForm()">Créer ma première facture</button>
+                    <button class="button-primary" onclick="alert('Processus : Créez un devis, faites-le valider, puis cliquez sur l\'icône Facture 🧾'); App.navigateTo('quotes');">Créer mon premier devis</button>
                 </div>
             `}
         `;

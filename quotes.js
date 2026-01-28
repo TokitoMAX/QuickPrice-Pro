@@ -52,11 +52,11 @@ const Quotes = {
                                                 <button class="btn-icon" onclick="Quotes.changeStatus('${quote.id}')" title="Changer statut">
                                                     🔄
                                                 </button>
-                                                ${quote.status === 'accepted' ? `
-                                                    <button class="btn-icon btn-success" onclick="Quotes.convertToInvoice('${quote.id}')" title="Convertir en facture">
-                                                        🧾
-                                                    </button>
-                                                ` : ''}
+                                                <button class="btn-icon ${quote.status === 'accepted' ? 'btn-success' : ''}" 
+                                                        onclick="Quotes.convertToInvoice('${quote.id}')" 
+                                                        title="${quote.status === 'accepted' ? 'Convertir en facture' : 'Valider et Facturer'}">
+                                                    🧾
+                                                </button>
                                                 <button class="btn-icon" onclick="Quotes.downloadPDF('${quote.id}')" title="PDF">
                                                     📄
                                                 </button>
@@ -334,26 +334,34 @@ const Quotes = {
         const quote = Storage.getQuote(id);
         if (!quote) return;
 
-        if (confirm('Voulez-vous convertir ce devis en facture ?')) {
-            // Créer la facture basée sur le devis
-            const invoiceData = {
-                clientId: quote.clientId,
-                status: 'draft',
-                items: quote.items,
-                subtotal: quote.subtotal,
-                tax: quote.tax,
-                total: quote.total,
-                dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() // J+30
-            };
-
-            const newInvoice = Storage.addInvoice(invoiceData);
-
-            App.showNotification('🎉 Devis converti en facture !', 'success');
-            App.navigateTo('invoices');
-
-            // Optionnel: proposer d'éditer la facture tout de suite
-            // Invoices.showAddForm(newInvoice); // Nécessiterait modification de invoice.js
+        // Auto-accept confirmation if not already accepted
+        if (quote.status !== 'accepted') {
+            if (!confirm('💡 Ce devis n\'est pas encore marqué "Accepté".\n\nVoulez-vous le valider maintenant et générer la facture ?')) {
+                return;
+            }
+            // Update status first
+            Storage.updateQuote(id, { status: 'accepted' });
+        } else {
+            if (!confirm('Voulez-vous convertir ce devis en facture ?')) {
+                return;
+            }
         }
+
+        // Créer la facture basée sur le devis
+        const invoiceData = {
+            clientId: quote.clientId,
+            status: 'draft',
+            items: quote.items,
+            subtotal: quote.subtotal,
+            tax: quote.tax,
+            total: quote.total,
+            dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() // J+30
+        };
+
+        const newInvoice = Storage.addInvoice(invoiceData);
+
+        App.showNotification('🎉 Devis converti en facture !', 'success');
+        App.navigateTo('invoices');
     },
 
     changeStatus(id) {
