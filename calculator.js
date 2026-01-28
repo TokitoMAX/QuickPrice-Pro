@@ -1,18 +1,23 @@
 
 
 function calculatePrice() {
+    // Check if calculator exists on this page
+    const revenueInput = document.getElementById('monthlyRevenue');
+    if (!revenueInput) return; // Exit if calculator inputs are not present
+
     // Get input values
-    const monthlyRevenue = parseFloat(document.getElementById('monthlyRevenue').value) || 0;
-    const workingDays = parseFloat(document.getElementById('workingDays').value) || 0;
-    const hoursPerDay = parseFloat(document.getElementById('hoursPerDay').value) || 0;
-    const monthlyCharges = parseFloat(document.getElementById('monthlyCharges').value) || 0;
-    const taxRate = parseFloat(document.getElementById('taxRate').value) || 0;
+    const monthlyRevenue = parseFloat(revenueInput.value) || 0;
+    const workingDays = parseFloat(document.getElementById('workingDays')?.value) || 0;
+    const hoursPerDay = parseFloat(document.getElementById('hoursPerDay')?.value) || 0;
+    const monthlyCharges = parseFloat(document.getElementById('monthlyCharges')?.value) || 0;
+    const taxRate = parseFloat(document.getElementById('taxRate')?.value) || 0;
 
     // Validation
     if (workingDays === 0 || hoursPerDay === 0) {
         return;
     }
 
+    // ... rest of calculation ...
     // Calculate total monthly hours
     const monthlyHours = workingDays * hoursPerDay;
 
@@ -36,17 +41,29 @@ function calculatePrice() {
         monthlyRevenue, workingDays, hoursPerDay, monthlyCharges, taxRate
     });
 
-    // Update UI
-    document.getElementById('hourlyRate').textContent = `${Math.ceil(hourlyRate)}€/h`;
-    document.getElementById('dailyRate').textContent = `${Math.ceil(dailyRate)}€/j`;
-    document.getElementById('annualRevenue').textContent = `${Math.ceil(annualRevenue).toLocaleString('fr-FR')}€`;
+    // Update UI (with checks)
+    const hourlyEl = document.getElementById('hourlyRate');
+    if (hourlyEl) hourlyEl.textContent = `${Math.ceil(hourlyRate)}€/h`;
+
+    const dailyEl = document.getElementById('dailyRate');
+    if (dailyEl) dailyEl.textContent = `${Math.ceil(dailyRate)}€/j`;
+
+    const annualEl = document.getElementById('annualRevenue');
+    if (annualEl) annualEl.textContent = `${Math.ceil(annualRevenue).toLocaleString('fr-FR')}€`;
 
     // Update breakdown
     const taxAmount = revenueNeeded * (taxRate / 100);
-    document.getElementById('breakdownNet').textContent = `${Math.ceil(monthlyRevenue).toLocaleString('fr-FR')}€`;
-    document.getElementById('breakdownTax').textContent = `${Math.ceil(taxAmount).toLocaleString('fr-FR')}€`;
-    document.getElementById('breakdownCharges').textContent = `${Math.ceil(monthlyCharges).toLocaleString('fr-FR')}€`;
-    document.getElementById('breakdownTotal').textContent = `${Math.ceil(revenueNeeded).toLocaleString('fr-FR')}€`;
+    const bdNet = document.getElementById('breakdownNet');
+    if (bdNet) bdNet.textContent = `${Math.ceil(monthlyRevenue).toLocaleString('fr-FR')}€`;
+
+    const bdTax = document.getElementById('breakdownTax');
+    if (bdTax) bdTax.textContent = `${Math.ceil(taxAmount).toLocaleString('fr-FR')}€`;
+
+    const bdCharges = document.getElementById('breakdownCharges');
+    if (bdCharges) bdCharges.textContent = `${Math.ceil(monthlyCharges).toLocaleString('fr-FR')}€`;
+
+    const bdTotal = document.getElementById('breakdownTotal');
+    if (bdTotal) bdTotal.textContent = `${Math.ceil(revenueNeeded).toLocaleString('fr-FR')}€`;
 
     // Update comparison marker position
     updateComparisonMarker(hourlyRate);
@@ -54,61 +71,11 @@ function calculatePrice() {
     // Add animation to results
     animateResults();
 }
-
-function saveCalculatorInputs(data) {
-    if (typeof Storage !== 'undefined') {
-        Storage.set('qp_calculator_data', data);
-    }
-}
-
-function loadCalculatorInputs() {
-    if (typeof Storage !== 'undefined') {
-        const data = Storage.get('qp_calculator_data');
-        if (data) {
-            if (data.monthlyRevenue) document.getElementById('monthlyRevenue').value = data.monthlyRevenue;
-            if (data.workingDays) document.getElementById('workingDays').value = data.workingDays;
-            if (data.hoursPerDay) document.getElementById('hoursPerDay').value = data.hoursPerDay;
-            if (data.monthlyCharges) document.getElementById('monthlyCharges').value = data.monthlyCharges;
-            if (data.taxRate) document.getElementById('taxRate').value = data.taxRate;
-        }
-    }
-}
-
-function useRate(type) {
-    const dailyRateStr = document.getElementById('dailyRate').textContent;
-    const dailyRate = parseFloat(dailyRateStr.replace(/[^0-9]/g, ''));
-
-    if (dailyRate > 0) {
-        if (typeof Storage !== 'undefined') {
-            Storage.set('qp_draft_quote_item', {
-                description: 'Consulting / Développement (Jour)',
-                quantity: 5,
-                unitPrice: dailyRate
-            });
-
-            App.navigateTo('quotes');
-            if (typeof Quotes !== 'undefined') {
-                Quotes.showAddForm();
-            }
-        }
-    }
-}
-
-// Auto-calculate on input change
-document.addEventListener('DOMContentLoaded', () => {
-    loadCalculatorInputs();
-
-    const inputs = document.querySelectorAll('.input-field');
-    inputs.forEach(input => {
-        input.addEventListener('input', calculatePrice);
-    });
-
-    // Calculate on page load
-    calculatePrice();
-});
-
+// ...
 function updateComparisonMarker(hourlyRate) {
     const marker = document.getElementById('yourMarker');
+    if (!marker) return; // Exit if marker doesn't exist
+
     const bar = marker.parentElement;
 
     // Market ranges
