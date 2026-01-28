@@ -119,13 +119,15 @@ const Auth = {
 
     showLoginModal() {
         console.log("Opening login modal");
+        // DEBUG: Alert to prove click works
+        // alert("DEBUG: Opening Login Modal");
+
         const modal = document.getElementById('login-modal');
         if (modal) {
             modal.classList.add('active');
-            // Force display in case CSS class isn't working
             modal.style.display = 'flex';
         } else {
-            alert("Erreur: Modal de connexion introuvable");
+            alert("Erreur: Modal de connexion introuvable dans le HTML");
         }
 
         const regModal = document.getElementById('register-modal');
@@ -137,12 +139,15 @@ const Auth = {
 
     showRegisterModal() {
         console.log("Opening register modal");
+        // DEBUG: Alert to prove click works
+        // alert("DEBUG: Opening Register Modal");
+
         const modal = document.getElementById('register-modal');
         if (modal) {
             modal.classList.add('active');
             modal.style.display = 'flex';
         } else {
-            alert("Erreur: Modal d'inscription introuvable");
+            alert("Erreur: Modal d'inscription introuvable dans le HTML");
         }
 
         const loginModal = document.getElementById('login-modal');
