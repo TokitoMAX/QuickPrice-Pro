@@ -1,0 +1,49 @@
+# 💰 QuickPrice Pro - Suite de Gestion pour Freelance
+
+## 🎯 Qu'est-ce que c'est ?
+
+**QuickPrice Pro** n'est pas juste un calculateur. C'est le premier **Système d'Exploitation Financier** pour indépendants. Il remplace le stress de l'incertitude par un flux de travail basé sur la confiance.
+
+## 🦄 Pourquoi QuickPrice est unique ? (Vs Concurrents)
+
+Là où les autres outils (Excel, facturiers classiques) sont passifs, QuickPrice est **proactif** :
+
+1.  **L'Approche "Objectif d'abord"** 🎯
+    *   *Les autres :* "Fais une facture et espère que ça suffit."
+    *   *QuickPrice :* Calcule votre besoin réel d'abord. Le système vous alerte si vous facturez en dessous de votre seuil de rentabilité.
+
+2.  **Le "Project Scoper" (Estimateur d'Incertitude)** 🛡️
+    *   *Les autres :* Vous demandent un prix fixe au doigt mouillé.
+    *   *QuickPrice :* Vous permet de définir une fourchette (Min/Max). L'outil calcule une **marge de sécurité** mathématique pour que vous ne perdiez jamais d'argent sur un projet mal estimé.
+
+3.  **Pipeline & Prévisibilité** 🔮
+    *   *Les autres :* Montrent ce que vous avez gagné (le passé).
+    *   *QuickPrice :* Montre l'argent "sur la table" (Devis envoyés) pour vous aider à anticiper les mois difficiles.
+
+4.  **Flux Unifié** ⚡
+    *   Calcul du besoin -> Estimation du projet -> Devis généré -> Conversion en Facture -> Suivi de l'objectif.
+    *   Tout est connecté. Pas de ressaisie.
+
+## ✨ Fonctionnalités Clés
+
+- **Calculateur Intelligent** : Sauvegarde vos hypothèses et objectifs.
+- **Gestionnaire de Devis** : Création rapide, conversion en facture en 1 clic.
+- **Tableau de Bord "Smart"** : Anneau de progression d'objectif en temps réel.
+- **Estimateur de Projet** : Module dédié pour chiffrer les projets complexes.
+- **Exports HTML/PDF Pro** : Documents soignés et imprimables.
+- **100% Local & Privé** : Vos données financières restent dans votre navigateur.
+
+## 🚀 Flux de Travail Conseillé
+
+1.  **Ciblez** : Utilisez le **Calculateur** pour définir votre TJM idéal.
+2.  **Estimez** : Utilisez le **Scoper** pour lister les tâches d'un projet et obtenir un prix sécurisé.
+3.  **Proposez** : Générez un **Devis** professionnel directement depuis l'estimation.
+4.  **Encaissez** : Transformez le devis signé en **Facture** et regardez votre jauge d'objectif se remplir !
+
+## 📦 Installation
+
+Aucune installation requise. Ouvrez simplement `index.html` dans votre navigateur.
+
+---
+
+**Conçu pour ceux qui veulent arrêter de sous-facturer.** 🚀
