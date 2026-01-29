@@ -32,51 +32,21 @@
             document.body.appendChild(dot);
         });
 
-        // Gestionnaires de formulaires d'authentification
-        async function handleLogin(event) {
-            const form = event.target;
-            const email = form.querySelector('#login-email').value;
-            const password = form.querySelector('#login-password').value;
-            const submitBtn = form.querySelector('#login-submit');
-
-            if (!email || !password) return;
-
-            submitBtn.disabled = true;
-            submitBtn.classList.add('btn-loading');
-
-            try {
-                await Auth.login(email, password);
-            } catch (error) {
-                console.error('Login error:', error);
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.classList.remove('btn-loading');
+        async function startApp() {
+            // Créer un utilisateur par défaut si nécessaire
+            if (!localStorage.getItem('qp_user')) {
+                const guestUser = {
+                    id: 'guest',
+                    email: 'utilisateur@local.com',
+                    company: { name: 'Mon Entreprise' },
+                    isPro: true,
+                    token: 'guest_token'
+                };
+                localStorage.setItem('qp_user', JSON.stringify(guestUser));
+                localStorage.setItem('qp_token', 'guest_token');
             }
-        }
-
-        async function handleRegister(event) {
-            const form = event.target;
-            const email = form.querySelector('#register-email').value;
-            const password = form.querySelector('#register-password').value;
-            const companyName = form.querySelector('#register-company').value;
-            const submitBtn = form.querySelector('#register-submit');
-
-            if (!email || !password || !companyName) return;
-
-            submitBtn.disabled = true;
-            submitBtn.classList.add('btn-loading');
-
-            try {
-                await Auth.register({
-                    email: email,
-                    password: password,
-                    company: { name: companyName }
-                });
-            } catch (error) {
-                console.error('Register error:', error);
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.classList.remove('btn-loading');
+            if (typeof App !== 'undefined' && App.enterApp) {
+                App.enterApp();
             }
         }
     </script>
@@ -96,8 +66,7 @@
                 <span class="logo-text">QuickPrice Pro</span>
             </div>
             <div class="landing-actions">
-                <button class="button-link" onclick="showModal('login-modal')">Connexion</button>
-                <button class="button-primary" onclick="showModal('register-modal')">S'inscrire</button>
+                <button class="button-primary" onclick="startApp()">Accéder à l'application</button>
             </div>
         </nav>
 
@@ -107,11 +76,11 @@
                 <p class="hero-subtitle">Le système financier complet pour les freelances qui veulent sécuriser leur
                     rentabilité avant même de signer.</p>
                 <div class="hero-buttons">
-                    <button class="cta-button big" onclick="showModal('register-modal')">
-                        <span>Démarrer Gratuitement</span>
+                    <button class="cta-button big" onclick="startApp()">
+                        <span>Démarrer l'Application</span>
                         <span class="arrow">→</span>
                     </button>
-                    <p class="hero-note">Essai gratuit • Accès immédiat • Espace personnel</p>
+                    <p class="hero-note">Accès immédiat • Aucune inscription requise</p>
                 </div>
             </div>
             <div class="hero-image">
@@ -511,72 +480,6 @@
         <script src="scoper.js"></script>
         <script src="calculator.js"></script>
 
-        <!-- Modals d'authentification -->
-        <div id="login-modal" class="modal-overlay">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3>Bon retour parmi nous</h3>
-                    <p class="auth-subtitle">Connectez-vous pour accéder à votre espace QuickPrice Pro</p>
-                    <button class="btn-close" type="button" onclick="closeAllModals()">✕</button>
-                </div>
-                <form id="login-form" onsubmit="event.preventDefault(); handleLogin(event)">
-                    <div class="form-group">
-                        <label class="form-label">Email professionnel</label>
-                        <input type="email" name="email" id="login-email" class="form-input" required
-                            placeholder="nom@entreprise.com">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Mot de passe</label>
-                        <input type="password" name="password" id="login-password" class="form-input" required
-                            placeholder="••••••••">
-                    </div>
-                    <div class="form-actions" style="margin-top: 2rem;">
-                        <button type="submit" id="login-submit" class="button-primary" style="width: 100%;">
-                            Se connecter
-                        </button>
-                    </div>
-                    <p class="auth-switch">
-                        Nouveau sur QuickPrice ? <a href="#"
-                            onclick="closeAllModals(); showModal('register-modal')">Créer un compte</a>
-                    </p>
-                </form>
-            </div>
-        </div>
-
-        <div id="register-modal" class="modal-overlay">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3>Démarrer avec QuickPrice</h3>
-                    <p class="auth-subtitle">Créez votre compte gratuit et gérez vos tarifs comme un pro</p>
-                    <button class="btn-close" type="button" onclick="closeAllModals()">✕</button>
-                </div>
-                <form id="register-form" onsubmit="event.preventDefault(); handleRegister(event)">
-                    <div class="form-group">
-                        <label class="form-label">Nom de votre activité</label>
-                        <input type="text" name="companyName" id="register-company" class="form-input" required
-                            placeholder="Ex: Jean Dupont Studio">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Email professionnel</label>
-                        <input type="email" name="email" id="register-email" class="form-input" required
-                            placeholder="nom@entreprise.com">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Mot de passe</label>
-                        <input type="password" name="password" id="register-password" class="form-input" required
-                            placeholder="6 caractères minimum" minlength="6">
-                    </div>
-                    <div class="form-actions" style="margin-top: 2rem;">
-                        <button type="submit" id="register-submit" class="button-primary" style="width: 100%;">
-                            Créer mon compte
-                        </button>
-                    </div>
-                    <p class="auth-switch">
-                        Déjà inscrit ? <a href="#" onclick="closeAllModals(); showModal('login-modal')">Se connecter</a>
-                    </p>
-                </form>
-            </div>
-        </div>
 </body>
 
 </html>

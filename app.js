@@ -14,14 +14,13 @@ const App = {
         // Router / Landing Logic
         const savedPage = localStorage.getItem('qp_last_page') || 'dashboard';
         const isLoggedIn = Auth.isLoggedIn();
+        const inApp = sessionStorage.getItem('qp_in_app') === 'true';
 
-        if (isLoggedIn) {
+        if (isLoggedIn || inApp) {
             this.enterApp(false);
             this.navigateTo(savedPage);
-            // Sync user data quietly
-            this.syncUser();
         } else {
-            // Force landing page if not logged in
+            // Landing page by default if never entered
             const landing = document.getElementById('landing-page');
             const appWrapper = document.getElementById('app-wrapper');
             if (landing) landing.style.display = 'block';
