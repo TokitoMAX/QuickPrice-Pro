@@ -18,6 +18,8 @@ const App = {
         if (isLoggedIn) {
             this.enterApp(false);
             this.navigateTo(savedPage);
+            // Sync user data quietly
+            this.syncUser();
         } else {
             // Force landing page if not logged in
             const landing = document.getElementById('landing-page');
@@ -155,6 +157,31 @@ const App = {
             maxQuotes: isPro ? Infinity : 3,
             maxInvoices: isPro ? Infinity : 3
         };
+    },
+
+    async syncUser() {
+        const token = localStorage.getItem('qp_token');
+        if (!token) return;
+
+        try {
+            const response = await fetch('/api/auth/me', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (response.ok) {
+                const userData = await response.json();
+                // Garder le token lors de la mise à jour
+                Storage.setUser({ ...userData, token });
+                this.renderUserInfo();
+            } else if (response.status === 401) {
+                // Token invalide ou expiré
+                Auth.logout();
+            }
+        } catch (error) {
+            console.error('Failed to sync user:', error);
+        }
     },
 
     // Affichage des informations utilisateur dans la sidebar

@@ -58,7 +58,7 @@ const Auth = {
     handleAuthSuccess(result) {
         localStorage.setItem('qp_token', result.token);
         localStorage.setItem('qp_user', JSON.stringify({
-            id: result._id,
+            id: result.id,
             email: result.email,
             company: result.company,
             isPro: result.isPro

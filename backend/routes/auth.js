@@ -1,85 +1,90 @@
 const express = require('express');
 const router = express.Router();
-const jwt = require('jsonwebtoken');
-const User = require('../models/User');
-const { protect } = require('../middleware/authMiddleware');
-
-// Generate JWT
-const generateToken = (id) => {
-    return jwt.sign({ id }, process.env.JWT_SECRET, {
-        expiresIn: '30d',
-    });
-};
 
 // @route   POST /api/auth/register
-// @desc    Register a new user
+// @desc    Register a new user via Supabase
 // @access  Public
 router.post('/register', async (req, res) => {
     const { email, password, company } = req.body;
+    const supabase = req.app.get('supabase');
 
     try {
-        const userExists = await User.findOne({ email });
-
-        if (userExists) {
-            return res.status(400).json({ message: 'Cet utilisateur existe déjà' });
-        }
-
-        const user = await User.create({
+        const { data, error } = await supabase.auth.signUp({
             email,
             password,
-            company
+            options: {
+                data: {
+                    company_name: company?.name || '',
+                    is_pro: false
+                }
+            }
         });
 
-        if (user) {
-            res.status(201).json({
-                _id: user._id,
-                email: user.email,
-                company: user.company,
-                isPro: user.isPro,
-                token: generateToken(user._id)
-            });
-        } else {
-            res.status(400).json({ message: 'Données invalides' });
-        }
+        if (error) throw error;
+
+        res.status(201).json({
+            id: data.user.id,
+            email: data.user.email,
+            company: { name: data.user.user_metadata.company_name },
+            isPro: data.user.user_metadata.is_pro,
+            token: data.session?.access_token
+        });
     } catch (error) {
-        res.status(500).json({ message: 'Erreur serveur', error: error.message });
+        res.status(400).json({ message: error.message });
     }
 });
 
 // @route   POST /api/auth/login
-// @desc    Auth user & get token
+// @desc    Auth user & get token via Supabase
 // @access  Public
 router.post('/login', async (req, res) => {
     const { email, password } = req.body;
+    const supabase = req.app.get('supabase');
 
     try {
-        const user = await User.findOne({ email });
+        const { data, error } = await supabase.auth.signInWithPassword({
+            email,
+            password
+        });
 
-        if (user && (await user.matchPassword(password))) {
-            res.json({
-                _id: user._id,
-                email: user.email,
-                company: user.company,
-                isPro: user.isPro,
-                token: generateToken(user._id)
-            });
-        } else {
-            res.status(401).json({ message: 'Email ou mot de passe incorrect' });
-        }
+        if (error) throw error;
+
+        res.json({
+            id: data.user.id,
+            email: data.user.email,
+            company: { name: data.user.user_metadata.company_name },
+            isPro: data.user.user_metadata.is_pro,
+            token: data.session.access_token
+        });
     } catch (error) {
-        res.status(500).json({ message: 'Erreur serveur', error: error.message });
+        res.status(401).json({ message: 'Email ou mot de passe incorrect' });
     }
 });
 
 // @route   GET /api/auth/me
-// @desc    Get user profile
-// @access  Private
-router.get('/me', protect, async (req, res) => {
+// @desc    Get user profile (simplified for Supabase)
+// @access  Private (Needs token check)
+router.get('/me', async (req, res) => {
+    const supabase = req.app.get('supabase');
+    const token = req.headers.authorization?.split(' ')[1];
+
+    if (!token) {
+        return res.status(401).json({ message: 'Non autorisé' });
+    }
+
     try {
-        const user = await User.findById(req.user.id).select('-password');
-        res.json(user);
+        const { data: { user }, error } = await supabase.auth.getUser(token);
+
+        if (error) throw error;
+
+        res.json({
+            id: user.id,
+            email: user.email,
+            company: { name: user.user_metadata.company_name },
+            isPro: user.user_metadata.is_pro
+        });
     } catch (error) {
-        res.status(500).json({ message: 'Erreur serveur' });
+        res.status(401).json({ message: 'Session invalide' });
     }
 });
 
