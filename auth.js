@@ -1,32 +1,28 @@
 // QuickPrice Pro - Authentication Module
+console.log("auth.js loading...");
 
 const Auth = {
-    API_URL: window.location.origin + '/api/auth',
-
     init() {
-        // Vérifier si un token existe au démarrage
-        const token = localStorage.getItem('qp_token');
-        if (token) {
-            this.setupAjax(token);
-        }
+        // Initialiser l'état si déjà connecté via Supabase
     },
 
     async register(data) {
         try {
-            const response = await fetch(`${this.API_URL}/register`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
+            const { data: authData, error } = await window.sbClient.auth.signUp({
+                email: data.email,
+                password: data.password,
+                options: {
+                    data: {
+                        company_name: data.company?.name || '',
+                        is_pro: false
+                    }
+                }
             });
 
-            const result = await response.json();
+            if (error) throw error;
 
-            if (!response.ok) {
-                throw new Error(result.message || 'Erreur lors de l\'inscription');
-            }
-
-            this.handleAuthSuccess(result);
-            return result;
+            this.handleAuthSuccess(authData);
+            return authData;
         } catch (error) {
             App.showNotification(error.message, 'error');
             throw error;
@@ -35,49 +31,51 @@ const Auth = {
 
     async login(email, password) {
         try {
-            const response = await fetch(`${this.API_URL}/login`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password })
+            const { data: authData, error } = await window.sbClient.auth.signInWithPassword({
+                email,
+                password
             });
 
-            const result = await response.json();
+            if (error) throw error;
 
-            if (!response.ok) {
-                throw new Error(result.message || 'Identifiants incorrects');
-            }
-
-            this.handleAuthSuccess(result);
-            return result;
+            this.handleAuthSuccess(authData);
+            return authData;
         } catch (error) {
-            App.showNotification(error.message, 'error');
+            App.showNotification(error.message || 'Identifiants incorrects', 'error');
             throw error;
         }
     },
 
-    handleAuthSuccess(result) {
-        localStorage.setItem('qp_token', result.token);
-        localStorage.setItem('qp_user', JSON.stringify({
-            id: result.id,
-            email: result.email,
-            company: result.company,
-            isPro: result.isPro
-        }));
+    handleAuthSuccess(authData) {
+        const user = authData.user;
+        const session = authData.session;
+
+        const userData = {
+            id: user.id,
+            email: user.email,
+            company: { name: user.user_metadata.company_name },
+            isPro: user.user_metadata.is_pro,
+            token: session?.access_token
+        };
+
+        localStorage.setItem('qp_token', userData.token);
+        localStorage.setItem('qp_user', JSON.stringify(userData));
 
         // Mettre à jour Storage avec les infos utilisateur
-        Storage.setUser(result);
+        Storage.setUser(userData);
 
         App.showNotification('Bienvenue !', 'success');
         App.enterApp();
     },
 
     logout() {
+        if (window.sbClient) window.sbClient.auth.signOut();
         localStorage.removeItem('qp_token');
         localStorage.removeItem('qp_user');
         sessionStorage.removeItem('qp_in_app');
 
         App.showNotification('Déconnexion réussie.', 'info');
-        window.location.reload(); // Recharger pour réinitialiser l'état
+        window.location.reload();
     },
 
     isLoggedIn() {
@@ -87,11 +85,6 @@ const Auth = {
     getUser() {
         const user = localStorage.getItem('qp_user');
         return user ? JSON.parse(user) : null;
-    },
-
-    setupAjax(token) {
-        // Si on utilisait une lib comme Axios, on configurerait les headers ici
-        // Pour fetch, on passera le header manuellement dans les futurs appels de synchronisation
     }
 };
 

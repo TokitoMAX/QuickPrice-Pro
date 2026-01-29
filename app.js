@@ -160,23 +160,21 @@ const App = {
     },
 
     async syncUser() {
-        const token = localStorage.getItem('qp_token');
-        if (!token) return;
-
         try {
-            const response = await fetch('/api/auth/me', {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
+            if (!window.sbClient) return;
+            const { data: { user }, error } = await window.sbClient.auth.getUser();
 
-            if (response.ok) {
-                const userData = await response.json();
-                // Garder le token lors de la mise à jour
-                Storage.setUser({ ...userData, token });
+            if (user) {
+                const userData = {
+                    id: user.id,
+                    email: user.email,
+                    company: { name: user.user_metadata.company_name },
+                    isPro: user.user_metadata.is_pro
+                };
+                Storage.setUser(userData);
                 this.renderUserInfo();
-            } else if (response.status === 401) {
-                // Token invalide ou expiré
+            } else if (error) {
+                // Session probablement expirée
                 Auth.logout();
             }
         } catch (error) {
