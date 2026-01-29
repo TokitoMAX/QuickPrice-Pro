@@ -553,6 +553,22 @@ const Quotes = {
         }, 800);
     },
 
+    edit(id) {
+        const quote = Storage.getQuote(id);
+        if (!quote) return;
+
+        this.editingId = id;
+        this.currentItems = quote.items;
+
+        const clients = Storage.getClients();
+        const container = document.getElementById('quote-form-container');
+        if (container) {
+            container.innerHTML = this.renderForm(clients, quote);
+            this.updateTotals();
+            container.scrollIntoView({ behavior: 'smooth' });
+        }
+    },
+
     delete(id) {
         if (confirm('Confirmer la suppression de ce devis ?')) {
             Storage.deleteQuote(id);

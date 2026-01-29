@@ -19,6 +19,10 @@ const Dashboard = {
             .filter(q => q.status === 'sent')
             .reduce((sum, q) => sum + (q.total || 0), 0);
 
+        const recentQuotes = Storage.getQuotes()
+            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+            .slice(0, 5);
+
         const recentInvoices = Storage.getInvoices()
             .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
             .slice(0, 5);
@@ -73,6 +77,46 @@ const Dashboard = {
             <div class="dashboard-sections">
                 <div class="dashboard-section">
                     <div class="section-header-inline">
+                        <h2 class="section-title-small">Derniers Devis</h2>
+                        <a href="#" data-nav="quotes" class="link-button">Voir tout →</a>
+                    </div>
+                    
+                    ${recentQuotes.length > 0 ? `
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Numéro</th>
+                                        <th>Client</th>
+                                        <th>Montant</th>
+                                        <th>Statut</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${recentQuotes.map(quote => {
+            const client = Storage.getClient(quote.clientId);
+            return `
+                                            <tr>
+                                                <td><strong>${quote.number}</strong></td>
+                                                <td>${client?.name || 'Client supprimé'}</td>
+                                                <td>${App.formatCurrency(quote.total)}</td>
+                                                <td><span class="status-badge status-${quote.status}">${this.getStatusLabel(quote.status)}</span></td>
+                                            </tr>
+                                        `;
+        }).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    ` : `
+                        <div class="empty-state">
+                            <p>Aucun devis enregistré</p>
+                            <button class="button-primary" onclick="App.navigateTo('quotes');">Créer mon premier devis</button>
+                        </div>
+                    `}
+                </div>
+
+                <div class="dashboard-section">
+                    <div class="section-header-inline">
                         <h2 class="section-title-small">Dernières Factures</h2>
                         <a href="#" data-nav="invoices" class="link-button">Voir tout →</a>
                     </div>
@@ -85,7 +129,6 @@ const Dashboard = {
                                         <th>Numéro</th>
                                         <th>Client</th>
                                         <th>Montant</th>
-                                        <th>Date</th>
                                         <th>Statut</th>
                                     </tr>
                                 </thead>
@@ -97,7 +140,6 @@ const Dashboard = {
                                                 <td><strong>${invoice.number}</strong></td>
                                                 <td>${client?.name || 'Client supprimé'}</td>
                                                 <td>${App.formatCurrency(invoice.total)}</td>
-                                                <td>${App.formatDate(invoice.createdAt)}</td>
                                                 <td><span class="status-badge status-${invoice.status}">${this.getStatusLabel(invoice.status)}</span></td>
                                             </tr>
                                         `;
@@ -108,7 +150,7 @@ const Dashboard = {
                     ` : `
                         <div class="empty-state">
                             <p>Aucune facture enregistrée</p>
-                            <button class="button-primary" onclick="App.navigateTo('invoices');">Gérer mes factures</button>
+                            <button class="button-primary" onclick="App.navigateTo('quotes');">Gérer mes factures</button>
                         </div>
                     `}
                 </div>
@@ -122,11 +164,11 @@ const Dashboard = {
                         <button class="action-card" onclick="App.navigateTo('quotes'); if(typeof Quotes !== 'undefined') Quotes.showAddForm();">
                             <span class="action-label">Nouveau Devis</span>
                         </button>
-                        <button class="action-card" onclick="App.navigateTo('quotes');">
-                            <span class="action-label">Facturer</span>
+                        <button class="action-card" onclick="App.navigateTo('invoices');">
+                            <span class="action-label">Gérer Factures</span>
                         </button>
-                        <button class="action-card" onclick="App.navigateTo('calculator')">
-                            <span class="action-label">Tarification</span>
+                        <button class="action-card" onclick="App.navigateTo('settings')">
+                            <span class="action-label">Paramètres</span>
                         </button>
                     </div>
                 </div>
