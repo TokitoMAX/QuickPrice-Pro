@@ -102,6 +102,9 @@ const App = {
             case 'clients':
                 if (typeof Clients !== 'undefined') Clients.render();
                 break;
+            case 'leads':
+                if (typeof Leads !== 'undefined') Leads.render();
+                break;
             case 'quotes':
                 if (typeof Quotes !== 'undefined') Quotes.render();
                 break;

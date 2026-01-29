@@ -56,6 +56,9 @@ const Invoices = {
                                         <td><span class="status-badge status-${invoice.status}">${this.getStatusLabel(invoice.status)}</span></td>
                                         <td>
                                             <div class="action-buttons">
+                                                <button class="btn-icon" onclick="Invoices.fastSend('${invoice.id}')" title="Envoyer (Simulation)">
+                                                    🚀
+                                                </button>
                                                 <button class="btn-icon" onclick="Invoices.changeStatus('${invoice.id}')" title="Changer statut">
                                                     🔄
                                                 </button>
@@ -170,6 +173,8 @@ const Invoices = {
                         <div id="items-container">
                             ${items.map((item, index) => this.renderItemRow(item, index)).join('')}
                         </div>
+
+                        <div id="margin-guard-container" style="margin-top: 1.5rem;"></div>
 
                         <div class="invoice-totals">
                             <div class="total-row">
@@ -288,6 +293,40 @@ const Invoices = {
         document.getElementById('subtotal-display').textContent = App.formatCurrency(subtotal);
         document.getElementById('tax-display').textContent = App.formatCurrency(tax);
         document.getElementById('total-display').textContent = App.formatCurrency(total);
+
+        this.renderMarginGuard(subtotal);
+    },
+
+    renderMarginGuard(subtotal) {
+        const container = document.getElementById('margin-guard-container');
+        if (!container) return;
+
+        const calcData = Storage.get('qp_calculator_data') || { dailyRate: 400 };
+        const targetTJM = calcData.dailyRate || 400;
+
+        // Estimation simple : on compare le total HT au TJM cible
+        // On considère qu'une ligne standard est une journée pour ce calcul de santé
+        // C'est indicatif pour aider le freelance à ne pas brader.
+
+        const health = Math.min(100, (subtotal / targetTJM) * 100);
+        let color = '#ef4444'; // Red
+        let label = 'Rentabilité Faible ⚠️';
+
+        if (health > 80) { color = '#10b981'; label = 'Excellente Rentabilité ✅'; }
+        else if (health > 50) { color = '#fbbf24'; label = 'Rentabilité Correcte ⚖️'; }
+
+        container.innerHTML = `
+            <div style="background: var(--bg-card); padding: 1rem; border-radius: 12px; border: 1px solid var(--border-color);">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.85rem; font-weight: 600;">
+                    <span style="color: var(--text-secondary);">Indicateur de Santé (Margin Guard)</span>
+                    <span style="color: ${color};">${label}</span>
+                </div>
+                <div style="height: 8px; background: var(--border-color); border-radius: 4px; overflow: hidden;">
+                    <div style="width: ${health}%; height: 100%; background: ${color}; transition: width 0.3s ease;"></div>
+                </div>
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">Comparé à votre objectif de ${App.formatCurrency(targetTJM)} / jour.</p>
+            </div>
+        `;
     },
 
     handleServiceSelect(input, index) {
@@ -374,6 +413,24 @@ const Invoices = {
         Storage.updateInvoice(id, { status: nextStatus });
         App.showNotification(`✅ Statut changé: ${statuses[nextIndex].label}`, 'success');
         this.render();
+    },
+
+    fastSend(id) {
+        const invoice = Storage.getInvoice(id);
+        if (!invoice) return;
+
+        if (invoice.status === 'sent' || invoice.status === 'paid') {
+            App.showNotification('ℹ️ Cette facture a déjà été envoyée.', 'info');
+            return;
+        }
+
+        App.showNotification('⏳ Envoi de la facture en cours...', 'info');
+
+        setTimeout(() => {
+            Storage.updateInvoice(id, { status: 'sent' });
+            App.showNotification('🚀 Facture envoyée avec succès !', 'success');
+            this.render();
+        }, 1500);
     },
 
     downloadPDF(id) {

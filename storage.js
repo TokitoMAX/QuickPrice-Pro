@@ -8,7 +8,8 @@ const Storage = {
         CLIENTS: 'qp_clients',
         QUOTES: 'qp_quotes',
         INVOICES: 'qp_invoices',
-        SERVICES: 'qp_services', // New Key
+        SERVICES: 'qp_services',
+        LEADS: 'qp_leads', // New Key
         REVENUES: 'qp_revenues',
         EXPENSES: 'qp_expenses',
         SETTINGS: 'qp_settings'
@@ -238,6 +239,40 @@ const Storage = {
     deleteService(id) {
         const services = this.getServices().filter(s => s.id !== id);
         this.set(this.KEYS.SERVICES, services);
+    },
+
+    // Méthodes Radar à Prospects (Leads)
+    getLeads() {
+        return this.get(this.KEYS.LEADS) || [];
+    },
+
+    addLead(lead) {
+        const leads = this.getLeads();
+        const newLead = {
+            id: this.generateId(),
+            ...lead,
+            status: lead.status || 'cold', // 'cold', 'warm', 'won'
+            createdAt: new Date().toISOString()
+        };
+        leads.push(newLead);
+        this.set(this.KEYS.LEADS, leads);
+        return newLead;
+    },
+
+    updateLead(id, updates) {
+        const leads = this.getLeads();
+        const index = leads.findIndex(l => l.id === id);
+        if (index !== -1) {
+            leads[index] = { ...leads[index], ...updates };
+            this.set(this.KEYS.LEADS, leads);
+            return leads[index];
+        }
+        return null;
+    },
+
+    deleteLead(id) {
+        const leads = this.getLeads().filter(l => l.id !== id);
+        this.set(this.KEYS.LEADS, leads);
     },
 
     // Statistiques
