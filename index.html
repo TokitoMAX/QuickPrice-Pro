@@ -48,6 +48,71 @@
             dot.style.cssText = "position:fixed; bottom:5px; right:5px; width:6px; height:6px; background:#10b981; border-radius:50%; z-index:100000; opacity:0.5;";
             document.body.appendChild(dot);
         });
+
+        // Gestionnaires de formulaires d'authentification
+        async function handleLogin(event) {
+            const form = event.target;
+            const email = form.querySelector('#login-email').value;
+            const password = form.querySelector('#login-password').value;
+            const submitBtn = form.querySelector('#login-submit');
+
+            if (!email || !password) {
+                alert('Veuillez remplir tous les champs');
+                return;
+            }
+
+            // Désactiver le bouton et afficher le chargement
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Connexion...';
+
+            try {
+                await Auth.login(email, password);
+            } catch (error) {
+                console.error('Erreur de connexion:', error);
+                // L'erreur est déjà gérée dans Auth.login
+            } finally {
+                // Réactiver le bouton
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Se connecter';
+            }
+        }
+
+        async function handleRegister(event) {
+            const form = event.target;
+            const email = form.querySelector('#register-email').value;
+            const password = form.querySelector('#register-password').value;
+            const companyName = form.querySelector('#register-company').value;
+            const submitBtn = form.querySelector('#register-submit');
+
+            if (!email || !password || !companyName) {
+                alert('Veuillez remplir tous les champs');
+                return;
+            }
+
+            if (password.length < 6) {
+                alert('Le mot de passe doit contenir au moins 6 caractères');
+                return;
+            }
+
+            // Désactiver le bouton et afficher le chargement
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Inscription...';
+
+            try {
+                await Auth.register({
+                    email: email,
+                    password: password,
+                    company: { name: companyName }
+                });
+            } catch (error) {
+                console.error('Erreur d\'inscription:', error);
+                // L'erreur est déjà gérée dans Auth.register
+            } finally {
+                // Réactiver le bouton
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'S\'inscrire gratuitement';
+            }
+        }
     </script>
     <noscript>
         <div
@@ -488,17 +553,17 @@
                     <button class="btn-close" type="button" onclick="closeAllModals()">✕</button>
                 </div>
                 <form id="login-form"
-                    onsubmit="event.preventDefault(); Auth.login(this.email.value, this.password.value)">
+                    onsubmit="event.preventDefault(); handleLogin(event)">
                     <div class="form-group">
                         <label class="form-label">Email</label>
-                        <input type="email" name="email" class="form-input" required placeholder="votre@email.com">
+                        <input type="email" name="email" id="login-email" class="form-input" required placeholder="votre@email.com">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Mot de passe</label>
-                        <input type="password" name="password" class="form-input" required placeholder="••••••••">
+                        <input type="password" name="password" id="login-password" class="form-input" required placeholder="••••••••">
                     </div>
                     <div class="form-actions" style="margin-top: 2rem;">
-                        <button type="submit" class="button-primary" style="width: 100%;">Se connecter</button>
+                        <button type="submit" id="login-submit" class="button-primary" style="width: 100%;">Se connecter</button>
                     </div>
                     <p class="text-center text-sm text-muted" style="margin-top: 1rem;">
                         Pas encore de compte ? <a href="#"
@@ -515,23 +580,23 @@
                     <button class="btn-close" type="button" onclick="closeAllModals()">✕</button>
                 </div>
                 <form id="register-form"
-                    onsubmit="event.preventDefault(); Auth.register({email: this.email.value, password: this.password.value, company: {name: this.companyName.value}})">
+                    onsubmit="event.preventDefault(); handleRegister(event)">
                     <div class="form-group">
                         <label class="form-label">Nom de l'entreprise / Freelance</label>
-                        <input type="text" name="companyName" class="form-input" required
+                        <input type="text" name="companyName" id="register-company" class="form-input" required
                             placeholder="Ex: Jean Dupont Studio">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Email</label>
-                        <input type="email" name="email" class="form-input" required placeholder="votre@email.com">
+                        <input type="email" name="email" id="register-email" class="form-input" required placeholder="votre@email.com">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Mot de passe</label>
-                        <input type="password" name="password" class="form-input" required
+                        <input type="password" name="password" id="register-password" class="form-input" required
                             placeholder="Minimum 6 caractères" minlength="6">
                     </div>
                     <div class="form-actions" style="margin-top: 2rem;">
-                        <button type="submit" class="button-primary" style="width: 100%;">S'inscrire
+                        <button type="submit" id="register-submit" class="button-primary" style="width: 100%;">S'inscrire
                             gratuitement</button>
                     </div>
                     <p class="text-center text-sm text-muted" style="margin-top: 1rem;">
