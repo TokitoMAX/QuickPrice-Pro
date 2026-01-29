@@ -56,20 +56,20 @@ const Invoices = {
                                         <td><span class="status-badge status-${invoice.status}">${this.getStatusLabel(invoice.status)}</span></td>
                                         <td>
                                             <div class="action-buttons">
-                                                <button class="btn-icon" onclick="Invoices.fastSend('${invoice.id}')" title="Envoyer">
-                                                    Envoyer
+                                                <button class="btn-icon" onclick="Invoices.fastSend('${invoice.id}')" title="Envoyer par email">
+                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
                                                 </button>
-                                                <button class="btn-icon" onclick="Invoices.changeStatus('${invoice.id}')" title="Statut">
-                                                    Statut
+                                                <button class="btn-icon" onclick="Invoices.changeStatus('${invoice.id}')" title="Changer le statut">
+                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 1-9 9 9 9 0 0 1-9-9 9 9 0 0 1 9-9 9 9 0 0 1 9 9z"></path><path d="M12 8v4l3 3"></path></svg>
                                                 </button>
                                                 <button class="btn-icon" onclick="Invoices.duplicate('${invoice.id}')" title="Dupliquer">
-                                                    Copier
+                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                                                 </button>
-                                                <button class="btn-icon" onclick="Invoices.downloadPDF('${invoice.id}')" title="PDF">
-                                                    PDF
+                                                <button class="btn-icon" onclick="Invoices.downloadPDF('${invoice.id}')" title="Générer PDF">
+                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
                                                 </button>
-                                                <button class="btn-icon btn-danger" onclick="Invoices.delete('${invoice.id}')">
-                                                    Supprimer
+                                                <button class="btn-icon btn-danger" onclick="Invoices.delete('${invoice.id}')" title="Supprimer">
+                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
                                                 </button>
                                             </div>
                                         </td>
@@ -424,20 +424,26 @@ const Invoices = {
 
     fastSend(id) {
         const invoice = Storage.getInvoice(id);
-        if (!invoice) return;
+        const client = Storage.getClient(invoice?.clientId);
+        const user = Storage.getUser();
 
-        if (invoice.status === 'sent' || invoice.status === 'paid') {
-            App.showNotification('Notification : Cette facture a déjà été marquée comme envoyée.', 'info');
-            return;
-        }
+        if (!invoice || !client) return;
 
-        App.showNotification('Transmission de la facture...', 'info');
+        // Préparer le mailto
+        const subject = encodeURIComponent(`Facture ${invoice.number} - ${user.company.name || 'Prestation'}`);
+        const body = encodeURIComponent(`Bonjour ${client.name},\n\nVeuillez trouver ci-joint la facture ${invoice.number} d'un montant de ${App.formatCurrency(invoice.total)}.\n\nCordialement,\n${user.company.name || 'Votre prestataire'}`);
+
+        const mailtoUrl = `mailto:${client.email || ''}?subject=${subject}&body=${body}`;
+
+        App.showNotification('Ouverture de votre messagerie...', 'info');
+
+        // Simuler le passage en mode "envoyé" immédiatement pour l'action-réaction
+        Storage.updateInvoice(id, { status: 'sent' });
+        this.render();
 
         setTimeout(() => {
-            Storage.updateInvoice(id, { status: 'sent' });
-            App.showNotification('La facture a été transmise.', 'success');
-            this.render();
-        }, 1500);
+            window.location.href = mailtoUrl;
+        }, 800);
     },
 
     downloadPDF(id) {

@@ -49,22 +49,25 @@ const Quotes = {
                                         <td><span class="status-badge status-${quote.status}">${this.getStatusLabel(quote.status)}</span></td>
                                         <td>
                                             <div class="action-buttons">
-                                                <button class="btn-icon" onclick="Quotes.changeStatus('${quote.id}')" title="Statut">
-                                                    Statut
+                                                <button class="btn-icon" onclick="Quotes.fastSend('${quote.id}')" title="Envoyer par email">
+                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                                                </button>
+                                                <button class="btn-icon" onclick="Quotes.changeStatus('${quote.id}')" title="Changer le statut">
+                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 1-9 9 9 9 0 0 1-9-9 9 9 0 0 1 9-9 9 9 0 0 1 9 9z"></path><path d="M12 8v4l3 3"></path></svg>
                                                 </button>
                                                 <button class="btn-icon ${quote.status === 'accepted' ? 'btn-success' : ''}" 
                                                         onclick="Quotes.convertToInvoice('${quote.id}')" 
                                                         title="${quote.status === 'accepted' ? 'Convertir en facture' : 'Valider et Facturer'}">
-                                                    Facturer
+                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
                                                 </button>
                                                 <button class="btn-icon" onclick="Quotes.duplicate('${quote.id}')" title="Dupliquer">
-                                                    Copier
+                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                                                 </button>
-                                                <button class="btn-icon" onclick="Quotes.downloadPDF('${quote.id}')" title="PDF">
-                                                    PDF
+                                                <button class="btn-icon" onclick="Quotes.downloadPDF('${quote.id}')" title="Générer PDF">
+                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
                                                 </button>
                                                 <button class="btn-icon btn-danger" onclick="Quotes.delete('${quote.id}')" title="Supprimer">
-                                                    Supprimer
+                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
                                                 </button>
                                             </div>
                                         </td>
@@ -523,6 +526,28 @@ const Quotes = {
         } else {
             App.showNotification('Module PDF indisponible pour le moment.', 'info');
         }
+    },
+
+    fastSend(id) {
+        const quote = Storage.getQuote(id);
+        const client = Storage.getClient(quote?.clientId);
+        const user = Storage.getUser();
+
+        if (!quote || !client) return;
+
+        const subject = encodeURIComponent(`Devis ${quote.number} - ${user.company.name || 'Proposition'}`);
+        const body = encodeURIComponent(`Bonjour ${client.name},\n\nVeuillez trouver ci-joint mon devis ${quote.number} d'un montant de ${App.formatCurrency(quote.total)}.\n\nJe reste à votre disposition pour en discuter.\n\nCordialement,\n${user.company.name || 'Votre prestataire'}`);
+
+        const mailtoUrl = `mailto:${client.email || ''}?subject=${subject}&body=${body}`;
+
+        App.showNotification('Ouverture de votre messagerie...', 'info');
+
+        Storage.updateQuote(id, { status: 'sent' });
+        this.render();
+
+        setTimeout(() => {
+            window.location.href = mailtoUrl;
+        }, 800);
     },
 
     delete(id) {
