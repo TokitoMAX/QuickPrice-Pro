@@ -9,17 +9,21 @@ const App = {
         this.setupNavigation();
         this.checkFreemiumLimits();
         this.renderProBadge();
+        this.renderUserInfo();
 
         // Router / Landing Logic
         const savedPage = localStorage.getItem('qp_last_page') || 'dashboard';
-        const inApp = sessionStorage.getItem('qp_in_app');
+        const isLoggedIn = Auth.isLoggedIn();
 
-        if (inApp) {
+        if (isLoggedIn) {
             this.enterApp(false);
             this.navigateTo(savedPage);
         } else {
-            // Stay on Landing Page
-            // Optionally check URL hash
+            // Force landing page if not logged in
+            const landing = document.getElementById('landing-page');
+            const appWrapper = document.getElementById('app-wrapper');
+            if (landing) landing.style.display = 'block';
+            if (appWrapper) appWrapper.style.display = 'none';
         }
 
         // Event listener pour fermeture de modales
@@ -43,6 +47,7 @@ const App = {
         }
 
         sessionStorage.setItem('qp_in_app', 'true');
+        this.renderUserInfo();
         this.navigateTo('dashboard');
     },
 
@@ -152,7 +157,26 @@ const App = {
         };
     },
 
-    // Affichage du badge PRO
+    // Affichage des informations utilisateur dans la sidebar
+    renderUserInfo() {
+        const user = Auth.getUser();
+        if (!user) return;
+
+        const infoContainer = document.getElementById('user-info-sidebar');
+        if (infoContainer) {
+            infoContainer.innerHTML = `
+                <div class="user-profile">
+                    <div class="user-avatar">${user.company?.name?.charAt(0) || 'U'}</div>
+                    <div class="user-details">
+                        <span class="user-name">${user.company?.name || user.email}</span>
+                        <span class="user-status">${user.isPro ? '<span class="pro-badge-small">PRO</span>' : 'Version Gratuite'}</span>
+                    </div>
+                </div>
+            `;
+        }
+    },
+
+    // Affichage du badge PRO (legacy, used in other places maybe)
     renderProBadge() {
         const isPro = Storage.isPro();
         const badge = document.getElementById('pro-badge');

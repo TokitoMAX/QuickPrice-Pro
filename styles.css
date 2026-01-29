@@ -758,6 +758,26 @@ section {
     padding: 2rem 0;
 }
 
+.landing-actions {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.button-link {
+    background: transparent;
+    border: none;
+    color: var(--text-light);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+}
+
+.button-link:hover {
+    color: var(--primary);
+}
+
 .landing-hero {
     display: flex;
     align-items: center;
@@ -1021,6 +1041,63 @@ section {
     justify-content: space-between;
     align-items: center;
     background: linear-gradient(to right, rgba(99, 102, 241, 0.05), transparent);
+}
+
+.user-info-sidebar {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    background: rgba(99, 102, 241, 0.02);
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.user-avatar {
+    width: 32px;
+    height: 32px;
+    background: var(--gradient-1);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: white;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    flex-shrink: 0;
+}
+
+.user-details {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.user-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-light);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.user-status {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.pro-badge-small {
+    background: var(--gradient-1);
+    color: white;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 0.6rem;
+    font-weight: 800;
+    text-transform: uppercase;
 }
 
 .pro-badge {

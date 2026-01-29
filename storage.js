@@ -17,23 +17,8 @@ const Storage = {
 
     // Initialisation
     init() {
-        if (!this.get(this.KEYS.USER)) {
-            this.set(this.KEYS.USER, {
-                isPro: false,
-                licenseKey: null,
-                activatedAt: null,
-                company: {
-                    name: '',
-                    email: '',
-                    phone: '',
-                    address: '',
-                    siret: '',
-                    logo: null
-                }
-            });
-        }
-
-        if (!this.get(this.KEYS.SETTINGS)) {
+        // L'init par défaut reste pour les données globales ou de base
+        if (!this.getRaw(this.KEYS.SETTINGS)) {
             this.set(this.KEYS.SETTINGS, {
                 currency: '€',
                 taxRate: 20,
@@ -42,17 +27,15 @@ const Storage = {
                 theme: 'dark'
             });
         }
-
-        // Initialiser les collections vides si nécessaire
-        ['CLIENTS', 'QUOTES', 'INVOICES', 'SERVICES', 'REVENUES', 'EXPENSES', 'LEADS'].forEach(key => {
-            if (!this.get(this.KEYS[key])) {
-                this.set(this.KEYS[key], []);
-            }
-        });
     },
 
-    // Méthodes génériques
-    get(key) {
+    // Méthodes génériques avec isolation par utilisateur
+    getUserPrefix() {
+        const user = this.getRaw(this.KEYS.USER);
+        return user?.id ? `u${user.id}_` : '';
+    },
+
+    getRaw(key) {
         try {
             const data = localStorage.getItem(key);
             return data ? JSON.parse(data) : null;
@@ -62,9 +45,15 @@ const Storage = {
         }
     },
 
+    get(key) {
+        const prefix = this.getUserPrefix();
+        return this.getRaw(prefix + key);
+    },
+
     set(key, value) {
         try {
-            localStorage.setItem(key, JSON.stringify(value));
+            const prefix = this.getUserPrefix();
+            localStorage.setItem(prefix + key, JSON.stringify(value));
             return true;
         } catch (e) {
             console.error('Error writing to storage:', e);
@@ -74,24 +63,32 @@ const Storage = {
 
     // Méthodes utilisateur
     getUser() {
-        return this.get(this.KEYS.USER);
+        return this.getRaw(this.KEYS.USER);
     },
 
-    updateUser(userData) {
-        const current = this.getUser();
-        this.set(this.KEYS.USER, { ...current, ...userData });
+    setUser(userData) {
+        localStorage.setItem(this.KEYS.USER, JSON.stringify(userData));
+        this.initUserData();
+    },
+
+    initUserData() {
+        // Initialiser les collections vides pour cet utilisateur
+        ['CLIENTS', 'QUOTES', 'INVOICES', 'SERVICES', 'REVENUES', 'EXPENSES', 'LEADS'].forEach(key => {
+            if (!this.get(this.KEYS[key])) {
+                this.set(this.KEYS[key], []);
+            }
+        });
     },
 
     isPro() {
-        return true; // TEMPORARY: Force Pro mode for demo
-        /*
         const user = this.getUser();
         return user && user.isPro === true;
-        */
     },
 
     activatePro(licenseKey) {
-        this.updateUser({
+        const user = this.getUser();
+        this.setUser({
+            ...user,
             isPro: true,
             licenseKey: licenseKey,
             activatedAt: new Date().toISOString()

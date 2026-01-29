@@ -17,7 +17,10 @@
                 <span class="logo-text">QuickPrice Pro</span>
             </div>
             <div class="landing-actions">
-                <!-- Navigation simple sans authentification -->
+                <button class="button-link"
+                    onclick="document.getElementById('login-modal').classList.add('active')">Connexion</button>
+                <button class="button-primary"
+                    onclick="document.getElementById('register-modal').classList.add('active')">S'inscrire</button>
             </div>
         </nav>
 
@@ -27,11 +30,12 @@
                 <p class="hero-subtitle">Le système financier complet pour les freelances qui veulent sécuriser leur
                     rentabilité avant même de signer.</p>
                 <div class="hero-buttons">
-                    <button class="cta-button big" onclick="App.enterApp()">
-                        <span>Accéder au Dashboard</span>
+                    <button class="cta-button big"
+                        onclick="document.getElementById('register-modal').classList.add('active')">
+                        <span>Démarrer Gratuitement</span>
                         <span class="arrow">→</span>
                     </button>
-                    <p class="hero-note">Gratuit • Sans inscription • Données locales</p>
+                    <p class="hero-note">Essai gratuit • Accès immédiat • Espace personnel</p>
                 </div>
             </div>
             <div class="hero-image">
@@ -109,7 +113,9 @@
                     <div class="logo">
                         <span class="logo-text">QuickPrice</span>
                     </div>
-                    <span id="pro-badge" class="pro-badge">PRO</span>
+                </div>
+                <div class="user-info-sidebar" id="user-info-sidebar">
+                    <!-- Rempli par app.js -->
                 </div>
 
                 <nav class="sidebar-nav">
@@ -415,6 +421,7 @@
 
         <!-- Scripts -->
         <script src="storage.js"></script>
+        <script src="auth.js"></script>
         <script src="app.js"></script>
         <script src="services.js"></script>
         <script src="dashboard.js"></script>
@@ -426,6 +433,69 @@
         <script src="quotes.js"></script>
         <script src="scoper.js"></script>
         <script src="calculator.js"></script>
+
+        <!-- Modals d'authentification -->
+        <div id="login-modal" class="modal-overlay">
+            <div class="modal-card">
+                <div class="modal-header">
+                    <h3>Connexion</h3>
+                    <button class="btn-close" onclick="App.closeModal()">✕</button>
+                </div>
+                <form id="login-form"
+                    onsubmit="event.preventDefault(); Auth.login(this.email.value, this.password.value)">
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" name="email" class="form-input" required placeholder="votre@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Mot de passe</label>
+                        <input type="password" name="password" class="form-input" required placeholder="••••••••">
+                    </div>
+                    <div class="form-actions" style="margin-top: 2rem;">
+                        <button type="submit" class="button-primary" style="width: 100%;">Se connecter</button>
+                    </div>
+                    <p class="text-center text-sm text-muted" style="margin-top: 1rem;">
+                        Pas encore de compte ? <a href="#"
+                            onclick="App.closeModal(); document.getElementById('register-modal').classList.add('active')">S'inscrire</a>
+                    </p>
+                </form>
+            </div>
+        </div>
+
+        <div id="register-modal" class="modal-overlay">
+            <div class="modal-card">
+                <div class="modal-header">
+                    <h3>Créer un compte</h3>
+                    <button class="btn-close" onclick="App.closeModal()">✕</button>
+                </div>
+                <form id="register-form"
+                    onsubmit="event.preventDefault(); Auth.register({email: this.email.value, password: this.password.value, company: {name: this.companyName.value}})">
+                    <div class="form-group">
+                        <label class="form-label">Nom de l'entreprise / Freelance</label>
+                        <input type="text" name="companyName" class="form-input" required
+                            placeholder="Ex: Jean Dupont Studio">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" name="email" class="form-input" required placeholder="votre@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Mot de passe</label>
+                        <input type="password" name="password" class="form-input" required
+                            placeholder="Minimum 6 caractères" minlength="6">
+                    </div>
+                    <div class="form-actions" style="margin-top: 2rem;">
+                        <button type="submit" class="button-primary" style="width: 100%;">S'inscrire
+                            gratuitement</button>
+                    </div>
+                    <p class="text-center text-sm text-muted" style="margin-top: 1rem;">
+                        Déjà un compte ? <a href="#"
+                            onclick="App.closeModal(); document.getElementById('login-modal').classList.add('active')">Se
+                            connecter</a>
+                    </p>
+                </form>
+            </div>
+        </div>
 </body>
 
 </html>
