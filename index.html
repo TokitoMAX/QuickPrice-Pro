@@ -7,24 +7,7 @@
     <title>QuickPrice Pro - Gestionnaire Freelance</title>
     <meta name="description" content="Gérez vos clients, factures et devis en toute simplicité">
     <link rel="stylesheet" href="styles.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        console.log("Initializing Supabase...");
-        window.onerror = function (msg, url, line) {
-            console.error("Global Error:", msg, "at", url, ":", line);
-            return false;
-        };
-
-        const SB_URL = 'https://kisldntelhrnilrihelr.supabase.co';
-        const SB_KEY = 'sb_publishable_Fy9VImo4K_Xlqbx4d-L8jw_B3VwLm_8';
-
-        try {
-            window.sbClient = supabase.createClient(SB_URL, SB_KEY);
-            console.log("Supabase OK");
-        } catch (e) {
-            console.error("Supabase Init Error", e);
-        }
-
         // Helpers de Secours - Forcent le display au cas où le CSS bloque
         window.showModal = function (id) {
             console.log("Showing modal:", id);
@@ -552,18 +535,20 @@
                     <h3>Connexion</h3>
                     <button class="btn-close" type="button" onclick="closeAllModals()">✕</button>
                 </div>
-                <form id="login-form"
-                    onsubmit="event.preventDefault(); handleLogin(event)">
+                <form id="login-form" onsubmit="event.preventDefault(); handleLogin(event)">
                     <div class="form-group">
                         <label class="form-label">Email</label>
-                        <input type="email" name="email" id="login-email" class="form-input" required placeholder="votre@email.com">
+                        <input type="email" name="email" id="login-email" class="form-input" required
+                            placeholder="votre@email.com">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Mot de passe</label>
-                        <input type="password" name="password" id="login-password" class="form-input" required placeholder="••••••••">
+                        <input type="password" name="password" id="login-password" class="form-input" required
+                            placeholder="••••••••">
                     </div>
                     <div class="form-actions" style="margin-top: 2rem;">
-                        <button type="submit" id="login-submit" class="button-primary" style="width: 100%;">Se connecter</button>
+                        <button type="submit" id="login-submit" class="button-primary" style="width: 100%;">Se
+                            connecter</button>
                     </div>
                     <p class="text-center text-sm text-muted" style="margin-top: 1rem;">
                         Pas encore de compte ? <a href="#"
@@ -579,8 +564,7 @@
                     <h3>Créer un compte</h3>
                     <button class="btn-close" type="button" onclick="closeAllModals()">✕</button>
                 </div>
-                <form id="register-form"
-                    onsubmit="event.preventDefault(); handleRegister(event)">
+                <form id="register-form" onsubmit="event.preventDefault(); handleRegister(event)">
                     <div class="form-group">
                         <label class="form-label">Nom de l'entreprise / Freelance</label>
                         <input type="text" name="companyName" id="register-company" class="form-input" required
@@ -588,7 +572,8 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">Email</label>
-                        <input type="email" name="email" id="register-email" class="form-input" required placeholder="votre@email.com">
+                        <input type="email" name="email" id="register-email" class="form-input" required
+                            placeholder="votre@email.com">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Mot de passe</label>
@@ -596,7 +581,8 @@
                             placeholder="Minimum 6 caractères" minlength="6">
                     </div>
                     <div class="form-actions" style="margin-top: 2rem;">
-                        <button type="submit" id="register-submit" class="button-primary" style="width: 100%;">S'inscrire
+                        <button type="submit" id="register-submit" class="button-primary"
+                            style="width: 100%;">S'inscrire
                             gratuitement</button>
                     </div>
                     <p class="text-center text-sm text-muted" style="margin-top: 1rem;">

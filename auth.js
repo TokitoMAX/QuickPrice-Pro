@@ -16,12 +16,6 @@ const Auth = {
     },
 
     async register(data) {
-        if (!this.checkSupabaseClient()) {
-            const error = new Error("Erreur de connexion. Veuillez rafraîchir la page.");
-            this.showError(error.message);
-            throw error;
-        }
-
         // Validation des données
         if (!data.email || !data.password) {
             const error = new Error('Veuillez remplir tous les champs');
@@ -36,51 +30,37 @@ const Auth = {
         }
 
         try {
-            const { data: authData, error } = await window.sbClient.auth.signUp({
-                email: data.email.trim(),
-                password: data.password,
-                options: {
-                    data: {
-                        company_name: data.company?.name || '',
-                        is_pro: false
-                    }
-                }
+            const response = await fetch('/api/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
             });
 
-            if (error) {
-                // Traduire les erreurs courantes
-                let errorMessage = this.translateError(error.message);
-                throw new Error(errorMessage);
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.message || 'Erreur lors de l\'inscription');
             }
 
-            // Vérifier si l'email nécessite une confirmation
-            if (authData.user && !authData.session) {
+            // Vérifier si l'email nécessite une confirmation (si le backend retourne un état spécifique)
+            if (result.user && !result.token) {
                 this.showSuccess('Inscription réussie ! Veuillez vérifier votre email pour confirmer votre compte.');
-                // Fermer la modale après 2 secondes
                 setTimeout(() => {
-                    if (typeof closeAllModals === 'function') {
-                        closeAllModals();
-                    }
+                    if (typeof closeAllModals === 'function') closeAllModals();
                 }, 2000);
-                return authData;
+                return result;
             }
 
-            this.handleAuthSuccess(authData);
-            return authData;
+            this.handleAuthSuccess(result);
+            return result;
         } catch (error) {
-            const errorMessage = error.message || 'Erreur lors de l\'inscription';
+            const errorMessage = this.translateError(error.message);
             this.showError(errorMessage);
             throw error;
         }
     },
 
     async login(email, password) {
-        if (!this.checkSupabaseClient()) {
-            const error = new Error("Erreur de connexion. Veuillez rafraîchir la page.");
-            this.showError(error.message);
-            throw error;
-        }
-
         // Validation des données
         if (!email || !password) {
             const error = new Error('Veuillez remplir tous les champs');
@@ -89,21 +69,22 @@ const Auth = {
         }
 
         try {
-            const { data: authData, error } = await window.sbClient.auth.signInWithPassword({
-                email: email.trim(),
-                password
+            const response = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
             });
 
-            if (error) {
-                // Traduire les erreurs courantes
-                let errorMessage = this.translateError(error.message);
-                throw new Error(errorMessage);
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.message || 'Identifiants incorrects');
             }
 
-            this.handleAuthSuccess(authData);
-            return authData;
+            this.handleAuthSuccess(result);
+            return result;
         } catch (error) {
-            const errorMessage = error.message || 'Identifiants incorrects';
+            const errorMessage = this.translateError(error.message);
             this.showError(errorMessage);
             throw error;
         }
@@ -172,7 +153,7 @@ const Auth = {
         }
 
         this.showSuccess('Bienvenue !');
-        
+
         // Fermer les modales
         if (typeof closeAllModals === 'function') {
             closeAllModals();
