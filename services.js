@@ -2,40 +2,41 @@
 
 const Services = {
     PRESETS: {
-        'web': [
-            { label: 'Site Vitrine Standard', unitPrice: 1500, description: 'Création site WordPress 5 pages, Responsive, SEO de base' },
-            { label: 'Développement TJM', unitPrice: 450, description: 'Journée de développement web (Front/Back)' },
-            { label: 'Maintenance Mensuelle', unitPrice: 80, description: 'Mises à jour, sauvegardes et sécurité' }
-        ],
-        'design': [
-            { label: 'Création de Logo', unitPrice: 800, description: '3 propositions, fichiers vectoriels et déclinaisons' },
-            { label: 'Charte Graphique', unitPrice: 1200, description: 'Palette couleurs, typographies, guide d\'utilisation' },
-            { label: 'Maquette UI Home', unitPrice: 400, description: 'Design page d\'accueil Desktop/Mobile' }
-        ],
-        'consulting': [
-            { label: 'Audit SEO', unitPrice: 900, description: 'Analyse technique, sémantique et concurrence' },
-            { label: 'Consulting Stratégique (1h)', unitPrice: 150, description: 'Visio-conférence et plan d\'action' }
-        ]
-    },
+        PRESETS: {
+            'web': [
+                { label: 'Site Vitrine Standard', unitPrice: 1500, description: 'Création site WordPress 5 pages, Responsive, SEO de base', category: 'Développement Web', unitType: 'Forfait' },
+                { label: 'Développement TJM', unitPrice: 450, description: 'Journée de développement web (Front/Back)', category: 'Développement Web', unitType: 'Jour' },
+                { label: 'Maintenance Mensuelle', unitPrice: 80, description: 'Mises à jour, sauvegardes et sécurité', category: 'Maintenance', unitType: 'Mois' }
+            ],
+            'design': [
+                { label: 'Création de Logo', unitPrice: 800, description: '3 propositions, fichiers vectoriels et déclinaisons', category: 'Design Graphique', unitType: 'Forfait' },
+                { label: 'Charte Graphique', unitPrice: 1200, description: 'Palette couleurs, typographies, guide d\'utilisation', category: 'Design Graphique', unitType: 'Forfait' },
+                { label: 'Maquette UI Home', unitPrice: 400, description: 'Design page d\'accueil Desktop/Mobile', category: 'UI/UX Design', unitType: 'Page' }
+            ],
+            'consulting': [
+                { label: 'Audit SEO', unitPrice: 900, description: 'Analyse technique, sémantique et concurrence', category: 'Consulting', unitType: 'Forfait' },
+                { label: 'Consulting Stratégique', unitPrice: 150, description: 'Visio-conférence et plan d\'action', category: 'Consulting', unitType: 'Heure' }
+            ]
+        },
 
-    importPresets(type) {
-        if (!confirm('Voulez-vous importer ces prestations exemples dans votre catalogue ?')) return;
+        importPresets(type) {
+            if (!confirm('Voulez-vous importer ces prestations exemples dans votre catalogue ?')) return;
 
-        const items = this.PRESETS[type];
-        if (items) {
-            items.forEach(item => Storage.addService(item));
-            App.showNotification('✅ Pack de prestations importé !', 'success');
-            this.render();
-        }
-    },
+            const items = this.PRESETS[type];
+            if (items) {
+                items.forEach(item => Storage.addService(item));
+                App.showNotification('✅ Pack de prestations importé !', 'success');
+                this.render();
+            }
+        },
 
-    render() {
-        const container = document.getElementById('services-content');
-        if (!container) return;
+        render() {
+            const container = document.getElementById('services-content');
+            if (!container) return;
 
-        const services = Storage.getServices();
+            const services = Storage.getServices();
 
-        container.innerHTML = `
+            container.innerHTML = `
             <div class="page-header">
                 <div>
                     <h1 class="page-title">Catalogue de Prestations</h1>
@@ -49,33 +50,8 @@ const Services = {
             <div id="service-form-container"></div>
 
             ${services.length > 0 ? `
-                <div class="table-container">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Intitulé</th>
-                                <th>Description par défaut</th>
-                                <th>Prix Unitaire</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${services.sort((a, b) => a.label.localeCompare(b.label)).map(service => `
-                                <tr>
-                                    <td><strong>${service.label}</strong></td>
-                                    <td>${service.description || '-'}</td>
-                                    <td>${App.formatCurrency(service.unitPrice)}</td>
-                                    <td>
-                                        <div class="action-buttons">
-                                            <button class="btn-icon btn-danger" onclick="Services.delete('${service.id}')" title="Supprimer">
-                                                🗑️
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
+                <div class="services-list-container">
+                    ${this.renderGroupedServices(services)}
                 </div>
                 
                 <div class="presets-section" style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border-color);">
@@ -118,11 +94,11 @@ const Services = {
                 </div>
             `}
         `;
-    },
+        },
 
-    showAddForm() {
-        const container = document.getElementById('service-form-container');
-        container.innerHTML = `
+        showAddForm() {
+            const container = document.getElementById('service-form-container');
+            container.innerHTML = `
             <div class="form-card">
                 <div class="form-header">
                     <h3>Nouvelle Prestation</h3>
@@ -153,33 +129,33 @@ const Services = {
                 </form>
             </div>
         `;
-        container.scrollIntoView({ behavior: 'smooth' });
-    },
+            container.scrollIntoView({ behavior: 'smooth' });
+        },
 
-    save(e) {
-        e.preventDefault();
-        const formData = new FormData(e.target);
+        save(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
 
-        const serviceData = {
-            label: formData.get('label'),
-            unitPrice: parseFloat(formData.get('unitPrice')),
-            description: formData.get('description')
-        };
+            const serviceData = {
+                label: formData.get('label'),
+                unitPrice: parseFloat(formData.get('unitPrice')),
+                description: formData.get('description')
+            };
 
-        Storage.addService(serviceData);
-        App.showNotification('✅ Prestation ajoutée au catalogue', 'success');
-        this.render();
-    },
-
-    delete(id) {
-        if (confirm('Supprimer cette prestation du catalogue ?')) {
-            Storage.deleteService(id);
-            App.showNotification('✅ Prestation supprimée', 'success');
+            Storage.addService(serviceData);
+            App.showNotification('✅ Prestation ajoutée au catalogue', 'success');
             this.render();
-        }
-    },
+        },
 
-    hideForm() {
-        document.getElementById('service-form-container').innerHTML = '';
-    }
-};
+        delete(id) {
+            if (confirm('Supprimer cette prestation du catalogue ?')) {
+                Storage.deleteService(id);
+                App.showNotification('✅ Prestation supprimée', 'success');
+                this.render();
+            }
+        },
+
+        hideForm() {
+            document.getElementById('service-form-container').innerHTML = '';
+        }
+    };
