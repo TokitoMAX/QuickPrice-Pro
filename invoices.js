@@ -59,14 +59,14 @@ const Invoices = {
                                                 <button class="btn-icon" onclick="Invoices.fastSend('${invoice.id}')" title="Envoyer">
                                                     Envoyer
                                                 </button>
-                                                <button class="btn-icon" onclick="Invoices.changeStatus('${invoice.id}')" title="Changer statut">
+                                                <button class="btn-icon" onclick="Invoices.changeStatus('${invoice.id}')" title="Statut">
                                                     Statut
                                                 </button>
-                                                <button class="btn-icon" onclick="Invoices.duplicate('${invoice.id}')" title="Dupliquer (Facture récurrente)">
-                                                    ❐
+                                                <button class="btn-icon" onclick="Invoices.duplicate('${invoice.id}')" title="Dupliquer">
+                                                    Copier
                                                 </button>
                                                 <button class="btn-icon" onclick="Invoices.downloadPDF('${invoice.id}')" title="PDF">
-                                                    📄
+                                                    PDF
                                                 </button>
                                                 <button class="btn-icon btn-danger" onclick="Invoices.delete('${invoice.id}')">
                                                     Supprimer

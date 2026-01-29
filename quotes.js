@@ -49,22 +49,22 @@ const Quotes = {
                                         <td><span class="status-badge status-${quote.status}">${this.getStatusLabel(quote.status)}</span></td>
                                         <td>
                                             <div class="action-buttons">
-                                                <button class="btn-icon" onclick="Quotes.changeStatus('${quote.id}')" title="Changer statut">
-                                                    🔄
+                                                <button class="btn-icon" onclick="Quotes.changeStatus('${quote.id}')" title="Statut">
+                                                    Statut
                                                 </button>
                                                 <button class="btn-icon ${quote.status === 'accepted' ? 'btn-success' : ''}" 
                                                         onclick="Quotes.convertToInvoice('${quote.id}')" 
                                                         title="${quote.status === 'accepted' ? 'Convertir en facture' : 'Valider et Facturer'}">
-                                                    
+                                                    Facturer
                                                 </button>
                                                 <button class="btn-icon" onclick="Quotes.duplicate('${quote.id}')" title="Dupliquer">
-                                                    
+                                                    Copier
                                                 </button>
                                                 <button class="btn-icon" onclick="Quotes.downloadPDF('${quote.id}')" title="PDF">
-                                                    
+                                                    PDF
                                                 </button>
                                                 <button class="btn-icon btn-danger" onclick="Quotes.delete('${quote.id}')" title="Supprimer">
-                                                    
+                                                    Supprimer
                                                 </button>
                                             </div>
                                         </td>
