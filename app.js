@@ -46,6 +46,14 @@ const App = {
         this.navigateTo('dashboard');
     },
 
+    toggleMobileMenu() {
+        const sidebar = document.querySelector('.sidebar');
+        sidebar.classList.toggle('active');
+
+        const toggle = document.getElementById('mobile-menu-toggle');
+        toggle.classList.toggle('active');
+    },
+
     // Configuration de la navigation
     setupNavigation() {
         document.querySelectorAll('[data-nav]').forEach(link => {
@@ -59,6 +67,12 @@ const App = {
 
     // Navigation entre pages
     navigateTo(page) {
+        // Fermer le menu mobile si ouvert
+        const sidebar = document.querySelector('.sidebar');
+        if (sidebar) sidebar.classList.remove('active');
+        const toggle = document.getElementById('mobile-menu-toggle');
+        if (toggle) toggle.classList.remove('active');
+
         // Cacher toutes les pages
         document.querySelectorAll('.page').forEach(p => {
             p.classList.remove('active');

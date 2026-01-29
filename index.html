@@ -101,6 +101,11 @@
             <!-- Sidebar Navigation -->
             <aside class="sidebar">
                 <div class="sidebar-header">
+                    <button id="mobile-menu-toggle" class="mobile-menu-toggle" onclick="App.toggleMobileMenu()">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
                     <div class="logo">
                         <span class="logo-text">QuickPrice</span>
                     </div>
@@ -117,9 +122,6 @@
                     </a>
                     <a href="#" data-nav="leads" class="nav-item">
                         <span class="nav-label">Prospection</span>
-                    </a>
-                    <a href="#" data-nav="services" class="nav-item">
-                        <span class="nav-label">Services</span>
                     </a>
                     <!-- Scoper moved to Quotes context -->
                     <a href="#" data-nav="invoices" class="nav-item">

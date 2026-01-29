@@ -1,40 +1,20 @@
-// QuickPrice Pro - Services Catalog Module
-
 const Services = {
     render() {
-        const container = document.getElementById('services-content');
-        if (!container) return;
+        // Rediriger vers les paramètres car le catalogue y a été déplacé
+        App.navigateTo('settings');
+    },
 
-        const services = Storage.getServices();
-
-        container.innerHTML = `
-            <div class="page-header">
-                <div>
-                    <h1 class="page-title">Catalogue de Prestations</h1>
-                    <p class="page-subtitle">${services.length} prestation(s) enregistrée(s)</p>
-                </div>
-                <button class="button-primary" onclick="Services.showAddForm()">
-                    Nouvelle Prestation
-                </button>
-            </div>
-
-            <div id="service-form-container"></div>
-
-            ${services.length > 0 ? `
-                <div class="services-list-container">
-                    ${this.renderGroupedServices(services)}
-                </div>
-            ` : `
+    renderGroupedServices(services) {
+        if (!services || services.length === 0) {
+            return `
                 <div class="empty-state">
                     <h3>Catalogue vide</h3>
                     <p>Enregistrez vos prestations habituelles pour gagner du temps lors de vos devis.</p>
                     <button class="button-primary" onclick="Services.showAddForm()">Ajouter une prestation</button>
                 </div>
-            `}
-        `;
-    },
+            `;
+        }
 
-    renderGroupedServices(services) {
         // Group by category
         const groups = {};
         services.forEach(s => {
@@ -46,44 +26,48 @@ const Services = {
         // Generate HTML
         return Object.keys(groups).sort().map(cat => `
             <div class="service-category-group" style="margin-bottom: 2rem;">
-                <h3 style="margin-bottom: 0.5rem; font-size: 1rem; color: var(--primary-color); border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">${cat}</h3>
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th style="width: 40%;">Intitulé</th>
-                            <th style="width: 30%;">Description</th>
-                            <th style="width: 15%;">Prix</th>
-                            <th style="width: 10%;">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${groups[cat].map(service => `
+                <h3 style="margin-bottom: 0.5rem; font-size: 1rem; color: var(--primary); border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">${cat}</h3>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
                             <tr>
-                                <td>
-                                    <div style="font-weight: 600;">${service.label}</div>
-                                    <div style="font-size: 0.8rem; color: var(--text-muted);">${service.unitType ? `Tarif par : ${service.unitType}` : ''}</div>
-                                </td>
-                                <td style="font-size: 0.9rem; color: var(--text-muted);">${service.description || '-'}</td>
-                                <td style="font-weight: 600;">${App.formatCurrency(service.unitPrice)}</td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <button class="btn-icon btn-danger" onclick="Services.delete('${service.id}')">
-                                            Supprimer
-                                        </button>
-                                    </div>
-                                </td>
+                                <th style="width: 40%;">Intitulé</th>
+                                <th style="width: 30%;">Description</th>
+                                <th style="width: 15%;">Prix</th>
+                                <th style="width: 10%;">Actions</th>
                             </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            ${groups[cat].map(service => `
+                                <tr>
+                                    <td data-label="Intitulé">
+                                        <div style="font-weight: 600;">${service.label}</div>
+                                        <div style="font-size: 0.8rem; color: var(--text-muted);">${service.unitType ? `Tarif par : ${service.unitType}` : ''}</div>
+                                    </td>
+                                    <td data-label="Description" style="font-size: 0.9rem; color: var(--text-muted);">${service.description || '-'}</td>
+                                    <td data-label="Prix" style="font-weight: 600;">${App.formatCurrency(service.unitPrice)}</td>
+                                    <td data-label="Actions">
+                                        <div class="action-buttons">
+                                            <button class="btn-icon btn-danger" onclick="Services.delete('${service.id}')">
+                                                Supprimer
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         `).join('');
     },
 
     showAddForm() {
         const container = document.getElementById('service-form-container');
+        if (!container) return;
+
         container.innerHTML = `
-            <div class="form-card">
+            <div class="form-card" style="margin-top: 1rem; margin-bottom: 2rem;">
                 <div class="form-header">
                     <h3>Nouvelle Prestation</h3>
                     <button class="btn-close" onclick="Services.hideForm()">✕</button>
@@ -99,6 +83,7 @@ const Services = {
                                 <option value="Consulting">
                                 <option value="Maintenance">
                                 <option value="Formation">
+                                <option value="Rédaction">
                             </datalist>
                         </div>
 
@@ -153,18 +138,20 @@ const Services = {
         Storage.addService(service);
         App.showNotification('Prestation ajoutée.', 'success');
         this.hideForm();
-        this.render();
+
+        // Re-rendre les paramètres si on y est
+        if (App.currentPage === 'settings') Settings.render();
     },
 
     delete(id) {
         if (confirm('Supprimer cette prestation ?')) {
             Storage.deleteService(id);
-            this.render();
+            if (App.currentPage === 'settings') Settings.render();
         }
     },
 
     hideForm() {
         const container = document.getElementById('service-form-container');
-        container.innerHTML = '';
+        if (container) container.innerHTML = '';
     }
 };

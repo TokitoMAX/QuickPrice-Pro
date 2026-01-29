@@ -108,6 +108,14 @@ const Invoices = {
         const container = document.getElementById('invoice-form-container');
         container.innerHTML = this.renderForm(clients);
         container.scrollIntoView({ behavior: 'smooth' });
+
+        // Écouteur pour changement de client
+        const select = document.querySelector('select[name="clientId"]');
+        if (select) {
+            select.addEventListener('change', (e) => {
+                this.addDefaultServicesForClient(e.target.value);
+            });
+        }
     },
 
     renderForm(clients, invoice = null) {
@@ -506,5 +514,34 @@ const Invoices = {
             overdue: 'En retard'
         };
         return labels[status] || status;
+    },
+
+    addDefaultServicesForClient(clientId) {
+        if (!clientId) return;
+        const client = Storage.getClient(clientId);
+        if (client && client.defaultServiceIds && client.defaultServiceIds.length > 0) {
+            const services = Storage.getServices();
+            client.defaultServiceIds.forEach(serviceId => {
+                const service = services.find(s => s.id === serviceId);
+                if (service) {
+                    const alreadyPresent = this.currentItems.some(item => item.description === service.label);
+                    if (!alreadyPresent) {
+                        this.addItem();
+                        const lastIndex = this.currentItems.length - 1;
+                        this.currentItems[lastIndex] = {
+                            description: service.label,
+                            quantity: 1,
+                            unitPrice: service.unitPrice
+                        };
+                        const row = document.querySelector(`.item-row[data-index="${lastIndex}"]`);
+                        if (row) {
+                            row.querySelector('[name*="[description]"]').value = service.label;
+                            row.querySelector('[name*="[unitPrice]"]').value = service.unitPrice;
+                        }
+                    }
+                }
+            });
+            this.updateTotals();
+        }
     }
 };

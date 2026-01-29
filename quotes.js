@@ -135,6 +135,19 @@ const Quotes = {
         const container = document.getElementById('quote-form-container');
         container.innerHTML = this.renderForm(clients, null, preselectedClientId);
         container.scrollIntoView({ behavior: 'smooth' });
+
+        // Auto-populate services for new quote
+        if (preselectedClientId) {
+            this.addDefaultServicesForClient(preselectedClientId);
+        }
+
+        // Listener for client change
+        const select = document.getElementById('quote-client-select');
+        if (select) {
+            select.addEventListener('change', (e) => {
+                this.addDefaultServicesForClient(e.target.value);
+            });
+        }
     },
 
     renderForm(clients, quote = null, preselectedClientId = null) {
@@ -436,6 +449,35 @@ const Quotes = {
         Storage.addInvoice(invoiceData);
         App.showNotification('Facture générée avec succès.', 'success');
         App.navigateTo('invoices');
+    },
+
+    addDefaultServicesForClient(clientId) {
+        if (!clientId) return;
+        const client = Storage.getClient(clientId);
+        if (client && client.defaultServiceIds && client.defaultServiceIds.length > 0) {
+            const services = Storage.getServices();
+            client.defaultServiceIds.forEach(serviceId => {
+                const service = services.find(s => s.id === serviceId);
+                if (service) {
+                    const alreadyPresent = this.currentItems.some(item => item.description === service.label);
+                    if (!alreadyPresent) {
+                        this.addItem();
+                        const lastIndex = this.currentItems.length - 1;
+                        this.currentItems[lastIndex] = {
+                            description: service.label,
+                            quantity: 1,
+                            unitPrice: service.unitPrice
+                        };
+                        const row = document.querySelector(`.item-row[data-index="${lastIndex}"]`);
+                        if (row) {
+                            row.querySelector('[name*="[description]"]').value = service.label;
+                            row.querySelector('[name*="[unitPrice]"]').value = service.unitPrice;
+                        }
+                    }
+                }
+            });
+            this.updateTotals();
+        }
     },
 
     changeStatus(id) {

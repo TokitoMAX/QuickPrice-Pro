@@ -128,6 +128,19 @@ const Clients = {
                             <label class="form-label">Ville</label>
                             <input type="text" name="city" class="form-input">
                         </div>
+
+                        <div class="form-group full-width">
+                            <label class="form-label">Prestations habituelles pour ce client</label>
+                            <div class="services-selection-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.5rem; margin-top: 0.5rem; max-height: 200px; overflow-y: auto; padding: 1rem; background: var(--dark); border-radius: 8px; border: 1px solid var(--border);">
+                                ${Storage.getServices().map(service => `
+                                    <label class="checkbox-container" style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.9rem;">
+                                        <input type="checkbox" name="defaultServiceIds" value="${service.id}" style="accent-color: var(--primary);">
+                                        <span>${service.label}</span>
+                                    </label>
+                                `).join('') || '<p class="text-muted text-sm">Aucune prestation enregistrée dans le catalogue.</p>'}
+                            </div>
+                            <p class="text-sm text-muted" style="margin-top: 0.5rem;">Ces prestations seront automatiquement ajoutées à ses nouveaux devis/factures.</p>
+                        </div>
                     </div>
 
                     <div class="form-actions">
@@ -159,6 +172,15 @@ const Clients = {
                 input.value = client[field];
             }
         });
+
+        // Cocher les prestations par défaut
+        if (client.defaultServiceIds) {
+            form.querySelectorAll('input[name="defaultServiceIds"]').forEach(checkbox => {
+                if (client.defaultServiceIds.includes(checkbox.value)) {
+                    checkbox.checked = true;
+                }
+            });
+        }
     },
 
     save(e) {
@@ -173,7 +195,8 @@ const Clients = {
             siret: formData.get('siret'),
             address: formData.get('address'),
             zipCode: formData.get('zipCode'),
-            city: formData.get('city')
+            city: formData.get('city'),
+            defaultServiceIds: Array.from(formData.getAll('defaultServiceIds'))
         };
 
         if (this.editingId) {

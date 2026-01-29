@@ -44,7 +44,7 @@ const Storage = {
         }
 
         // Initialiser les collections vides si nécessaire
-        ['CLIENTS', 'QUOTES', 'INVOICES', 'SERVICES', 'REVENUES', 'EXPENSES'].forEach(key => {
+        ['CLIENTS', 'QUOTES', 'INVOICES', 'SERVICES', 'REVENUES', 'EXPENSES', 'LEADS'].forEach(key => {
             if (!this.get(this.KEYS[key])) {
                 this.set(this.KEYS[key], []);
             }

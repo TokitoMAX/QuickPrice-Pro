@@ -128,17 +128,20 @@ const Settings = {
                     </form>
                 </div>
 
-                <!-- Outils Financiers (Déplacés du menu) -->
                 <div class="settings-section">
-                    <h2 class="section-title-small">Mon Taux Journalier (TJM)</h2>
-                    <p class="section-subtitle">Utilisez le calculateur pour vérifier si vous êtes rentable.</p>
-                    <div class="settings-grid">
-                       <div class="setting-card" onclick="App.navigateTo('calculator')">
-                               <h3>Accéder à l'outil</h3>
-                               <p>Définissez votre prix idéal selon vos charges réelles.</p>
-                           </div>
-                           <button class="button-secondary">Ouvrir</button>
-                       </div>
+                    <h2 class="section-title-small">Catalogue de Prestations</h2>
+                    <p class="section-subtitle">Gérez vos prestations habituelles pour les ajouter rapidement à vos devis.</p>
+                    <div id="settings-services-container">
+                        ${typeof Services !== 'undefined' ?
+                `<div class="page-header" style="margin-top: 1rem;">
+                                <button class="button-primary" onclick="Services.showAddForm()">
+                                    Nouvelle Prestation
+                                </button>
+                            </div>
+                            <div id="service-form-container"></div>
+                            <div class="services-settings-list">
+                                ${Services.renderGroupedServices(Storage.getServices())}
+                            </div>` : ''}
                     </div>
                 </div>
 
