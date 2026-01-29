@@ -3,7 +3,7 @@ console.log("auth.js loading...");
 
 const Auth = {
     init() {
-        // Mode Local - Pas d'initialisation requise
+        // Mode Backend Local - Initialisation standard
     },
 
     async register(data) {
@@ -13,29 +13,20 @@ const Auth = {
         }
 
         try {
-            await new Promise(r => setTimeout(r, 600)); // Simuler un délai
-            const users = JSON.parse(localStorage.getItem('qp_local_users') || '[]');
+            const response = await fetch('/api/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
 
-            if (users.find(u => u.email === data.email.trim())) {
-                throw new Error('Cet email est déjà utilisé');
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.message || 'Erreur lors de l\'inscription');
             }
 
-            const newUser = {
-                id: 'u_' + Date.now(),
-                email: data.email.trim(),
-                password: data.password,
-                company_name: data.company.name,
-                is_pro: false,
-                createdAt: new Date().toISOString()
-            };
-
-            users.push(newUser);
-            localStorage.setItem('qp_local_users', JSON.stringify(users));
-
-            this.handleAuthSuccess({
-                user: { id: newUser.id, email: newUser.email, user_metadata: { company_name: newUser.company_name, is_pro: newUser.is_pro } },
-                session: { access_token: 'local_' + newUser.id }
-            });
+            this.handleAuthSuccess(result);
+            return result;
         } catch (error) {
             this.showError(error.message);
             throw error;
@@ -49,16 +40,20 @@ const Auth = {
         }
 
         try {
-            await new Promise(r => setTimeout(r, 400));
-            const users = JSON.parse(localStorage.getItem('qp_local_users') || '[]');
-            const user = users.find(u => u.email === email.trim() && u.password === password);
-
-            if (!user) throw new Error('Email ou mot de passe incorrect');
-
-            this.handleAuthSuccess({
-                user: { id: user.id, email: user.email, user_metadata: { company_name: user.company_name, is_pro: user.is_pro } },
-                session: { access_token: 'local_' + user.id }
+            const response = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
             });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.message || 'Identifiants incorrects');
+            }
+
+            this.handleAuthSuccess(result);
+            return result;
         } catch (error) {
             this.showError(error.message);
             throw error;
@@ -77,7 +72,7 @@ const Auth = {
         if (typeof App !== 'undefined' && App.showNotification) {
             App.showNotification(message, 'success');
         } else {
-            alert("Succès: " + message);
+            console.log("Success:", message);
         }
     },
 
@@ -98,10 +93,15 @@ const Auth = {
 
         if (typeof Storage !== 'undefined') Storage.setUser(userData);
 
-        this.showSuccess('Bienvenue !');
+        this.showSuccess('Bienvenue, ' + (userData.company.name || userData.email) + ' !');
+
         if (typeof closeAllModals === 'function') closeAllModals();
-        if (typeof App !== 'undefined' && App.enterApp) App.enterApp();
-        else window.location.reload();
+
+        if (typeof App !== 'undefined' && App.enterApp) {
+            App.enterApp();
+        } else {
+            window.location.reload();
+        }
     },
 
     logout() {
