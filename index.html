@@ -11,15 +11,50 @@
     <script>
         console.log("Initializing Supabase...");
         window.onerror = function (msg, url, line) {
-            alert("Erreur Script: " + msg + "\nLigne: " + line);
+            console.error("Global Error:", msg, "at", url, ":", line);
             return false;
         };
-        // Configuration Supabase Directe - Objet Global
+
         const SB_URL = 'https://kisldntelhrnilrihelr.supabase.co';
         const SB_KEY = 'sb_publishable_Fy9VImo4K_Xlqbx4d-L8jw_B3VwLm_8';
-        window.sbClient = supabase.createClient(SB_URL, SB_KEY);
-        console.log("Supabase initialized:", !!window.sbClient);
+
+        try {
+            window.sbClient = supabase.createClient(SB_URL, SB_KEY);
+            console.log("Supabase OK");
+        } catch (e) {
+            console.error("Supabase Init Error", e);
+        }
+
+        // Helpers de Secours - Forcent le display au cas où le CSS bloque
+        window.showModal = function (id) {
+            console.log("Showing modal:", id);
+            const m = document.getElementById(id);
+            if (m) {
+                m.style.display = 'flex';
+                m.classList.add('active');
+            }
+        };
+        window.closeAllModals = function () {
+            console.log("Closing all modals");
+            document.querySelectorAll('.modal-overlay').forEach(m => {
+                m.style.display = 'none';
+                m.classList.remove('active');
+            });
+        };
+
+        // Indicateur visuel discret pour confirmer que le JS tourne
+        window.addEventListener('load', () => {
+            const dot = document.createElement('div');
+            dot.style.cssText = "position:fixed; bottom:5px; right:5px; width:6px; height:6px; background:#10b981; border-radius:50%; z-index:100000; opacity:0.5;";
+            document.body.appendChild(dot);
+        });
     </script>
+    <noscript>
+        <div
+            style="position:fixed; top:0; left:0; width:100%; background:red; color:white; text-align:center; padding:10px; z-index:999999;">
+            JavaScript est désactivé. L'application ne peut pas fonctionner.
+        </div>
+    </noscript>
 </head>
 
 <body>
@@ -30,10 +65,8 @@
                 <span class="logo-text">QuickPrice Pro</span>
             </div>
             <div class="landing-actions">
-                <button class="button-link"
-                    onclick="document.getElementById('login-modal').classList.add('active')">Connexion</button>
-                <button class="button-primary"
-                    onclick="document.getElementById('register-modal').classList.add('active')">S'inscrire</button>
+                <button class="button-link" onclick="showModal('login-modal')">Connexion</button>
+                <button class="button-primary" onclick="showModal('register-modal')">S'inscrire</button>
             </div>
         </nav>
 
@@ -43,8 +76,7 @@
                 <p class="hero-subtitle">Le système financier complet pour les freelances qui veulent sécuriser leur
                     rentabilité avant même de signer.</p>
                 <div class="hero-buttons">
-                    <button class="cta-button big"
-                        onclick="document.getElementById('register-modal').classList.add('active')">
+                    <button class="cta-button big" onclick="showModal('register-modal')">
                         <span>Démarrer Gratuitement</span>
                         <span class="arrow">→</span>
                     </button>
@@ -405,7 +437,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h3>Nouveau Client Rapide</h3>
-                    <button class="btn-close" onclick="App.closeModal()">✕</button>
+                    <button class="btn-close" type="button" onclick="closeAllModals()">✕</button>
                 </div>
                 <form id="quick-client-form" onsubmit="Clients.handleQuickAdd(event)">
                     <div class="form-grid">
@@ -453,7 +485,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h3>Connexion</h3>
-                    <button class="btn-close" onclick="App.closeModal()">✕</button>
+                    <button class="btn-close" type="button" onclick="closeAllModals()">✕</button>
                 </div>
                 <form id="login-form"
                     onsubmit="event.preventDefault(); Auth.login(this.email.value, this.password.value)">
@@ -470,7 +502,7 @@
                     </div>
                     <p class="text-center text-sm text-muted" style="margin-top: 1rem;">
                         Pas encore de compte ? <a href="#"
-                            onclick="App.closeModal(); document.getElementById('register-modal').classList.add('active')">S'inscrire</a>
+                            onclick="closeAllModals(); showModal('register-modal')">S'inscrire</a>
                     </p>
                 </form>
             </div>
@@ -480,7 +512,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h3>Créer un compte</h3>
-                    <button class="btn-close" onclick="App.closeModal()">✕</button>
+                    <button class="btn-close" type="button" onclick="closeAllModals()">✕</button>
                 </div>
                 <form id="register-form"
                     onsubmit="event.preventDefault(); Auth.register({email: this.email.value, password: this.password.value, company: {name: this.companyName.value}})">
@@ -503,8 +535,7 @@
                             gratuitement</button>
                     </div>
                     <p class="text-center text-sm text-muted" style="margin-top: 1rem;">
-                        Déjà un compte ? <a href="#"
-                            onclick="App.closeModal(); document.getElementById('login-modal').classList.add('active')">Se
+                        Déjà un compte ? <a href="#" onclick="closeAllModals(); showModal('login-modal')">Se
                             connecter</a>
                     </p>
                 </form>

@@ -88,4 +88,9 @@ const Auth = {
     }
 };
 
-Auth.init();
+try {
+    Auth.init();
+    console.log("Auth initialized");
+} catch (e) {
+    console.error("Auth Init Error:", e);
+}

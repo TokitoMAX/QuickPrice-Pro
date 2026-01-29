@@ -348,9 +348,22 @@ const App = {
     }
 };
 
+window.App = App;
+
 // Auto-démarrage quand le DOM est prêt
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => App.init());
+    document.addEventListener('DOMContentLoaded', () => {
+        try {
+            App.init();
+            console.log("App initialized");
+        } catch (e) {
+            console.error("App Init Error:", e);
+        }
+    });
 } else {
-    App.init();
+    try {
+        App.init();
+    } catch (e) {
+        console.error("App Init Error:", e);
+    }
 }
