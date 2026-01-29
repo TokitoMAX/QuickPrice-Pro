@@ -17,7 +17,7 @@ const Clients = {
                     <p class="page-subtitle">${clients.length} client(s) enregistré(s) ${!limits.canAddClient ? `(limite: ${limits.maxClients})` : ''}</p>
                 </div>
                 <button class="button-primary" onclick="Clients.showAddForm()" ${!limits.canAddClient ? 'disabled' : ''}>
-                    <span>➕</span> Nouveau Client
+                    Nouveau Client
                 </button>
             </div>
 
@@ -46,18 +46,10 @@ const Clients = {
                                     <td>${App.formatDate(client.createdAt)}</td>
                                     <td>
                                         <div class="action-buttons">
-                                            <button class="btn-icon" onclick="Clients.createQuoteFor('${client.id}')" title="Créer un devis">
-                                                📋
-                                            </button>
-                                            <button class="btn-icon" onclick="Clients.createInvoiceFor('${client.id}')" title="Créer une facture">
-                                                🧾
-                                            </button>
-                                            <button class="btn-icon" onclick="Clients.edit('${client.id}')" title="Modifier">
-                                                ✏️
-                                            </button>
-                                            <button class="btn-icon btn-danger" onclick="Clients.delete('${client.id}')" title="Supprimer">
-                                                🗑️
-                                            </button>
+                                            <button class="btn-icon" onclick="Clients.createQuoteFor('${client.id}')" title="Devis">Devis</button>
+                                            <button class="btn-icon" onclick="Clients.createInvoiceFor('${client.id}')" title="Facture">Facture</button>
+                                            <button class="btn-icon" onclick="Clients.edit('${client.id}')" title="Modifier">Modifier</button>
+                                            <button class="btn-icon btn-danger" onclick="Clients.delete('${client.id}')">Supprimer</button>
                                         </div>
                                     </td>
                                 </tr>
@@ -67,8 +59,7 @@ const Clients = {
                 </div>
             ` : `
                 <div class="empty-state">
-                    <div class="empty-icon">👥</div>
-                    <p>Commencez par ajouter vos clients</p>
+                    <p>Aucun client enregistré</p>
                     <button class="button-primary" onclick="Clients.showAddForm()">Ajouter un client</button>
                 </div>
             `}
@@ -187,10 +178,10 @@ const Clients = {
 
         if (this.editingId) {
             Storage.updateClient(this.editingId, clientData);
-            App.showNotification('✅ Client modifié avec succès', 'success');
+            App.showNotification('Client modifié.', 'success');
         } else {
             Storage.addClient(clientData);
-            App.showNotification('✅ Client ajouté avec succès', 'success');
+            App.showNotification('Client ajouté.', 'success');
         }
 
         this.hideForm();
@@ -200,7 +191,7 @@ const Clients = {
     delete(id) {
         if (confirm('Êtes-vous sûr de vouloir supprimer ce client ?')) {
             Storage.deleteClient(id);
-            App.showNotification('✅ Client supprimé', 'success');
+            App.showNotification('Client supprimé.', 'success');
             this.render();
         }
     },
@@ -233,7 +224,7 @@ const Clients = {
         };
 
         const newClient = Storage.addClient(clientData);
-        App.showNotification('✅ Client créé rapidement', 'success');
+        App.showNotification('Client créé.', 'success');
 
         this.closeQuickAdd();
 

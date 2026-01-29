@@ -14,7 +14,6 @@
     <div id="landing-page" class="landing-container">
         <nav class="landing-nav container">
             <div class="logo">
-                <span class="logo-icon">💰</span>
                 <span class="logo-text">QuickPrice Pro</span>
             </div>
             <div class="landing-actions">
@@ -37,14 +36,12 @@
             </div>
             <div class="hero-image">
                 <div class="floating-card glass">
-                    <div class="card-icon">🎯</div>
                     <div class="card-text">
                         <span class="label">Objectif de CA</span>
                         <span class="value">5 000 €</span>
                     </div>
                 </div>
                 <div class="floating-card glass delayed">
-                    <div class="card-icon">⚡</div>
                     <div class="card-text">
                         <span class="label">TJM Recommandé</span>
                         <span class="value">450 €</span>
@@ -60,20 +57,17 @@
             </div>
             <div class="features-grid">
                 <div class="feature-card glass">
-                    <div class="feature-icon">⚡</div>
-                    <h3 class="feature-title">Calculateur de TJM</h3>
+                    <h3 class="feature-title">Calculateur de tarifs</h3>
                     <p class="feature-description">Définissez vos tarifs en fonction de vos charges et objectifs réels.
                     </p>
                 </div>
                 <div class="feature-card glass">
-                    <div class="feature-icon">⏱️</div>
-                    <h3 class="feature-title">Estimateur de Projet</h3>
+                    <h3 class="feature-title">Analyse projet</h3>
                     <p class="feature-description">Calculez précisément la rentabilité de chaque projet avant de dire
                         oui.</p>
                 </div>
                 <div class="feature-card glass">
-                    <div class="feature-icon">🧾</div>
-                    <h3 class="feature-title">Facturation Simple</h3>
+                    <h3 class="feature-title">Facturation</h3>
                     <p class="feature-description">Créez des factures et devis professionnels en quelques clics.</p>
                 </div>
             </div>
@@ -82,7 +76,7 @@
         <footer class="landing-footer">
             <div class="container footer-content">
                 <div class="footer-logo">
-                    <span class="logo-icon">💰</span> QuickPrice Pro
+                    QuickPrice Pro
                 </div>
                 <div class="footer-links">
                     <a href="#" onclick="App.enterApp()">Application</a>
@@ -99,7 +93,7 @@
     <div id="app-wrapper" style="display: none;">
         <!-- Bannière Freemium -->
         <div id="freemium-banner" class="freemium-banner">
-            <span>🎁 Version Gratuite - Passez à PRO pour débloquer toutes les fonctionnalités</span>
+            <span>Version Gratuite - Passez à PRO pour débloquer toutes les fonctionnalités</span>
             <button class="btn-upgrade" onclick="App.showUpgradeModal()">Upgrade</button>
         </div>
 
@@ -108,7 +102,6 @@
             <aside class="sidebar">
                 <div class="sidebar-header">
                     <div class="logo">
-                        <span class="logo-icon">💰</span>
                         <span class="logo-text">QuickPrice</span>
                     </div>
                     <span id="pro-badge" class="pro-badge">PRO</span>
@@ -116,44 +109,37 @@
 
                 <nav class="sidebar-nav">
                     <a href="#" data-nav="dashboard" class="nav-item active">
-                        <span class="nav-icon">📊</span>
                         <span class="nav-label">Tableau de bord</span>
                     </a>
                     <!-- Tools moved to specific contexts -->
                     <a href="#" data-nav="clients" class="nav-item">
-                        <span class="nav-icon">👥</span>
                         <span class="nav-label">Clients</span>
                     </a>
                     <a href="#" data-nav="leads" class="nav-item">
-                        <span class="nav-icon">🎯</span>
-                        <span class="nav-label">Radar Prospects</span>
+                        <span class="nav-label">Prospection</span>
                     </a>
                     <a href="#" data-nav="services" class="nav-item">
-                        <span class="nav-icon">🏷️</span>
-                        <span class="nav-label">Prestations</span>
+                        <span class="nav-label">Services</span>
                     </a>
                     <!-- Scoper moved to Quotes context -->
                     <a href="#" data-nav="invoices" class="nav-item">
-                        <span class="nav-icon">🧾</span>
                         <span class="nav-label">Factures</span>
                     </a>
                     <a href="#" data-nav="quotes" class="nav-item">
-                        <span class="nav-icon">📋</span>
                         <span class="nav-label">Devis</span>
                     </a>
                     <a href="#" data-nav="settings" class="nav-item">
-                        <span class="nav-icon">⚙️</span>
                         <span class="nav-label">Paramètres</span>
                     </a>
                 </nav>
 
                 <div class="sidebar-footer">
                     <button class="license-button" onclick="App.showLicenseModal()">
-                        🔑 Activer une licence
+                        Activer une licence
                     </button>
                     <button class="license-button" onclick="Auth.logout()"
                         style="margin-top: 0.5rem; background: transparent; border-color: var(--border-light);">
-                        🚪 Déconnexion
+                        Déconnexion
                     </button>
                 </div>
             </aside>
@@ -222,8 +208,7 @@
                             </div>
 
                             <button class="calculate-button" onclick="calculatePrice()">
-                                <span class="button-icon">⚡</span>
-                                Calculer mon tarif
+                                Calculer
                             </button>
                         </div>
 
@@ -251,12 +236,12 @@
 
                             <div class="calculator-actions">
                                 <button class="button-secondary" onclick="useRate('daily')">
-                                    <span>📋</span> Préparer un devis avec ce TJM
+                                    Préparer un devis
                                 </button>
                             </div>
 
                             <div class="breakdown-section">
-                                <h4 class="breakdown-title">📊 Répartition</h4>
+                                <h4 class="breakdown-title">Répartition</h4>
                                 <div class="breakdown-items">
                                     <div class="breakdown-item">
                                         <span class="breakdown-label">Revenu net</span>
@@ -308,7 +293,6 @@
                             <p class="page-subtitle">Fonctionnalité en cours de développement</p>
                         </div>
                         <div class="empty-state">
-                            <div class="empty-icon">📋</div>
                             <p>Le module de devis sera disponible prochainement</p>
                             <p class="text-sm">Utilisez les factures en attendant</p>
                         </div>
@@ -327,7 +311,7 @@
             <div class="modal-content">
                 <button class="modal-close" onclick="App.closeModal()">✕</button>
                 <div class="modal-header">
-                    <h2>🚀 Passez à QuickPrice PRO</h2>
+                    <h2>Passer à QuickPrice PRO</h2>
                 </div>
                 <div class="modal-body">
                     <p class="upgrade-message">Vous avez atteint la limite de la version gratuite.</p>
@@ -335,12 +319,12 @@
                     <div class="upgrade-benefits">
                         <h3>Avec QuickPrice PRO :</h3>
                         <ul>
-                            <li>✅ Clients illimités</li>
-                            <li>✅ Factures et devis illimités</li>
-                            <li>✅ Export PDF professionnel</li>
-                            <li>✅ Templates de documents</li>
-                            <li>✅ Support prioritaire</li>
-                            <li>✅ Mises à jour gratuites à vie</li>
+                            <li>Clients illimités</li>
+                            <li>Factures et devis illimités</li>
+                            <li>Export PDF professionnel</li>
+                            <li>Templates de documents</li>
+                            <li>Support prioritaire</li>
+                            <li>Mises à jour gratuites à vie</li>
                         </ul>
                     </div>
 
@@ -366,7 +350,7 @@
             <div class="modal-content">
                 <button class="modal-close" onclick="App.closeModal()">✕</button>
                 <div class="modal-header">
-                    <h2>🔑 Activer une Licence</h2>
+                    <h2>Activer une Licence</h2>
                 </div>
                 <div class="modal-body">
                     <p>Entrez votre clé de licence pour activer QuickPrice PRO</p>

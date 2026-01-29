@@ -18,7 +18,7 @@ const Quotes = {
                     <p class="page-subtitle">${quotes.length} devis ${!limits.canAddQuote ? `(limite: ${limits.maxQuotes})` : ''}</p>
                 </div>
                 <button class="button-primary" onclick="Quotes.showAddForm()" ${!limits.canAddQuote ? 'disabled' : ''}>
-                    <span>➕</span> Nouveau Devis
+                    Nouveau Devis
                 </button>
             </div>
 
@@ -55,16 +55,16 @@ const Quotes = {
                                                 <button class="btn-icon ${quote.status === 'accepted' ? 'btn-success' : ''}" 
                                                         onclick="Quotes.convertToInvoice('${quote.id}')" 
                                                         title="${quote.status === 'accepted' ? 'Convertir en facture' : 'Valider et Facturer'}">
-                                                    🧾
+                                                    
                                                 </button>
                                                 <button class="btn-icon" onclick="Quotes.duplicate('${quote.id}')" title="Dupliquer">
-                                                    ❐
+                                                    
                                                 </button>
                                                 <button class="btn-icon" onclick="Quotes.downloadPDF('${quote.id}')" title="PDF">
-                                                    📄
+                                                    
                                                 </button>
                                                 <button class="btn-icon btn-danger" onclick="Quotes.delete('${quote.id}')" title="Supprimer">
-                                                    🗑️
+                                                    
                                                 </button>
                                             </div>
                                         </td>
@@ -76,8 +76,7 @@ const Quotes = {
                 </div>
             ` : `
                 <div class="empty-state">
-                    <div class="empty-icon">📋</div>
-                    <p>Aucun devis pour le moment</p>
+                    <p>Aucun devis enregistré</p>
                     <button class="button-primary" onclick="Quotes.showAddForm()">Créer mon premier devis</button>
                 </div>
             `}
@@ -99,7 +98,7 @@ const Quotes = {
             };
 
             Storage.addQuote(newQuoteData);
-            App.showNotification('✅ Devis dupliqué avec succès', 'success');
+            App.showNotification('Devis dupliqué.', 'success');
             this.render();
         }
     },
@@ -124,11 +123,11 @@ const Quotes = {
         if (draftItems && Array.isArray(draftItems) && draftItems.length > 0) {
             this.currentItems = draftItems;
             Storage.set('qp_draft_quote_items', null);
-            App.showNotification('✅ Estimation importée avec succès !', 'success');
+            App.showNotification('Estimation importée avec succès !', 'success');
         } else if (draftItem) {
             this.currentItems = [draftItem];
             Storage.set('qp_draft_quote_item', null);
-            App.showNotification('✅ Tarif importé depuis le calculateur !', 'success');
+            App.showNotification('Tarif importé depuis le calculateur !', 'success');
         } else {
             this.currentItems = [{ description: '', quantity: 1, unitPrice: 0 }];
         }
@@ -166,8 +165,8 @@ const Quotes = {
                                         </option>
                                     `).join('')}
                                 </select>
-                                <button type="button" class="button-secondary" onclick="Quotes.openQuickClientAdd()" title="Nouveau Client Rapide">
-                                    ➕
+                                <button type="button" class="button-secondary" onclick="Quotes.openQuickClientAdd()">
+                                    Nouveau
                                 </button>
                             </div>
                         </div>
@@ -187,7 +186,7 @@ const Quotes = {
                         <div class="section-header-inline">
                             <h4>Lignes du devis</h4>
                             <button type="button" class="button-secondary" onclick="Quotes.addItem()">
-                                ➕ Ajouter une ligne
+                                Ajouter une ligne
                             </button>
                         </div>
 
@@ -262,7 +261,7 @@ const Quotes = {
                 </div>
                 <div class="item-field item-actions">
                     <button type="button" class="btn-icon btn-danger" onclick="Quotes.removeItem(${index})">
-                        🗑️
+                        Supprimer
                     </button>
                 </div>
             </div>
@@ -280,7 +279,7 @@ const Quotes = {
 
     removeItem(index) {
         if (this.currentItems.length <= 1) {
-            App.showNotification('⚠️ Un devis doit avoir au moins une ligne', 'error');
+            App.showNotification('Un devis doit avoir au moins une ligne.', 'error');
             return;
         }
         this.currentItems.splice(index, 1);
@@ -342,15 +341,15 @@ const Quotes = {
 
         const health = Math.min(100, (subtotal / targetTJM) * 100);
         let color = '#ef4444'; // Red
-        let label = 'Rentabilité Faible ⚠️';
+        let label = 'Rentabilité critique';
 
-        if (health > 80) { color = '#10b981'; label = 'Excellente Rentabilité ✅'; }
-        else if (health > 50) { color = '#fbbf24'; label = 'Rentabilité Correcte ⚖️'; }
+        if (health > 80) { color = '#10b981'; label = 'Seuil de rentabilité atteint'; }
+        else if (health > 50) { color = '#fbbf24'; label = 'Vigilance rentabilité'; }
 
         container.innerHTML = `
             <div style="background: var(--bg-card); padding: 1rem; border-radius: 12px; border: 1px solid var(--border-color);">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.85rem; font-weight: 600;">
-                    <span style="color: var(--text-secondary);">Indicateur de Santé (Margin Guard)</span>
+                    <span style="color: var(--text-secondary);">Analyse de Rentabilité</span>
                     <span style="color: ${color};">${label}</span>
                 </div>
                 <div style="height: 8px; background: var(--border-color); border-radius: 4px; overflow: hidden;">
@@ -378,7 +377,7 @@ const Quotes = {
         });
 
         if (items.length === 0) {
-            App.showNotification('⚠️ Ajoutez au moins une ligne au devis', 'error');
+            App.showNotification('Veuillez ajouter au moins une ligne.', 'error');
             return;
         }
 
@@ -398,10 +397,10 @@ const Quotes = {
 
         if (this.editingId) {
             Storage.updateQuote(this.editingId, quoteData);
-            App.showNotification('✅ Devis modifié avec succès', 'success');
+            App.showNotification('Devis modifié.', 'success');
         } else {
             Storage.addQuote(quoteData);
-            App.showNotification('✅ Devis créé avec succès', 'success');
+            App.showNotification('Devis créé.', 'success');
         }
 
         this.hideForm();
@@ -413,12 +412,10 @@ const Quotes = {
         const quote = Storage.getQuote(id);
         if (!quote) return;
 
-        // Auto-accept confirmation if not already accepted
         if (quote.status !== 'accepted') {
-            if (!confirm('💡 Ce devis n\'est pas encore marqué "Accepté".\n\nVoulez-vous le valider maintenant et générer la facture ?')) {
+            if (!confirm('Le devis n\'est pas encore marqué comme accepté. Souhaitez-vous tout de même générer la facture ?')) {
                 return;
             }
-            // Update status first
             Storage.updateQuote(id, { status: 'accepted' });
         } else {
             if (!confirm('Voulez-vous convertir ce devis en facture ?')) {
@@ -426,7 +423,6 @@ const Quotes = {
             }
         }
 
-        // Créer la facture basée sur le devis
         const invoiceData = {
             clientId: quote.clientId,
             status: 'draft',
@@ -434,12 +430,11 @@ const Quotes = {
             subtotal: quote.subtotal,
             tax: quote.tax,
             total: quote.total,
-            dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() // J+30
+            dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
         };
 
-        const newInvoice = Storage.addInvoice(invoiceData);
-
-        App.showNotification('🎉 Devis converti en facture !', 'success');
+        Storage.addInvoice(invoiceData);
+        App.showNotification('Facture générée avec succès.', 'success');
         App.navigateTo('invoices');
     },
 
@@ -459,7 +454,7 @@ const Quotes = {
         const nextStatus = statuses[nextIndex].value;
 
         Storage.updateQuote(id, { status: nextStatus });
-        App.showNotification(`✅ Statut changé: ${statuses[nextIndex].label}`, 'success');
+        App.showNotification(`Statut mis à jour : ${statuses[nextIndex].label}`, 'success');
         this.render();
     },
 
@@ -472,7 +467,7 @@ const Quotes = {
 
         const user = Storage.getUser();
         if (!user.company.name || !user.company.address) {
-            if (confirm('⚠️ Vos informations entreprise sont incomplètes.\n\nVoulez-vous les remplir maintenant pour qu\'elles apparaissent sur le devis ?')) {
+            if (confirm('Vos informations entreprise sont incomplètes. Souhaitez-vous les compléter maintenant ?')) {
                 App.navigateTo('settings');
             }
             return;
@@ -484,22 +479,21 @@ const Quotes = {
         if (typeof PDFGenerator !== 'undefined' && PDFGenerator.generateQuote) {
             PDFGenerator.generateQuote(quote, client, user);
         } else {
-            // Fallback si la méthode n'existe pas encore
-            App.showNotification('⚠️ Génération PDF de devis bientôt disponible', 'info');
+            App.showNotification('Module PDF indisponible pour le moment.', 'info');
         }
     },
 
     delete(id) {
-        if (confirm('Êtes-vous sûr de vouloir supprimer ce devis ?')) {
+        if (confirm('Confirmer la suppression de ce devis ?')) {
             Storage.deleteQuote(id);
-            App.showNotification('✅ Devis supprimé', 'success');
+            App.showNotification('Devis supprimé.', 'success');
             this.render();
         }
     },
 
     hideForm() {
         const container = document.getElementById('quote-form-container');
-        container.innerHTML = '';
+        if (container) container.innerHTML = '';
         this.editingId = null;
         this.currentItems = [];
     },
@@ -514,7 +508,7 @@ const Quotes = {
                     option.text = newClient.name;
                     option.selected = true;
                     select.add(option);
-                    select.value = newClient.id; // Force selection
+                    select.value = newClient.id;
                 }
             });
         }

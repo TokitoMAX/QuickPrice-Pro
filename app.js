@@ -190,7 +190,7 @@ const App = {
         const licenseKey = input?.value.trim();
 
         if (!licenseKey) {
-            this.showNotification('❌ Veuillez entrer une clé de licence', 'error');
+            this.showNotification('Veuillez entrer une clé de licence', 'error');
             return;
         }
 
@@ -202,12 +202,12 @@ const App = {
             this.closeModal();
             this.renderProBadge();
             this.checkFreemiumLimits();
-            this.showNotification('🎉 Licence activée avec succès ! Bienvenue dans QuickPrice Pro !', 'success');
+            this.showNotification('Licence activée avec succès.', 'success');
 
             // Recharger la page actuelle
             this.loadPage(this.currentPage);
         } else {
-            this.showNotification('❌ Clé de licence invalide', 'error');
+            this.showNotification('Clé de licence invalide', 'error');
         }
     },
 
@@ -262,7 +262,7 @@ const App = {
     // Formatage de devises
     formatCurrency(amount) {
         const settings = Storage.get(Storage.KEYS.SETTINGS);
-        return `${Math.round(amount).toLocaleString('fr-FR')}${settings.currency}`;
+        return `${Math.round(amount).toLocaleString('fr-FR')} ${settings.currency}`;
     },
 
     // Formatage de dates

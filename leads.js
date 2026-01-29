@@ -10,11 +10,11 @@ const Leads = {
         container.innerHTML = `
             <div class="page-header">
                 <div>
-                    <h1 class="page-title">Radar à Prospects</h1>
-                    <p class="page-subtitle">Transformez vos opportunités en clients réels</p>
+                    <h1 class="page-title">Prospection</h1>
+                    <p class="page-subtitle">Suivi des opportunités commerciales</p>
                 </div>
                 <button class="button-primary" onclick="Leads.showAddForm()">
-                    <span>🎯</span> Nouveau Prospect
+                    Nouveau Prospect
                 </button>
             </div>
 
@@ -23,9 +23,8 @@ const Leads = {
             <div class="leads-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 2rem;">
                 ${leads.length > 0 ? leads.map(lead => this.renderLeadCard(lead)).join('') : `
                     <div class="empty-state" style="grid-column: 1 / -1;">
-                        <div class="empty-icon">🔭</div>
-                        <h3>Aucun prospect pour le moment</h3>
-                        <p>Ne laissez aucune opportunité s'échapper. Ajoutez votre premier contact.</p>
+                        <h3>Aucun prospect en cours</h3>
+                        <p>Ajoutez vos premières opportunités pour commencer le suivi.</p>
                         <button class="button-secondary" onclick="Leads.showAddForm()">Ajouter un prospect</button>
                     </div>
                 `}
@@ -41,9 +40,9 @@ const Leads = {
         };
 
         const statusLabels = {
-            cold: '❄️ Froid',
-            warm: '🔥 Chaud',
-            won: '✅ Client'
+            cold: 'Contact initial',
+            warm: 'En négociation',
+            won: 'Client confirmé'
         };
 
         return `
@@ -59,15 +58,15 @@ const Leads = {
                 </div>
                 
                 <div class="lead-info" style="margin-bottom: 1.5rem; font-size: 0.9rem; color: var(--text-secondary); line-height: 1.4;">
-                    <div>📧 ${this.escapeHtml(lead.email || '-')}</div>
-                    <div>📞 ${this.escapeHtml(lead.phone || '-')}</div>
+                    <div>Email: ${this.escapeHtml(lead.email || '-')}</div>
+                    <div>Tel: ${this.escapeHtml(lead.phone || '-')}</div>
                 </div>
 
                 <div class="lead-actions" style="display: flex; gap: 0.5rem; border-top: 1px solid var(--border-color); padding-top: 1rem;">
-                    ${lead.status !== 'cold' ? `<button class="btn-icon" onclick="Leads.updateStatus('${lead.id}', 'cold')" title="Passer en Froid">❄️</button>` : ''}
-                    ${lead.status !== 'warm' ? `<button class="btn-icon" onclick="Leads.updateStatus('${lead.id}', 'warm')" title="Passer en Chaud">🔥</button>` : ''}
-                    ${lead.status !== 'won' ? `<button class="btn-icon" onclick="Leads.convertToClient('${lead.id}')" title="Convertir en Client">✅</button>` : ''}
-                    <button class="btn-icon btn-danger" style="margin-left: auto;" onclick="Leads.delete('${lead.id}')" title="Supprimer">🗑️</button>
+                    ${lead.status !== 'cold' ? `<button class="button-secondary small" onclick="Leads.updateStatus('${lead.id}', 'cold')">Contact</button>` : ''}
+                    ${lead.status !== 'warm' ? `<button class="button-secondary small" onclick="Leads.updateStatus('${lead.id}', 'warm')">Négociation</button>` : ''}
+                    ${lead.status !== 'won' ? `<button class="button-primary small" onclick="Leads.convertToClient('${lead.id}')">Convertir</button>` : ''}
+                    <button class="btn-icon btn-danger" style="margin-left: auto;" onclick="Leads.delete('${lead.id}')">Supprimer</button>
                 </div>
             </div>
         `;
@@ -122,14 +121,14 @@ const Leads = {
         };
 
         Storage.addLead(leadData);
-        App.showNotification('✅ Prospect ajouté au radar', 'success');
+        App.showNotification('Prospect ajouté au suivi', 'success');
         this.hideForm();
         this.render();
     },
 
     updateStatus(id, newStatus) {
         Storage.updateLead(id, { status: newStatus });
-        App.showNotification(`🚀 Statut mis à jour`, 'success');
+        App.showNotification('Statut mis à jour', 'success');
         this.render();
     },
 
@@ -149,7 +148,7 @@ const Leads = {
             // Delete from leads
             Storage.deleteLead(id);
 
-            App.showNotification('🎉 Félicitations ! Nouveau client ajouté.', 'success');
+            App.showNotification('Nouveau client enregistré.', 'success');
             App.navigateTo('clients');
         }
     },

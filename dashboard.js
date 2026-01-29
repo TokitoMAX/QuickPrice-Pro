@@ -47,8 +47,7 @@ const Dashboard = {
                 <!-- Pipeline Card -->
                 <div class="stat-card pipeline-card">
                     <div class="stat-header">
-                        <span class="stat-icon">🔥</span>
-                        <span class="stat-label">Pipeline (Devis envoyés)</span>
+                        <span class="stat-label">Pipeline (Devis en cours)</span>
                     </div>
                     <div class="stat-value pipeline-value">${App.formatCurrency(pipelineValue)}</div>
                     <div class="stat-description">${quotes.filter(q => q.status === 'sent').length} devis en attente</div>
@@ -56,8 +55,7 @@ const Dashboard = {
 
                 <div class="stat-card">
                     <div class="stat-header">
-                        <span class="stat-icon">👥</span>
-                        <span class="stat-label">Clients Actifs</span>
+                        <span class="stat-label">Portefeuille Clients</span>
                     </div>
                     <div class="stat-value">${stats.totalClients}</div>
                     <div class="stat-description">Base client</div>
@@ -65,8 +63,7 @@ const Dashboard = {
 
                 <div class="stat-card ${stats.unpaidCount > 0 ? 'warning' : ''}">
                     <div class="stat-header">
-                        <span class="stat-icon">⚠️</span>
-                        <span class="stat-label">Impayés</span>
+                        <span class="stat-label">Factures en attente</span>
                     </div>
                     <div class="stat-value" style="color: ${stats.unpaidCount > 0 ? 'var(--warning)' : ''}">${App.formatCurrency(stats.unpaidAmount)}</div>
                     <div class="stat-description">${stats.unpaidCount} facture(s)</div>
@@ -110,9 +107,8 @@ const Dashboard = {
                         </div>
                     ` : `
                         <div class="empty-state">
-                            <div class="empty-icon">📄</div>
-                            <p>Aucune facture pour le moment</p>
-                            <button class="button-primary" onclick="App.navigateTo('invoices'); if(Invoices && Invoices.showAddForm) Invoices.showAddForm();">Créer ma première facture</button>
+                            <p>Aucune facture enregistrée</p>
+                            <button class="button-primary" onclick="App.navigateTo('invoices');">Gérer mes factures</button>
                         </div>
                     `}
                 </div>
@@ -121,20 +117,16 @@ const Dashboard = {
                     <h2 class="section-title-small">Actions Rapides</h2>
                     <div class="quick-actions">
                         <button class="action-card" onclick="App.navigateTo('clients'); if(typeof Clients !== 'undefined') Clients.showAddForm();">
-                            <span class="action-icon">👤</span>
                             <span class="action-label">Nouveau Client</span>
                         </button>
                         <button class="action-card" onclick="App.navigateTo('quotes'); if(typeof Quotes !== 'undefined') Quotes.showAddForm();">
-                            <span class="action-icon">📋</span>
                             <span class="action-label">Nouveau Devis</span>
                         </button>
-                        <button class="action-card" onclick="alert('Process Sécurisé : Veuillez créer un devis puis le convertir en facture.'); App.navigateTo('quotes');">
-                            <span class="action-icon">🧾</span>
+                        <button class="action-card" onclick="App.navigateTo('quotes');">
                             <span class="action-label">Facturer</span>
                         </button>
                         <button class="action-card" onclick="App.navigateTo('calculator')">
-                            <span class="action-icon">⚡</span>
-                            <span class="action-label">Calculateur</span>
+                            <span class="action-label">Tarification</span>
                         </button>
                     </div>
                 </div>

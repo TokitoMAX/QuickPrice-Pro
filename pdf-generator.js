@@ -145,7 +145,7 @@ const PDFGenerator = {
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
 
-        App.showNotification('✅ Impression lancée (Enregistrez en PDF)', 'success');
+        App.showNotification('Impression lancée.', 'success');
     },
 
     generateQuote(quote, client, user) {
@@ -287,6 +287,6 @@ const PDFGenerator = {
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
 
-        App.showNotification('✅ Devis généré (Impression lancée)', 'success');
+        App.showNotification('Devis généré.', 'success');
     }
 };

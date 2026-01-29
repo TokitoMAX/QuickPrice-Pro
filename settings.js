@@ -20,11 +20,10 @@ const Settings = {
                     <h2 class="section-title-small">Licence</h2>
                     ${user.isPro ? `
                         <div class="pro-status-card">
-                            <div class="pro-icon">✅</div>
                             <div>
-                                <h3>QuickPrice PRO Activé</h3>
+                                <h3>Licence QuickPrice PRO Active</h3>
                                 <p>Clé: ${user.licenseKey}</p>
-                                <p class="text-sm">Activé le ${App.formatDate(user.activatedAt)}</p>
+                                <p class="text-sm">Activée le ${App.formatDate(user.activatedAt)}</p>
                             </div>
                         </div>
                     ` : `
@@ -32,11 +31,11 @@ const Settings = {
                             <h3>Version Gratuite</h3>
                             <p>Débloquez toutes les fonctionnalités avec QuickPrice PRO</p>
                             <div class="upgrade-features">
-                                <div class="feature-item">✓ Clients illimités</div>
-                                <div class="feature-item">✓ Factures et devis illimités</div>
-                                <div class="feature-item">✓ Export PDF professionnel</div>
-                                <div class="feature-item">✓ Templates de documents</div>
-                                <div class="feature-item">✓ Support prioritaire</div>
+                                <div class="feature-item">Clients illimités</div>
+                                <div class="feature-item">Factures et devis illimités</div>
+                                <div class="feature-item">Export PDF professionnel</div>
+                                <div class="feature-item">Templates de documents</div>
+                                <div class="feature-item">Support prioritaire</div>
                             </div>
                             <div class="upgrade-actions">
                                 <button class="button-primary" onclick="Settings.buyPro()">
@@ -46,7 +45,7 @@ const Settings = {
                                     J'ai déjà une clé
                                 </button>
                             </div>
-                            <p class="text-sm text-muted">💡 Pour tester: utilisez une clé générée par le bouton ci-dessous</p>
+                            <p class="text-sm text-muted">Aide : Pour tester, vous pouvez générer une clé de démonstration.</p>
                             <button class="button-secondary" onclick="Settings.generateTestKey()">
                                 Générer une clé de test
                             </button>
@@ -135,9 +134,7 @@ const Settings = {
                     <p class="section-subtitle">Utilisez le calculateur pour vérifier si vous êtes rentable.</p>
                     <div class="settings-grid">
                        <div class="setting-card" onclick="App.navigateTo('calculator')">
-                           <div class="setting-icon">⚡</div>
-                           <div class="setting-info">
-                               <h3>Accéder au Calculateur</h3>
+                               <h3>Accéder à l'outil</h3>
                                <p>Définissez votre prix idéal selon vos charges réelles.</p>
                            </div>
                            <button class="button-secondary">Ouvrir</button>
@@ -180,13 +177,13 @@ const Settings = {
                     <h2 class="section-title-small">Données</h2>
                     <div class="data-actions">
                         <button class="button-secondary" onclick="Settings.exportData()">
-                            📥 Exporter toutes les données
+                            Exporter les données
                         </button>
                         <button class="button-secondary" onclick="Settings.importData()">
-                            📤 Importer des données
+                            Importer des données
                         </button>
                         <button class="button-danger" onclick="Settings.resetData()">
-                            🗑️ Réinitialiser tout
+                            Réinitialiser l'application
                         </button>
                     </div>
                     <input type="file" id="import-file-input" accept=".json" style="display:none" onchange="Settings.handleImportFile(event)">
@@ -210,7 +207,7 @@ const Settings = {
         };
 
         Storage.updateUser({ company: companyData });
-        App.showNotification('✅ Informations enregistrées', 'success');
+        App.showNotification('Informations enregistrées', 'success');
     },
 
     saveBillingSettings(e) {
@@ -229,21 +226,19 @@ const Settings = {
             ...settingsData
         });
 
-        App.showNotification('✅ Paramètres enregistrés', 'success');
+        App.showNotification('Paramètres enregistrés', 'success');
     },
 
     buyPro() {
         // Rediriger vers Stripe Checkout
         // Pour l'instant, on affiche juste une info
         const message = `
-🛒 Pour acheter QuickPrice PRO :
-
-1. Visitez: https://buy.stripe.com/votre-lien (à configurer)
+1. Visitez: https://buy.stripe.com/votre-lien
 2. Complétez le paiement
 3. Vous recevrez une clé de licence par email
 4. Activez-la ici dans les paramètres
 
-💡 En attendant, générez une clé de test pour tester les fonctionnalités PRO !
+Pour tester l'application, vous pouvez générer une clé de test.
         `;
 
         alert(message);
@@ -252,16 +247,16 @@ const Settings = {
     generateTestKey() {
         const key = App.generateLicenseKey();
 
-        if (confirm(`Clé de test générée:\n\n${key}\n\nVoulez-vous l'activer maintenant ?`)) {
+        if (confirm(`Clé de test générée :\n\n${key}\n\nVoulez-vous l'activer maintenant ?`)) {
             Storage.activatePro(key);
-            App.showNotification('🎉 Version PRO activée (test) !', 'success');
+            App.showNotification('Version PRO activée.', 'success');
             App.renderProBadge();
             App.checkFreemiumLimits();
             this.render();
         } else {
             // Copier dans le presse-papier
             navigator.clipboard.writeText(key).then(() => {
-                App.showNotification('📋 Clé copiée dans le presse-papier', 'success');
+                App.showNotification('Clé copiée.', 'success');
             });
         }
     },
@@ -307,10 +302,10 @@ const Settings = {
     },
 
     resetData() {
-        if (confirm('⚠️ ATTENTION: Cette action supprimera toutes vos données (clients, factures, devis, paramètres). Cette action est irréversible.\n\nÊtes-vous sûr ?')) {
-            if (confirm('Dernière confirmation: toutes vos données seront perdues. Continuer ?')) {
+        if (confirm('Attention : Cette action supprimera toutes vos données. Cette action est irréversible.\n\nSouhaitez-vous continuer ?')) {
+            if (confirm('Dernière confirmation : toutes vos données seront supprimées. Continuer ?')) {
                 Storage.clearAll();
-                App.showNotification('✅ Données réinitialisées', 'success');
+                App.showNotification('Données réinitialisées', 'success');
                 window.location.reload();
             }
         }

@@ -14,7 +14,7 @@ const Services = {
                     <p class="page-subtitle">${services.length} prestation(s) enregistrée(s)</p>
                 </div>
                 <button class="button-primary" onclick="Services.showAddForm()">
-                    <span>➕</span> Nouvelle Prestation
+                    Nouvelle Prestation
                 </button>
             </div>
 
@@ -26,10 +26,9 @@ const Services = {
                 </div>
             ` : `
                 <div class="empty-state">
-                    <div class="empty-icon">⚡</div>
-                    <h3>Votre catalogue est vide</h3>
+                    <h3>Catalogue vide</h3>
                     <p>Enregistrez vos prestations habituelles pour gagner du temps lors de vos devis.</p>
-                    <button class="button-primary" onclick="Services.showAddForm()">Ajouter ma première prestation</button>
+                    <button class="button-primary" onclick="Services.showAddForm()">Ajouter une prestation</button>
                 </div>
             `}
         `;
@@ -68,8 +67,8 @@ const Services = {
                                 <td style="font-weight: 600;">${App.formatCurrency(service.unitPrice)}</td>
                                 <td>
                                     <div class="action-buttons">
-                                        <button class="btn-icon btn-danger" onclick="Services.delete('${service.id}')" title="Supprimer">
-                                            🗑️
+                                        <button class="btn-icon btn-danger" onclick="Services.delete('${service.id}')">
+                                            Supprimer
                                         </button>
                                     </div>
                                 </td>
@@ -152,7 +151,7 @@ const Services = {
         };
 
         Storage.addService(service);
-        App.showNotification('✅ Prestation ajoutée', 'success');
+        App.showNotification('Prestation ajoutée.', 'success');
         this.hideForm();
         this.render();
     },

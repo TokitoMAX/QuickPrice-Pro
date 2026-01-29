@@ -15,7 +15,7 @@ const Scoper = {
                     <p class="page-subtitle">Calculez une estimation juste basée sur l'incertitude</p>
                 </div>
                 <!-- <button class="button-secondary" onclick="Scoper.clear()">
-                    <span>🧹</span> Tout effacer
+                    Tout effacer
                 </button> -->
             </div>
 
@@ -26,7 +26,7 @@ const Scoper = {
                     <div class="section-header-inline">
                         <h3>Liste des Tâches</h3>
                         <button class="button-secondary small" onclick="Scoper.addTask()">
-                            <span>➕</span> Ajouter une tâche
+                            Ajouter une tâche
                         </button>
                     </div>
 
@@ -56,7 +56,7 @@ const Scoper = {
                     </div>
 
                     <div class="breakdown-section">
-                        <h4 class="breakdown-title">⚙️ Paramètres</h4>
+                        <h4 class="breakdown-title">Paramètres</h4>
                         <div class="input-group">
                             <label class="form-label">TJM (Tarif Journalier)</label>
                             <input type="number" id="scoper-tjm" class="form-input" value="${this.getTJM()}" onchange="Scoper.calculate()">
@@ -69,7 +69,7 @@ const Scoper = {
 
                     <div class="calculator-actions">
                         <button class="button-primary full-width" onclick="Scoper.createQuote()" ${this.tasks.length === 0 ? 'disabled' : ''} id="btn-create-quote">
-                            <span>📝</span> Créer le Devis
+                            Créer le Devis
                         </button>
                     </div>
                 </div>
@@ -129,7 +129,7 @@ const Scoper = {
                         <input type="number" class="form-input" value="${task.max}" min="0.5" step="0.5" onchange="Scoper.updateTask(${index}, 'max', this.value)">
                     </div>
                 </div>
-                <button class="btn-icon btn-danger" onclick="Scoper.removeTask(${index})">🗑️</button>
+                <button class="btn-icon btn-danger" onclick="Scoper.removeTask(${index})">Supprimer</button>
             </div>
         `).join('');
 

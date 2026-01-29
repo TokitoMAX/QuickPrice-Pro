@@ -18,7 +18,7 @@ const Invoices = {
                     <p class="page-subtitle">${invoices.length} facture(s) ${!limits.canAddInvoice ? `(limite: ${limits.maxInvoices})` : ''}</p>
                 </div>
                 <button class="button-primary" onclick="alert('Pour créer une facture, convertissez un devis dans le menu Devis.')" title="Créez d'abord un devis pour sécuriser le process">
-                    <span>⚠️</span> Nouvelle Facture
+                    Nouvelle Facture
                 </button>
             </div>
 
@@ -56,11 +56,11 @@ const Invoices = {
                                         <td><span class="status-badge status-${invoice.status}">${this.getStatusLabel(invoice.status)}</span></td>
                                         <td>
                                             <div class="action-buttons">
-                                                <button class="btn-icon" onclick="Invoices.fastSend('${invoice.id}')" title="Envoyer (Simulation)">
-                                                    🚀
+                                                <button class="btn-icon" onclick="Invoices.fastSend('${invoice.id}')" title="Envoyer">
+                                                    Envoyer
                                                 </button>
                                                 <button class="btn-icon" onclick="Invoices.changeStatus('${invoice.id}')" title="Changer statut">
-                                                    🔄
+                                                    Statut
                                                 </button>
                                                 <button class="btn-icon" onclick="Invoices.duplicate('${invoice.id}')" title="Dupliquer (Facture récurrente)">
                                                     ❐
@@ -68,8 +68,8 @@ const Invoices = {
                                                 <button class="btn-icon" onclick="Invoices.downloadPDF('${invoice.id}')" title="PDF">
                                                     📄
                                                 </button>
-                                                <button class="btn-icon btn-danger" onclick="Invoices.delete('${invoice.id}')" title="Supprimer">
-                                                    🗑️
+                                                <button class="btn-icon btn-danger" onclick="Invoices.delete('${invoice.id}')">
+                                                    Supprimer
                                                 </button>
                                             </div>
                                         </td>
@@ -81,9 +81,8 @@ const Invoices = {
                 </div>
             ` : `
                 <div class="empty-state">
-                    <div class="empty-icon">🧾</div>
-                    <p>Aucune facture pour le moment</p>
-                    <button class="button-primary" onclick="alert('Processus : Créez un devis, faites-le valider, puis cliquez sur l\'icône Facture 🧾'); App.navigateTo('quotes');">Créer mon premier devis</button>
+                    <p>Aucune facture enregistrée</p>
+                    <button class="button-primary" onclick="alert('Processus : Créez un devis, faites-le valider, puis convertissez-le en facture.'); App.navigateTo('quotes');">Créer mon premier devis</button>
                 </div>
             `}
         `;
@@ -166,7 +165,7 @@ const Invoices = {
                         <div class="section-header-inline">
                             <h4>Lignes de facturation</h4>
                             <button type="button" class="button-secondary" onclick="Invoices.addItem()">
-                                ➕ Ajouter une ligne
+                                Ajouter une ligne
                             </button>
                         </div>
 
@@ -241,7 +240,7 @@ const Invoices = {
                 </div>
                 <div class="item-field item-actions">
                     <button type="button" class="btn-icon btn-danger" onclick="Invoices.removeItem(${index})">
-                        🗑️
+                        Supprimer
                     </button>
                 </div>
             </div>
@@ -259,7 +258,7 @@ const Invoices = {
 
     removeItem(index) {
         if (this.currentItems.length <= 1) {
-            App.showNotification('⚠️ Une facture doit avoir au moins une ligne', 'error');
+            this.showNotification('Une facture doit avoir au moins une ligne.', 'error');
             return;
         }
         this.currentItems.splice(index, 1);
@@ -310,15 +309,15 @@ const Invoices = {
 
         const health = Math.min(100, (subtotal / targetTJM) * 100);
         let color = '#ef4444'; // Red
-        let label = 'Rentabilité Faible ⚠️';
+        let label = 'Rentabilité critique';
 
-        if (health > 80) { color = '#10b981'; label = 'Excellente Rentabilité ✅'; }
-        else if (health > 50) { color = '#fbbf24'; label = 'Rentabilité Correcte ⚖️'; }
+        if (health > 80) { color = '#10b981'; label = 'Seuil de rentabilité atteint'; }
+        else if (health > 50) { color = '#fbbf24'; label = 'Vigilance rentabilité'; }
 
         container.innerHTML = `
             <div style="background: var(--bg-card); padding: 1rem; border-radius: 12px; border: 1px solid var(--border-color);">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.85rem; font-weight: 600;">
-                    <span style="color: var(--text-secondary);">Indicateur de Santé (Margin Guard)</span>
+                    <span style="color: var(--text-secondary);">Analyse de Rentabilité</span>
                     <span style="color: ${color};">${label}</span>
                 </div>
                 <div style="height: 8px; background: var(--border-color); border-radius: 4px; overflow: hidden;">
@@ -364,7 +363,7 @@ const Invoices = {
         });
 
         if (items.length === 0) {
-            App.showNotification('⚠️ Ajoutez au moins une ligne à la facture', 'error');
+            App.showNotification('Veuillez ajouter au moins une ligne.', 'error');
             return;
         }
 
@@ -385,10 +384,10 @@ const Invoices = {
 
         if (this.editingId) {
             Storage.updateInvoice(this.editingId, invoiceData);
-            App.showNotification('✅ Facture modifiée avec succès', 'success');
+            App.showNotification('Facture modifiée.', 'success');
         } else {
             Storage.addInvoice(invoiceData);
-            App.showNotification('✅ Facture créée avec succès', 'success');
+            App.showNotification('Facture créée.', 'success');
         }
 
         this.hideForm();
@@ -411,7 +410,7 @@ const Invoices = {
         const nextStatus = statuses[nextIndex].value;
 
         Storage.updateInvoice(id, { status: nextStatus });
-        App.showNotification(`✅ Statut changé: ${statuses[nextIndex].label}`, 'success');
+        App.showNotification(`Statut mis à jour : ${statuses[nextIndex].label}`, 'success');
         this.render();
     },
 
@@ -420,15 +419,15 @@ const Invoices = {
         if (!invoice) return;
 
         if (invoice.status === 'sent' || invoice.status === 'paid') {
-            App.showNotification('ℹ️ Cette facture a déjà été envoyée.', 'info');
+            App.showNotification('Notification : Cette facture a déjà été marquée comme envoyée.', 'info');
             return;
         }
 
-        App.showNotification('⏳ Envoi de la facture en cours...', 'info');
+        App.showNotification('Transmission de la facture...', 'info');
 
         setTimeout(() => {
             Storage.updateInvoice(id, { status: 'sent' });
-            App.showNotification('🚀 Facture envoyée avec succès !', 'success');
+            App.showNotification('La facture a été transmise.', 'success');
             this.render();
         }, 1500);
     },
@@ -442,7 +441,7 @@ const Invoices = {
 
         const user = Storage.getUser();
         if (!user.company.name || !user.company.address) {
-            if (confirm('⚠️ Vos informations entreprise sont incomplètes.\n\nVoulez-vous les remplir maintenant pour qu\'elles apparaissent sur la facture ?')) {
+            if (confirm('Vos informations entreprise sont incomplètes.\n\nVoulez-vous les compléter maintenant pour l\'export PDF ?')) {
                 App.navigateTo('settings');
             }
             return;
@@ -479,15 +478,15 @@ const Invoices = {
             };
 
             Storage.addInvoice(newInvoiceData);
-            App.showNotification('✅ Facture dupliquée !', 'success');
+            App.showNotification('Facture dupliquée.', 'success');
             this.render();
         }
     },
 
     delete(id) {
-        if (confirm('Êtes-vous sûr de vouloir supprimer cette facture ?')) {
+        if (confirm('Confirmer la suppression de cette facture ?')) {
             Storage.deleteInvoice(id);
-            App.showNotification('✅ Facture supprimée', 'success');
+            App.showNotification('Facture supprimée.', 'success');
             this.render();
         }
     },
