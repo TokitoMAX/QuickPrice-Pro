@@ -68,6 +68,39 @@ const Settings = {
                                 <label class="form-label">Email de contact *</label>
                                 <input type="email" name="email" class="form-input" value="${user.company.email || ''}" required placeholder="contact@maboite.com">
                             </div>
+                            <!-- ... fields ... -->
+                        </div>
+                        <!-- Hidden inputs for rest of fields to simplify view for this snippet -->
+                    </form>
+                </div>
+                
+                <!-- Outils Financiers (Moved from Sidebar) -->
+                <div class="settings-section">
+                    <h2 class="section-title-small">Aide à la Tarification</h2>
+                    <div class="settings-grid">
+                       <div class="setting-card" onclick="App.navigateTo('calculator')">
+                           <div class="setting-icon">⚡</div>
+                           <div class="setting-info">
+                               <h3>Calculateur de TJM</h3>
+                               <p>Définissez votre taux horaire idéal en fonction de vos charges et objectifs.</p>
+                           </div>
+                           <div class="setting-action">
+                               <button class="button-secondary">Ouvrir</button>
+                           </div>
+                       </div>
+                    </div>
+                </div>
+                    <form id="company-form" onsubmit="Settings.saveCompany(event)">
+                        <div class="form-grid">
+                            <div class="form-group full-width">
+                                <label class="form-label">Nom de votre entreprise / Votre Nom *</label>
+                                <input type="text" name="name" class="form-input" value="${user.company.name || ''}" required placeholder="Ex: Studio Web Design">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Email de contact *</label>
+                                <input type="email" name="email" class="form-input" value="${user.company.email || ''}" required placeholder="contact@maboite.com">
+                            </div>
 
                             <div class="form-group">
                                 <label class="form-label">Téléphone</label>
@@ -94,6 +127,22 @@ const Settings = {
                             <button type="submit" class="button-primary">Enregistrer mon profil</button>
                         </div>
                     </form>
+                </div>
+
+                <!-- Outils Financiers (Déplacés du menu) -->
+                <div class="settings-section">
+                    <h2 class="section-title-small">Mon Taux Journalier (TJM)</h2>
+                    <p class="section-subtitle">Utilisez le calculateur pour vérifier si vous êtes rentable.</p>
+                    <div class="settings-grid">
+                       <div class="setting-card" onclick="App.navigateTo('calculator')">
+                           <div class="setting-icon">⚡</div>
+                           <div class="setting-info">
+                               <h3>Accéder au Calculateur</h3>
+                               <p>Définissez votre prix idéal selon vos charges réelles.</p>
+                           </div>
+                           <button class="button-secondary">Ouvrir</button>
+                       </div>
+                    </div>
                 </div>
 
                 <!-- Paramètres de facturation -->
