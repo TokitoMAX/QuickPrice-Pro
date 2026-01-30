@@ -78,6 +78,18 @@ const Storage = {
                 this.set(this.KEYS[key], []);
             }
         });
+
+        // Initialize Settings for this user if not present
+        if (!this.get(this.KEYS.SETTINGS)) {
+            const defaultSettings = this.getRaw(this.KEYS.SETTINGS) || {
+                currency: '€',
+                taxRate: 22,
+                invoicePrefix: 'FACT-',
+                quotePrefix: 'DEV-',
+                theme: 'dark'
+            };
+            this.set(this.KEYS.SETTINGS, defaultSettings);
+        }
     },
 
     isPro() {
