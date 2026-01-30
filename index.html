@@ -112,7 +112,7 @@
                         <p id="auth-forgot-error" class="auth-error" aria-live="polite"></p>
                         <button type="submit" class="button-primary full-width">Envoyer le lien</button>
                         <div style="text-align: center; margin-top: 1rem;">
-                            <a href="#" onclick="switchAuthTab('login'); return false;"
+                            <a href="#" onclick="showAuthModal('login'); return false;"
                                 style="font-size: 0.85rem;">Retour à la connexion</a>
                         </div>
                     </form>
@@ -126,26 +126,27 @@
                         <p id="auth-reset-message" class="auth-success" aria-live="polite"></p>
                         <p id="auth-reset-error" class="auth-error" aria-live="polite"></p>
                         <button type="submit" class="button-primary full-width">Mettre à jour</button>
-                        <form id="auth-form-register" class="auth-form" onsubmit="handleAuthRegister(event)">
-                            <h2 class="auth-form-title">Créer un compte</h2>
-                            <label class="form-group">
-                                <span class="form-label">Nom de l'entreprise (optionnel)</span>
-                                <input type="text" id="auth-register-company" class="form-input"
-                                    placeholder="Mon Entreprise">
-                            </label>
-                            <label class="form-group">
-                                <span class="form-label">Email</span>
-                                <input type="email" id="auth-register-email" class="form-input"
-                                    placeholder="vous@exemple.fr" required>
-                            </label>
-                            <label class="form-group">
-                                <span class="form-label">Mot de passe</span>
-                                <input type="password" id="auth-register-password" class="form-input"
-                                    placeholder="Au moins 6 caractères" required minlength="6">
-                            </label>
-                            <p id="auth-register-error" class="auth-error" aria-live="polite"></p>
-                            <button type="submit" class="button-primary full-width">S'inscrire</button>
-                        </form>
+                    </form>
+                    <form id="auth-form-register" class="auth-form" onsubmit="handleAuthRegister(event)">
+                        <h2 class="auth-form-title">Créer un compte</h2>
+                        <label class="form-group">
+                            <span class="form-label">Nom de l'entreprise (optionnel)</span>
+                            <input type="text" id="auth-register-company" class="form-input"
+                                placeholder="Mon Entreprise">
+                        </label>
+                        <label class="form-group">
+                            <span class="form-label">Email</span>
+                            <input type="email" id="auth-register-email" class="form-input"
+                                placeholder="vous@exemple.fr" required>
+                        </label>
+                        <label class="form-group">
+                            <span class="form-label">Mot de passe</span>
+                            <input type="password" id="auth-register-password" class="form-input"
+                                placeholder="Au moins 6 caractères" required minlength="6">
+                        </label>
+                        <p id="auth-register-error" class="auth-error" aria-live="polite"></p>
+                        <button type="submit" class="button-primary full-width">S'inscrire</button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -552,6 +553,14 @@
             function showAuthModal(tab) {
                 var m = document.getElementById('auth-modal');
                 if (m) { m.style.display = 'flex'; m.classList.add('active'); m.setAttribute('aria-hidden', 'false'); }
+                var tabs = m ? m.querySelector('.auth-modal-tabs') : null;
+                if (tabs) {
+                    if (tab === 'reset-password' || tab === 'forgot-password') {
+                        tabs.style.display = 'none';
+                    } else {
+                        tabs.style.display = 'flex';
+                    }
+                }
                 switchAuthTab(tab || 'login');
                 // Clear errors
                 ['login', 'register', 'forgot', 'reset'].forEach(t => {
