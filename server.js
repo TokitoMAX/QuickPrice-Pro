@@ -56,15 +56,19 @@ app.get('/api/health', (req, res) => {
 });
 
 const authRoutes = require('./backend/routes/auth');
-app.use('/api/auth', authRoutes);
 
 // Supabase Guard Middleware for Auth Routes
-app.use('/api/auth', (err, req, res, next) => {
+// Utilisation de 3 arguments pour un middleware standard (pas 4 qui est réservé aux erreurs)
+app.use('/api/auth', (req, res, next) => {
+    console.log(`[AUTH-GUARD] Checking Supabase for: ${req.path}`);
     if (!req.app.get('supabase')) {
+        console.error('[AUTH-GUARD] Supabase client is MISSING');
         return res.status(503).json({ message: "Service d'authentification indisponible (Configuration manquante)." });
     }
-    next(err);
+    next();
 });
+
+app.use('/api/auth', authRoutes);
 
 // 2. Static Files
 app.use(express.static(process.cwd()));
