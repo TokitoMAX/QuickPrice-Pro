@@ -8,7 +8,7 @@ Write-Host "🚀 Démarrage..." -ForegroundColor Cyan
 if ($UpdateOnly) {
     Write-Host "📦 Mise à jour du code (Push GitHub)..." -ForegroundColor Yellow
     git add .
-    git commit -m "update: UI/UX Polish (Glassmorphism & Fixes)"
+    git commit -m "update: Rebranding DomTomConnect collaboration"
     git push origin main
     Write-Host "✅ Code mis à jour sur GitHub ! Vercel va redéployer automatiquement." -ForegroundColor Green
     exit
