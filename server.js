@@ -32,9 +32,11 @@ const authRoutes = require('./backend/routes/auth');
 app.use('/api/auth', authRoutes);
 
 // Point d'entrée principal (SPA Fallback)
-app.get('*', (req, res, next) => {
-    // Si la requête est pour l'API, on laisse passer au cas où un 404 est nécessaire
-    if (req.path.startsWith('/api/')) return next();
+// On utilise un middleware à la fin pour attraper toutes les routes non-API
+app.use((req, res, next) => {
+    if (req.path.startsWith('/api/')) {
+        return next(); // Laisser passer pour que le gestionnaire d'erreurs global ou un 404 API se déclenche
+    }
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
