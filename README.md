@@ -1,8 +1,15 @@
-# 💰 QuickPrice Pro - Suite de Gestion pour Freelance
+# QuickPrice Pro
 
-## 🎯 Qu'est-ce que c'est ?
+**Powered by DomTomConnect**
 
-**QuickPrice Pro** n'est pas juste un calculateur. C'est le premier **Système d'Exploitation Financier** pour indépendants. Il remplace le stress de l'incertitude par un flux de travail basé sur la confiance.
+L'outil de collaboration qui facilite les échanges entre clients et prestataires dans l'écosystème DomTomConnect. Calculez vos tarifs, analysez la rentabilité de vos projets, et créez des devis professionnels en quelques clics.
+
+## 🎯 Mission
+
+QuickPrice Pro est une extension de l'écosystème DomTomConnect conçue pour :
+- 🏢 **Clients** : Obtenir des devis transparents de prestataires qualifiés
+- 👨‍💼 **Prestataires** : Répondre aux opportunités avec des tarifs justes
+- 🌐 **Collaboration** : Faciliter les échanges commerciaux dans les DOM-TOM
 
 ## 🦄 Pourquoi QuickPrice est unique ? (Vs Concurrents)
 
