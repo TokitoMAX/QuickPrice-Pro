@@ -13,14 +13,6 @@ const Auth = {
         }
 
         try {
-            console.log(`📡 Registration attempt to: ${window.location.origin}/api/auth/register`);
-
-            // Test connection to direct API first
-            fetch('/api/test-direct', { method: 'POST' })
-                .then(r => r.json())
-                .then(d => console.log("🧪 API Direct Test:", d))
-                .catch(e => console.error("🧪 API Direct Test FAILED:", e));
-
             const response = await fetch('/api/auth/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -34,7 +26,7 @@ const Auth = {
             } else {
                 const text = await response.text();
                 console.error("Non-JSON response received:", { status: response.status, body: text });
-                throw new Error(`Erreur serveur (${response.status}): Réponse invalide. Vérifiez la console du serveur.`);
+                throw new Error(`Erreur serveur (${response.status}): Réponse invalide.`);
             }
 
             if (!response.ok) {
