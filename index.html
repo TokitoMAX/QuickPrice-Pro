@@ -66,9 +66,54 @@
                 <span class="logo-text">QuickPrice Pro</span>
             </div>
             <div class="landing-actions">
+                <button type="button" class="button-secondary landing-auth-btn" onclick="showAuthModal('login')">Se connecter</button>
+                <button type="button" class="button-outline landing-auth-btn" onclick="showAuthModal('register')">S'inscrire</button>
                 <button class="button-primary" onclick="startApp()">Accéder à l'application</button>
             </div>
         </nav>
+
+        <!-- Modale Connexion / Inscription -->
+        <div id="auth-modal" class="modal-overlay auth-modal" style="display: none;" aria-hidden="true" onclick="if(event.target===this) closeAuthModal()">
+            <div class="modal-content auth-modal-content" onclick="event.stopPropagation()">
+                <button type="button" class="modal-close" onclick="closeAuthModal()" aria-label="Fermer">✕</button>
+                <div class="auth-modal-tabs">
+                    <button type="button" class="auth-tab active" data-auth-tab="login" onclick="switchAuthTab('login')">Connexion</button>
+                    <button type="button" class="auth-tab" data-auth-tab="register" onclick="switchAuthTab('register')">Inscription</button>
+                </div>
+                <div class="modal-body auth-modal-body">
+                    <form id="auth-form-login" class="auth-form active" onsubmit="handleAuthLogin(event)">
+                        <h2 class="auth-form-title">Connexion</h2>
+                        <label class="form-group">
+                            <span class="form-label">Email</span>
+                            <input type="email" id="auth-login-email" class="form-input" placeholder="vous@exemple.fr" required>
+                        </label>
+                        <label class="form-group">
+                            <span class="form-label">Mot de passe</span>
+                            <input type="password" id="auth-login-password" class="form-input" placeholder="••••••••" required>
+                        </label>
+                        <p id="auth-login-error" class="auth-error" aria-live="polite"></p>
+                        <button type="submit" class="button-primary full-width">Se connecter</button>
+                    </form>
+                    <form id="auth-form-register" class="auth-form" onsubmit="handleAuthRegister(event)">
+                        <h2 class="auth-form-title">Créer un compte</h2>
+                        <label class="form-group">
+                            <span class="form-label">Nom de l'entreprise (optionnel)</span>
+                            <input type="text" id="auth-register-company" class="form-input" placeholder="Mon Entreprise">
+                        </label>
+                        <label class="form-group">
+                            <span class="form-label">Email</span>
+                            <input type="email" id="auth-register-email" class="form-input" placeholder="vous@exemple.fr" required>
+                        </label>
+                        <label class="form-group">
+                            <span class="form-label">Mot de passe</span>
+                            <input type="password" id="auth-register-password" class="form-input" placeholder="Au moins 6 caractères" required minlength="6">
+                        </label>
+                        <p id="auth-register-error" class="auth-error" aria-live="polite"></p>
+                        <button type="submit" class="button-primary full-width">S'inscrire</button>
+                    </form>
+                </div>
+            </div>
+        </div>
 
         <header class="landing-hero container">
             <div class="hero-content">
@@ -80,7 +125,7 @@
                         <span>Démarrer l'Application</span>
                         <span class="arrow">→</span>
                     </button>
-                    <p class="hero-note">Accès immédiat • Aucune inscription requise</p>
+                    <p class="hero-note">Accès immédiat en invité, ou <button type="button" class="link-button" onclick="showAuthModal('login')">se connecter</button> / <button type="button" class="link-button" onclick="showAuthModal('register')">s'inscrire</button> pour un compte.</p>
                 </div>
             </div>
             <div class="hero-image">
@@ -466,6 +511,47 @@
 
         <!-- Scripts -->
         <script>console.log("Loading modules...");</script>
+        <script>
+        function showAuthModal(tab) {
+            var m = document.getElementById('auth-modal');
+            if (m) { m.style.display = 'flex'; m.classList.add('active'); m.setAttribute('aria-hidden', 'false'); }
+            switchAuthTab(tab || 'login');
+            document.getElementById('auth-login-error').textContent = '';
+            document.getElementById('auth-register-error').textContent = '';
+        }
+        function closeAuthModal() {
+            var m = document.getElementById('auth-modal');
+            if (m) { m.style.display = 'none'; m.classList.remove('active'); m.setAttribute('aria-hidden', 'true'); }
+        }
+        function switchAuthTab(tab) {
+            document.querySelectorAll('.auth-tab').forEach(function(t) { t.classList.toggle('active', t.dataset.authTab === tab); });
+            document.querySelectorAll('.auth-form').forEach(function(f) { f.classList.toggle('active', f.id === 'auth-form-' + tab); });
+        }
+        function handleAuthLogin(e) {
+            e.preventDefault();
+            var errEl = document.getElementById('auth-login-error');
+            errEl.textContent = '';
+            var email = document.getElementById('auth-login-email').value.trim();
+            var password = document.getElementById('auth-login-password').value;
+            if (!email || !password) { errEl.textContent = 'Veuillez remplir tous les champs.'; return; }
+            Auth.login(email, password).then(function() { closeAuthModal(); }).catch(function(err) {
+            errEl.textContent = err && err.message ? err.message : 'Erreur de connexion.';
+        });
+        }
+        function handleAuthRegister(e) {
+            e.preventDefault();
+            var errEl = document.getElementById('auth-register-error');
+            errEl.textContent = '';
+            var company = document.getElementById('auth-register-company').value.trim();
+            var email = document.getElementById('auth-register-email').value.trim();
+            var password = document.getElementById('auth-register-password').value;
+            if (!email || !password) { errEl.textContent = 'Email et mot de passe requis.'; return; }
+            Auth.register({ email: email, password: password, company: { name: company || '' } })
+                .then(function() { closeAuthModal(); }).catch(function(err) {
+                    errEl.textContent = err && err.message ? err.message : 'Erreur lors de l\'inscription.';
+                });
+        }
+        </script>
         <script src="storage.js"></script>
         <script src="auth.js"></script>
         <script src="app.js"></script>
