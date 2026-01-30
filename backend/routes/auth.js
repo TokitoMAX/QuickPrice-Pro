@@ -127,4 +127,82 @@ router.get('/me', async (req, res) => {
     }
 });
 
+// @route   POST /api/auth/forgot-password
+// @desc    Send password reset email
+// @access  Public
+router.post('/forgot-password', async (req, res) => {
+    const { email } = req.body;
+    const supabase = req.app.get('supabase');
+
+    try {
+        console.log(`📧 Demande de réinitialisation pour: ${email}`);
+
+        // Obtenir l'URL de base pour la redirection
+        const origin = req.headers.origin || req.protocol + '://' + req.get('host');
+        const redirectTo = `${origin}/index.html`;
+
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+            redirectTo: redirectTo,
+        });
+
+        if (error) throw error;
+
+        res.json({ message: 'Si cet email existe, un lien de réinitialisation a été envoyé.' });
+    } catch (error) {
+        console.error('❌ Forgot Password Error:', error.message);
+        // On renvoie un succès même en cas d'erreur pour ne pas leaker l'existence des emails
+        res.json({ message: 'Si cet email existe, un lien de réinitialisation a été envoyé.' });
+    }
+});
+
+// @route   POST /api/auth/update-password
+// @desc    Update password using recovery token
+// @access  Private (via access_token in body)
+router.post('/update-password', async (req, res) => {
+    const { accessToken, password } = req.body;
+    const supabase = req.app.get('supabase');
+
+    try {
+        if (!accessToken) throw new Error('Token manquant');
+
+        console.log(`🔐 Mise à jour du mot de passe...`);
+
+        // Pour mettre à jour le mot de passe, on doit avoir une session valide.
+        // Le flow Supabase : User clique sur le lien -> Redirigé vers le site avec un hash contenant access_token & type=recovery.
+        // Le frontend récupère ce token.
+        // MAIS pour updateUser, on doit être authentifié.
+        // Avec supabase-js côté serveur, on ne peut pas utiliser 'getUser(accessToken)' puis 'updateUser' directement sur l'instance admin
+        // car updateUser s'applique à l'utilisateur *connecté*.
+
+        // Solution : On renvoie juste le fait que c'est au frontend de faire l'update via le client supabase s'il en a un ?
+        // NON, on a pas de client supabase frontend configuré avec URL/KEY dans le code frontend actuel (c'est caché dans le backend proxy).
+
+        // Donc on doit créer un client supabase temporaire authentifié avec ce token.
+        const { createClient } = require('@supabase/supabase-js');
+        const supabaseUrl = process.env.SUPABASE_URL;
+        const supabaseKey = process.env.SUPABASE_ANON_KEY;
+
+        // On crée un client juste pour cet utilisateur
+        const userSupabase = createClient(supabaseUrl, supabaseKey, {
+            global: {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`
+                }
+            }
+        });
+
+        const { data, error } = await userSupabase.auth.updateUser({
+            password: password
+        });
+
+        if (error) throw error;
+
+        res.json({ message: 'Mot de passe mis à jour avec succès !', user: data.user });
+
+    } catch (error) {
+        console.error('❌ Update Password Error:', error.message);
+        res.status(400).json({ message: error.message || 'Impossible de mettre à jour le mot de passe' });
+    }
+});
+
 module.exports = router;

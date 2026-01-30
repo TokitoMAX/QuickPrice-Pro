@@ -95,28 +95,57 @@
                                 required>
                         </label>
                         <p id="auth-login-error" class="auth-error" aria-live="polite"></p>
+                        <div style="display: flex; justify-content: flex-end; margin-bottom: 1rem;">
+                            <a href="#" onclick="showAuthModal('forgot-password'); return false;"
+                                style="font-size: 0.85rem; color: var(--primary);">Mot de passe oublié ?</a>
+                        </div>
                         <button type="submit" class="button-primary full-width">Se connecter</button>
                     </form>
-                    <form id="auth-form-register" class="auth-form" onsubmit="handleAuthRegister(event)">
-                        <h2 class="auth-form-title">Créer un compte</h2>
-                        <label class="form-group">
-                            <span class="form-label">Nom de l'entreprise (optionnel)</span>
-                            <input type="text" id="auth-register-company" class="form-input"
-                                placeholder="Mon Entreprise">
-                        </label>
+                    <form id="auth-form-forgot-password" class="auth-form" onsubmit="handleAuthForgotPassword(event)">
+                        <h2 class="auth-form-title">Réinitialisation</h2>
                         <label class="form-group">
                             <span class="form-label">Email</span>
-                            <input type="email" id="auth-register-email" class="form-input"
-                                placeholder="vous@exemple.fr" required>
+                            <input type="email" id="auth-forgot-email" class="form-input" placeholder="vous@exemple.fr"
+                                required>
                         </label>
+                        <p id="auth-forgot-message" class="auth-success" aria-live="polite"></p>
+                        <p id="auth-forgot-error" class="auth-error" aria-live="polite"></p>
+                        <button type="submit" class="button-primary full-width">Envoyer le lien</button>
+                        <div style="text-align: center; margin-top: 1rem;">
+                            <a href="#" onclick="switchAuthTab('login'); return false;"
+                                style="font-size: 0.85rem;">Retour à la connexion</a>
+                        </div>
+                    </form>
+                    <form id="auth-form-reset-password" class="auth-form" onsubmit="handleAuthResetPassword(event)">
+                        <h2 class="auth-form-title">Nouveau mot de passe</h2>
                         <label class="form-group">
-                            <span class="form-label">Mot de passe</span>
-                            <input type="password" id="auth-register-password" class="form-input"
+                            <span class="form-label">Nouveau mot de passe</span>
+                            <input type="password" id="auth-reset-new-password" class="form-input"
                                 placeholder="Au moins 6 caractères" required minlength="6">
                         </label>
-                        <p id="auth-register-error" class="auth-error" aria-live="polite"></p>
-                        <button type="submit" class="button-primary full-width">S'inscrire</button>
-                    </form>
+                        <p id="auth-reset-message" class="auth-success" aria-live="polite"></p>
+                        <p id="auth-reset-error" class="auth-error" aria-live="polite"></p>
+                        <button type="submit" class="button-primary full-width">Mettre à jour</button>
+                        <form id="auth-form-register" class="auth-form" onsubmit="handleAuthRegister(event)">
+                            <h2 class="auth-form-title">Créer un compte</h2>
+                            <label class="form-group">
+                                <span class="form-label">Nom de l'entreprise (optionnel)</span>
+                                <input type="text" id="auth-register-company" class="form-input"
+                                    placeholder="Mon Entreprise">
+                            </label>
+                            <label class="form-group">
+                                <span class="form-label">Email</span>
+                                <input type="email" id="auth-register-email" class="form-input"
+                                    placeholder="vous@exemple.fr" required>
+                            </label>
+                            <label class="form-group">
+                                <span class="form-label">Mot de passe</span>
+                                <input type="password" id="auth-register-password" class="form-input"
+                                    placeholder="Au moins 6 caractères" required minlength="6">
+                            </label>
+                            <p id="auth-register-error" class="auth-error" aria-live="polite"></p>
+                            <button type="submit" class="button-primary full-width">S'inscrire</button>
+                        </form>
                 </div>
             </div>
         </div>
@@ -524,8 +553,11 @@
                 var m = document.getElementById('auth-modal');
                 if (m) { m.style.display = 'flex'; m.classList.add('active'); m.setAttribute('aria-hidden', 'false'); }
                 switchAuthTab(tab || 'login');
-                document.getElementById('auth-login-error').textContent = '';
-                document.getElementById('auth-register-error').textContent = '';
+                // Clear errors
+                ['login', 'register', 'forgot', 'reset'].forEach(t => {
+                    var err = document.getElementById('auth-' + t + '-error');
+                    if (err) err.textContent = '';
+                });
             }
             function closeAuthModal() {
                 var m = document.getElementById('auth-modal');
@@ -558,6 +590,52 @@
                     .then(function () { closeAuthModal(); }).catch(function (err) {
                         errEl.textContent = err && err.message ? err.message : 'Erreur lors de l\'inscription.';
                     });
+            }
+            function handleAuthForgotPassword(e) {
+                e.preventDefault();
+                var msgEl = document.getElementById('auth-forgot-message');
+                var errEl = document.getElementById('auth-forgot-error');
+                msgEl.textContent = ''; errEl.textContent = '';
+                var email = document.getElementById('auth-forgot-email').value.trim();
+                if (!email) { errEl.textContent = 'Email requis.'; return; }
+
+                Auth.forgotPassword(email)
+                    .then(function (res) { msgEl.textContent = res.message; })
+                    .catch(function (err) { errEl.textContent = err.message || 'Erreur inconnue.'; });
+            }
+            function handleAuthResetPassword(e) {
+                e.preventDefault();
+                var msgEl = document.getElementById('auth-reset-message');
+                var errEl = document.getElementById('auth-reset-error');
+                msgEl.textContent = ''; errEl.textContent = '';
+
+                var newPass = document.getElementById('auth-reset-new-password').value;
+                if (!newPass || newPass.length < 6) { errEl.textContent = 'Minimum 6 caractères.'; return; }
+
+                // Retrieve token from hash that was saved/parsed by Auth.init
+                // OR we can parse it again if we are on the page.
+                // Actually, Auth.checkRecoveryMode should have handled the parsing.
+                // We'll trust Auth.updatePassword to know the token or pass it.
+                // Wait, Auth.updatePassword needs the token.
+                // Let's assume Auth stored it in a temporary variable or we get it from URL.
+                var hash = window.location.hash;
+                var token = null;
+                if (hash && hash.includes('access_token=')) {
+                    var params = new URLSearchParams(hash.substring(1)); // remove #
+                    token = params.get('access_token');
+                }
+
+                if (!token) { errEl.textContent = 'Token invalide ou expiré.'; return; }
+
+                Auth.updatePassword(token, newPass)
+                    .then(function (res) {
+                        msgEl.textContent = 'Mot de passe mis à jour ! Redirection...';
+                        setTimeout(function () {
+                            window.location.hash = '';
+                            window.location.reload();
+                        }, 2000);
+                    })
+                    .catch(function (err) { errEl.textContent = err.message || 'Erreur de mise à jour.'; });
             }
         </script>
         <script src="storage.js"></script>

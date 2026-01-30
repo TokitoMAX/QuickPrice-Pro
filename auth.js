@@ -4,6 +4,62 @@ console.log("auth.js loading...");
 const Auth = {
     init() {
         // Mode Backend Local - Initialisation standard
+        this.checkRecoveryMode();
+    },
+
+    checkRecoveryMode() {
+        const hash = window.location.hash;
+        if (hash && hash.includes('type=recovery') && hash.includes('access_token=')) {
+            console.log("🔄 Recovery mode detected!");
+
+            // Wait for DOM to be ready just in case
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', () => this.openResetModal());
+            } else {
+                this.openResetModal();
+            }
+        }
+    },
+
+    openResetModal() {
+        if (typeof showAuthModal === 'function') {
+            showAuthModal('reset-password'); // Will activate the form even if no tab matches
+        }
+    },
+
+    async forgotPassword(email) {
+        try {
+            const response = await fetch('/api/auth/forgot-password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email })
+            });
+            return await response.json();
+        } catch (error) {
+            console.error("Forgot Password Error:", error);
+            throw error;
+        }
+    },
+
+    async updatePassword(accessToken, password) {
+        try {
+            const response = await fetch('/api/auth/update-password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ accessToken, password })
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.message || 'Erreur lors de la mise à jour');
+            }
+
+            return result;
+        } catch (error) {
+            console.error("Update Password Error:", error);
+            throw error;
+        }
     },
 
     async register(data) {
