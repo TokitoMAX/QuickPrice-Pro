@@ -30,19 +30,22 @@ app.use((req, res, next) => {
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static(__dirname));
 
-// Routes
+// 1. API Routes (FIRST)
 app.get('/api/health', (req, res) => res.json({ status: 'ok', time: new Date().toISOString() }));
 
 const authRoutes = require('./backend/routes/auth');
 app.use('/api/auth', authRoutes);
 
-// Point d'entrée principal (SPA Fallback)
-// On utilise un middleware à la fin pour attraper toutes les routes non-API
+// 2. Static Files
+app.use(express.static(__dirname));
+
+// 3. SPA Fallback (LAST)
 app.use((req, res, next) => {
     if (req.path.startsWith('/api/')) {
-        return next(); // Laisser passer pour que le gestionnaire d'erreurs global ou un 404 API se déclenche
+        // Si on arrive ici pour un /api/, c'est que la route n'existe pas
+        console.warn(`[404] API route not found: ${req.method} ${req.path}`);
+        return res.status(404).json({ message: `API route ${req.method} ${req.path} non trouvée.` });
     }
     res.sendFile(path.join(__dirname, 'index.html'));
 });
