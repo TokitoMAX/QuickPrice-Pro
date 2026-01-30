@@ -12,17 +12,21 @@ const app = express();
 const PORT = process.env.PORT || 5050; // Changé de 5000 à 5050
 
 // Supabase Initialization
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_ANON_KEY;
-
-if (!supabaseUrl || !supabaseKey) {
-    console.error('❌ Erreur: SUPABASE_URL et SUPABASE_ANON_KEY doivent être définis dans le fichier .env');
+let supabase;
+try {
+    if (!supabaseUrl || !supabaseKey) {
+        console.warn('⚠️ Attention: SUPABASE_URL ou SUPABASE_ANON_KEY manquant.');
+    } else {
+        supabase = createClient(supabaseUrl, supabaseKey);
+    }
+} catch (err) {
+    console.error('❌ Erreur initialisation Supabase:', err.message);
 }
 
-const supabase = createClient(supabaseUrl, supabaseKey);
+// Injecter supabase (peut être null si échec init)
 app.set('supabase', supabase);
 
-// Middleware de Logging pour débugger les requêtes
+// Middleware de Logging
 app.use((req, res, next) => {
     console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
     next();
@@ -31,34 +35,30 @@ app.use((req, res, next) => {
 app.use(cors());
 app.use(express.json());
 
-// 1. API Routes (FIRST)
-app.get('/api/health', (req, res) => res.json({ status: 'ok', time: new Date().toISOString() }));
+// Routes
+// Health Check & Debug
+app.get('/api/health', (req, res) => {
+    res.json({
+        status: 'online',
+        timestamp: new Date().toISOString(),
+        config: {
+            hasSupabaseUrl: !!process.env.SUPABASE_URL,
+            hasSupabaseKey: !!process.env.SUPABASE_ANON_KEY,
+            hasAppUrl: !!process.env.APP_URL,
+            mode: process.env.NODE_ENV
+        }
+    });
+});
 
 const authRoutes = require('./backend/routes/auth');
 app.use('/api/auth', authRoutes);
 
-// RE-DEFINITION DIRECTE POUR FIABILITÉ MAXIMALE
-app.post('/api/auth/register', async (req, res) => {
-    console.log(`📡 [SERVER] RECU POST /api/auth/register`);
-    const { email, password, company } = req.body;
-    try {
-        const { data, error } = await supabase.auth.signUp({
-            email, password,
-            options: { data: { company_name: company?.name || '', is_pro: false } }
-        });
-        if (error) throw error;
-        if (!data.user) return res.status(200).json({ message: "Vérifiez vos emails.", requiresConfirmation: true });
-        res.status(201).json({ user: data.user, session: data.session });
-    } catch (error) {
-        console.error('❌ Erreur Inscription:', error.message);
-        res.status(400).json({ message: error.message });
+// Supabase Guard Middleware for Auth Routes
+app.use('/api/auth', (err, req, res, next) => {
+    if (!req.app.get('supabase')) {
+        return res.status(503).json({ message: "Service d'authentification indisponible (Configuration manquante)." });
     }
-});
-
-// Test route directe
-app.post('/api/test-direct', (req, res) => {
-    console.log("🚀 POST /api/test-direct REACHED!");
-    res.json({ message: "Le serveur accepte bien les POST sur /api/" });
+    next(err);
 });
 
 // 2. Static Files
