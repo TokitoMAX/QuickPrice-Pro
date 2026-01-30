@@ -62,7 +62,7 @@ app.post('/api/test-direct', (req, res) => {
 });
 
 // 2. Static Files
-app.use(express.static(__dirname));
+app.use(express.static(process.cwd()));
 
 // 3. SPA Fallback (LAST)
 app.use((req, res, next) => {
@@ -71,7 +71,7 @@ app.use((req, res, next) => {
         console.warn(`[404] API route not found: ${req.method} ${req.path}`);
         return res.status(404).json({ message: `API route ${req.method} ${req.path} non trouvée.` });
     }
-    res.sendFile(path.join(__dirname, 'index.html'));
+    res.sendFile(path.join(process.cwd(), 'index.html'));
 });
 
 // Global Error Handler to prevent empty responses
@@ -83,7 +83,12 @@ app.use((err, req, res, next) => {
     });
 });
 
-app.listen(PORT, '0.0.0.0', () => {
-    console.log(`\n🚀  QuickPrice Pro est prêt sur http://localhost:${PORT}`);
-    console.log(`Mode: Professional Backend (Supabase Auth)\n`);
-});
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(PORT, '0.0.0.0', () => {
+        console.log(`\n🚀  QuickPrice Pro est prêt sur http://localhost:${PORT}`);
+        console.log(`Mode: Professional Backend (Supabase Auth)\n`);
+    });
+}
+
+// Export for Vercel
+module.exports = app;
