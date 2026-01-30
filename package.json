@@ -4,6 +4,7 @@
   "description": "**QuickPrice Pro** n'est pas juste un calculateur. C'est le premier **Système d'Exploitation Financier** pour indépendants. Il remplace le stress de l'incertitude par un flux de travail basé sur la confiance.",
   "main": "app.js",
   "scripts": {
+    "start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
