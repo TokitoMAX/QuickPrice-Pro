@@ -9,6 +9,8 @@ router.post('/register', async (req, res) => {
     const supabase = req.app.get('supabase');
 
     try {
+        console.log(`📝 Inscription demandée pour: ${email}`);
+
         const { data, error } = await supabase.auth.signUp({
             email,
             password,
@@ -20,23 +22,36 @@ router.post('/register', async (req, res) => {
             }
         });
 
-        if (error) throw error;
+        if (error) {
+            console.error('❌ Supabase Auth Error:', error.message);
+            throw error;
+        }
+
+        // Si la confirmation d'email est activée, data.user peut exister mais data.session sera null.
+        // Ou data.user peut être null si le compte n'est pas créé immédiatement.
+        console.log('✅ Supabase data:', JSON.stringify(data));
+
+        if (!data.user) {
+            return res.status(200).json({
+                message: "Inscription réussie ! Veuillez vérifier vos emails pour confirmer votre compte.",
+                requiresConfirmation: true
+            });
+        }
 
         res.status(201).json({
             user: {
                 id: data.user.id,
                 email: data.user.email,
-                user_metadata: {
-                    company_name: data.user.user_metadata.company_name,
-                    is_pro: data.user.user_metadata.is_pro
-                }
+                user_metadata: data.user.user_metadata
             },
-            session: {
-                access_token: data.session?.access_token
-            }
+            session: data.session ? {
+                access_token: data.session.access_token
+            } : null,
+            message: !data.session ? "Veuillez confirmer votre email." : undefined
         });
     } catch (error) {
-        res.status(400).json({ message: error.message });
+        console.error('💥 Catch Error /register:', error);
+        res.status(400).json({ message: error.message || 'Erreur inconnue lors de l\'inscription' });
     }
 });
 
@@ -48,27 +63,29 @@ router.post('/login', async (req, res) => {
     const supabase = req.app.get('supabase');
 
     try {
+        console.log(`🔑 Tentative de connexion pour: ${email}`);
         const { data, error } = await supabase.auth.signInWithPassword({
             email,
             password
         });
 
-        if (error) throw error;
+        if (error) {
+            console.error('❌ Login error:', error.message);
+            throw error;
+        }
 
         res.json({
             user: {
                 id: data.user.id,
                 email: data.user.email,
-                user_metadata: {
-                    company_name: data.user.user_metadata.company_name,
-                    is_pro: data.user.user_metadata.is_pro
-                }
+                user_metadata: data.user.user_metadata
             },
             session: {
                 access_token: data.session.access_token
             }
         });
     } catch (error) {
+        console.error('💥 Catch Error /login:', error);
         res.status(401).json({ message: 'Email ou mot de passe incorrect' });
     }
 });

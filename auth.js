@@ -32,6 +32,12 @@ const Auth = {
                 throw new Error(result.message || 'Erreur lors de l\'inscription');
             }
 
+            if (result.requiresConfirmation || (result.user && !result.session)) {
+                this.showSuccess(result.message || 'Inscription réussie ! Veuillez confirmer votre email.');
+                if (typeof closeAllModals === 'function') closeAllModals();
+                return result;
+            }
+
             this.handleAuthSuccess(result);
             return result;
         } catch (error) {
@@ -93,6 +99,11 @@ const Auth = {
     handleAuthSuccess(authData) {
         const user = authData.user;
         const session = authData.session;
+
+        if (!user || !session) {
+            console.log("Auth success but no user/session (waiting for confirmation?)");
+            return;
+        }
 
         const userData = {
             id: user.id,
