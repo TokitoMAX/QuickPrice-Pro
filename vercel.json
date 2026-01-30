@@ -9,9 +9,8 @@
           "*.html",
           "*.css",
           "*.js",
-          "*.png",
-          "*.jpg",
-          "*.svg"
+          "backend/**/*.js",
+          "assets/**/*"
         ],
         "env": {
           "PORT": "5050",

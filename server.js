@@ -20,7 +20,9 @@ try {
     if (!supabaseUrl || !supabaseKey) {
         console.warn('⚠️ Attention: SUPABASE_URL ou SUPABASE_ANON_KEY manquant.');
     } else {
+        console.log('📡 Initialisation de Supabase...');
         supabase = createClient(supabaseUrl, supabaseKey);
+        console.log('✅ Supabase client créé.');
     }
 } catch (err) {
     console.error('❌ Erreur initialisation Supabase:', err.message);
