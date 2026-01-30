@@ -23,11 +23,17 @@ router.post('/register', async (req, res) => {
         if (error) throw error;
 
         res.status(201).json({
-            id: data.user.id,
-            email: data.user.email,
-            company: { name: data.user.user_metadata.company_name },
-            isPro: data.user.user_metadata.is_pro,
-            token: data.session?.access_token
+            user: {
+                id: data.user.id,
+                email: data.user.email,
+                user_metadata: {
+                    company_name: data.user.user_metadata.company_name,
+                    is_pro: data.user.user_metadata.is_pro
+                }
+            },
+            session: {
+                access_token: data.session?.access_token
+            }
         });
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -50,11 +56,17 @@ router.post('/login', async (req, res) => {
         if (error) throw error;
 
         res.json({
-            id: data.user.id,
-            email: data.user.email,
-            company: { name: data.user.user_metadata.company_name },
-            isPro: data.user.user_metadata.is_pro,
-            token: data.session.access_token
+            user: {
+                id: data.user.id,
+                email: data.user.email,
+                user_metadata: {
+                    company_name: data.user.user_metadata.company_name,
+                    is_pro: data.user.user_metadata.is_pro
+                }
+            },
+            session: {
+                access_token: data.session.access_token
+            }
         });
     } catch (error) {
         res.status(401).json({ message: 'Email ou mot de passe incorrect' });
@@ -78,10 +90,14 @@ router.get('/me', async (req, res) => {
         if (error) throw error;
 
         res.json({
-            id: user.id,
-            email: user.email,
-            company: { name: user.user_metadata.company_name },
-            isPro: user.user_metadata.is_pro
+            user: {
+                id: user.id,
+                email: user.email,
+                user_metadata: {
+                    company_name: user.user_metadata.company_name,
+                    is_pro: user.user_metadata.is_pro
+                }
+            }
         });
     } catch (error) {
         res.status(401).json({ message: 'Session invalide' });

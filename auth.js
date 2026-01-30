@@ -7,8 +7,8 @@ const Auth = {
     },
 
     async register(data) {
-        if (!data.email || !data.password || !data.company?.name) {
-            this.showError('Veuillez remplir tous les champs');
+        if (!data.email || !data.password) {
+            this.showError('Veuillez remplir tous les champs obligatoires');
             throw new Error('Champs manquants');
         }
 
@@ -19,7 +19,14 @@ const Auth = {
                 body: JSON.stringify(data)
             });
 
-            const result = await response.json();
+            const contentType = response.headers.get("content-type");
+            let result;
+            if (contentType && contentType.indexOf("application/json") !== -1) {
+                result = await response.json();
+            } else {
+                const text = await response.text();
+                throw new Error(text || 'Le serveur a renvoyé une réponse vide ou invalide.');
+            }
 
             if (!response.ok) {
                 throw new Error(result.message || 'Erreur lors de l\'inscription');
@@ -46,7 +53,14 @@ const Auth = {
                 body: JSON.stringify({ email, password })
             });
 
-            const result = await response.json();
+            const contentType = response.headers.get("content-type");
+            let result;
+            if (contentType && contentType.indexOf("application/json") !== -1) {
+                result = await response.json();
+            } else {
+                const text = await response.text();
+                throw new Error(text || 'Le serveur a renvoyé une réponse vide ou invalide.');
+            }
 
             if (!response.ok) {
                 throw new Error(result.message || 'Identifiants incorrects');
