@@ -12,6 +12,9 @@ const app = express();
 const PORT = process.env.PORT || 5050; // Changé de 5000 à 5050
 
 // Supabase Initialization
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_ANON_KEY;
+
 let supabase;
 try {
     if (!supabaseUrl || !supabaseKey) {
