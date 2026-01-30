@@ -1,22 +1,25 @@
 {
+  "version": 2,
   "builds": [
     {
       "src": "server.js",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "*.{html,css,js,png,jpg,svg}",
-      "use": "@vercel/static"
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": [
+          "*.html",
+          "*.css",
+          "*.js",
+          "*.png",
+          "*.jpg",
+          "*.svg"
+        ]
+      }
     }
   ],
   "rewrites": [
     {
-      "source": "/api/(.*)",
+      "source": "/(.*)",
       "destination": "/server.js"
-    },
-    {
-      "source": "/((?!.*\\.).*)",
-      "destination": "/index.html"
     }
   ],
   "headers": [
