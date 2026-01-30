@@ -37,7 +37,25 @@ app.get('/api/health', (req, res) => res.json({ status: 'ok', time: new Date().t
 const authRoutes = require('./backend/routes/auth');
 app.use('/api/auth', authRoutes);
 
-// Test route directe pour éliminer les problèmes de router
+// RE-DEFINITION DIRECTE POUR FIABILITÉ MAXIMALE
+app.post('/api/auth/register', async (req, res) => {
+    console.log(`📡 [SERVER] RECU POST /api/auth/register`);
+    const { email, password, company } = req.body;
+    try {
+        const { data, error } = await supabase.auth.signUp({
+            email, password,
+            options: { data: { company_name: company?.name || '', is_pro: false } }
+        });
+        if (error) throw error;
+        if (!data.user) return res.status(200).json({ message: "Vérifiez vos emails.", requiresConfirmation: true });
+        res.status(201).json({ user: data.user, session: data.session });
+    } catch (error) {
+        console.error('❌ Erreur Inscription:', error.message);
+        res.status(400).json({ message: error.message });
+    }
+});
+
+// Test route directe
 app.post('/api/test-direct', (req, res) => {
     console.log("🚀 POST /api/test-direct REACHED!");
     res.json({ message: "Le serveur accepte bien les POST sur /api/" });
