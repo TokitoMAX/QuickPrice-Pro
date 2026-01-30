@@ -12,7 +12,11 @@
           "*.png",
           "*.jpg",
           "*.svg"
-        ]
+        ],
+        "env": {
+          "PORT": "5050",
+          "APP_URL": "https://votre-projet.vercel.app"
+        }
       }
     }
   ],

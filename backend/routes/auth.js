@@ -138,8 +138,11 @@ router.post('/forgot-password', async (req, res) => {
         console.log(`📧 Demande de réinitialisation pour: ${email}`);
 
         // Obtenir l'URL de base pour la redirection
-        const origin = req.headers.origin || req.protocol + '://' + req.get('host');
+        // En prod, on utilise APP_URL si défini. Sinon on fallback sur le header origin (dev/preview)
+        const origin = process.env.APP_URL || req.headers.origin || req.protocol + '://' + req.get('host');
         const redirectTo = `${origin}/index.html`;
+
+        console.log(`🔗 Redirect URL set to: ${redirectTo}`);
 
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
             redirectTo: redirectTo,
