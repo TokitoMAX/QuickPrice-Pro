@@ -609,7 +609,9 @@
                 if (!email) { errEl.textContent = 'Email requis.'; return; }
 
                 Auth.forgotPassword(email)
-                    .then(function (res) { msgEl.textContent = res.message; })
+                    .then(function (res) {
+                        msgEl.innerHTML = "Si cet email existe, un lien a été envoyé.<br><small style='color:#888; display:block; margin-top:5px;'>(Vérifiez vos spams. Attendez 1h si vous avez fait plusieurs essais).</small>";
+                    })
                     .catch(function (err) { errEl.textContent = err.message || 'Erreur inconnue.'; });
             }
             function handleAuthResetPassword(e) {
