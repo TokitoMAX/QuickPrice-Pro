@@ -37,6 +37,12 @@ app.get('/api/health', (req, res) => res.json({ status: 'ok', time: new Date().t
 const authRoutes = require('./backend/routes/auth');
 app.use('/api/auth', authRoutes);
 
+// Test route directe pour éliminer les problèmes de router
+app.post('/api/test-direct', (req, res) => {
+    console.log("🚀 POST /api/test-direct REACHED!");
+    res.json({ message: "Le serveur accepte bien les POST sur /api/" });
+});
+
 // 2. Static Files
 app.use(express.static(__dirname));
 

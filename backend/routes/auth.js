@@ -1,6 +1,12 @@
 const express = require('express');
 const router = express.Router();
 
+// Debug middleware
+router.use((req, res, next) => {
+    console.log(`[Auth Router] ${req.method} ${req.path}`);
+    next();
+});
+
 // @route   POST /api/auth/register
 // @desc    Register a new user via Supabase
 // @access  Public
