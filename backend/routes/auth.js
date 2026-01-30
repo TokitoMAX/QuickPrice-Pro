@@ -17,6 +17,15 @@ router.post('/register', async (req, res) => {
     try {
         console.log(`📝 Inscription demandée pour: ${email}`);
 
+        // Check if supabase client exists
+        if (!supabase) {
+            console.error('❌ Supabase client is NULL in register route');
+            return res.status(503).json({
+                message: "Service d'authentification non configuré.",
+                debug: "Supabase client is null"
+            });
+        }
+
         const { data, error } = await supabase.auth.signUp({
             email,
             password,
@@ -29,13 +38,25 @@ router.post('/register', async (req, res) => {
         });
 
         if (error) {
-            console.error('❌ Supabase Auth Error:', error.message);
-            throw error;
+            console.error('❌ Supabase Auth Error:', {
+                message: error.message,
+                status: error.status,
+                name: error.name
+            });
+
+            // Return user-friendly error
+            return res.status(400).json({
+                message: error.message || "Erreur lors de l'inscription",
+                code: error.status
+            });
         }
 
         // Si la confirmation d'email est activée, data.user peut exister mais data.session sera null.
         // Ou data.user peut être null si le compte n'est pas créé immédiatement.
-        console.log('✅ Supabase data:', JSON.stringify(data));
+        console.log('✅ Supabase signup successful:', {
+            hasUser: !!data.user,
+            hasSession: !!data.session
+        });
 
         if (!data.user) {
             return res.status(200).json({
@@ -56,8 +77,15 @@ router.post('/register', async (req, res) => {
             message: !data.session ? "Veuillez confirmer votre email." : undefined
         });
     } catch (error) {
-        console.error('💥 Catch Error /register:', error);
-        res.status(400).json({ message: error.message || 'Erreur inconnue lors de l\'inscription' });
+        console.error('💥 Catch Error /register:', {
+            message: error.message,
+            stack: error.stack,
+            name: error.name
+        });
+        res.status(500).json({
+            message: 'Erreur serveur lors de l\'inscription',
+            error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
     }
 });
 
@@ -70,16 +98,30 @@ router.post('/login', async (req, res) => {
 
     try {
         console.log(`🔑 Tentative de connexion pour: ${email}`);
+
+        if (!supabase) {
+            console.error('❌ Supabase client is NULL in login route');
+            return res.status(503).json({
+                message: "Service d'authentification non configuré."
+            });
+        }
+
         const { data, error } = await supabase.auth.signInWithPassword({
             email,
             password
         });
 
         if (error) {
-            console.error('❌ Login error:', error.message);
-            throw error;
+            console.error('❌ Login error:', {
+                message: error.message,
+                status: error.status
+            });
+            return res.status(401).json({
+                message: error.message || 'Email ou mot de passe incorrect'
+            });
         }
 
+        console.log('✅ Login successful for:', email);
         res.json({
             user: {
                 id: data.user.id,
@@ -91,8 +133,14 @@ router.post('/login', async (req, res) => {
             }
         });
     } catch (error) {
-        console.error('💥 Catch Error /login:', error);
-        res.status(401).json({ message: 'Email ou mot de passe incorrect' });
+        console.error('💥 Catch Error /login:', {
+            message: error.message,
+            name: error.name
+        });
+        res.status(500).json({
+            message: 'Erreur serveur lors de la connexion',
+            error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
     }
 });
 
