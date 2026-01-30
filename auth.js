@@ -2,8 +2,16 @@
 console.log("auth.js loading...");
 
 const Auth = {
+    // Définir l'URL de base pour l'API
+    // Si on est en local (localhost ou file://), on force le port 5050
+    // Sinon (production), on utilise le chemin relatif
+    apiBase: (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:')
+        ? 'http://localhost:5050'
+        : '',
+
     init() {
         // Mode Backend Local - Initialisation standard
+        console.log("Auth initialized. API Base:", this.apiBase);
         this.checkRecoveryMode();
     },
 
@@ -29,7 +37,7 @@ const Auth = {
 
     async forgotPassword(email) {
         try {
-            const response = await fetch('/api/auth/forgot-password', {
+            const response = await fetch(`${this.apiBase}/api/auth/forgot-password`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email })
@@ -43,7 +51,7 @@ const Auth = {
 
     async updatePassword(accessToken, password) {
         try {
-            const response = await fetch('/api/auth/update-password', {
+            const response = await fetch(`${this.apiBase}/api/auth/update-password`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ accessToken, password })
@@ -69,7 +77,7 @@ const Auth = {
         }
 
         try {
-            const response = await fetch('/api/auth/register', {
+            const response = await fetch(`${this.apiBase}/api/auth/register`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
@@ -111,7 +119,7 @@ const Auth = {
         }
 
         try {
-            const response = await fetch('/api/auth/login', {
+            const response = await fetch(`${this.apiBase}/api/auth/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password })

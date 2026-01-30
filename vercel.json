@@ -15,7 +15,7 @@
         ],
         "env": {
           "PORT": "5050",
-          "APP_URL": "https://votre-projet.vercel.app"
+          "APP_URL": "https://quickprice.vercel.app"
         }
       }
     }
