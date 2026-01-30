@@ -22,12 +22,19 @@ if (!supabaseUrl || !supabaseKey) {
 const supabase = createClient(supabaseUrl, supabaseKey);
 app.set('supabase', supabase);
 
-// Middleware
+// Middleware de Logging pour débugger les requêtes
+app.use((req, res, next) => {
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
+    next();
+});
+
 app.use(cors());
 app.use(express.json());
 app.use(express.static(__dirname));
 
 // Routes
+app.get('/api/health', (req, res) => res.json({ status: 'ok', time: new Date().toISOString() }));
+
 const authRoutes = require('./backend/routes/auth');
 app.use('/api/auth', authRoutes);
 

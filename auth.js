@@ -25,11 +25,13 @@ const Auth = {
                 result = await response.json();
             } else {
                 const text = await response.text();
-                throw new Error(text || 'Le serveur a renvoyé une réponse vide ou invalide.');
+                console.error("Non-JSON response received:", { status: response.status, body: text });
+                throw new Error(`Erreur serveur (${response.status}): Réponse invalide. Vérifiez la console du serveur.`);
             }
 
             if (!response.ok) {
-                throw new Error(result.message || 'Erreur lors de l\'inscription');
+                console.error("API error response:", result);
+                throw new Error(result.message || `Erreur (${response.status}) lors de l'inscription`);
             }
 
             if (result.requiresConfirmation || (result.user && !result.session)) {
@@ -65,11 +67,13 @@ const Auth = {
                 result = await response.json();
             } else {
                 const text = await response.text();
-                throw new Error(text || 'Le serveur a renvoyé une réponse vide ou invalide.');
+                console.error("Non-JSON response received:", { status: response.status, body: text });
+                throw new Error(`Erreur serveur (${response.status}): Réponse invalide.`);
             }
 
             if (!response.ok) {
-                throw new Error(result.message || 'Identifiants incorrects');
+                console.error("API error response:", result);
+                throw new Error(result.message || `Erreur (${response.status}): Identifiants incorrects`);
             }
 
             this.handleAuthSuccess(result);
