@@ -14,7 +14,7 @@
         ],
         "env": {
           "PORT": "5050",
-          "APP_URL": "https://quickprice.vercel.app"
+          "NODE_ENV": "production"
         }
       }
     }

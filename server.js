@@ -43,14 +43,17 @@ app.use(express.json());
 // Routes
 // Health Check & Debug
 app.get('/api/health', (req, res) => {
+    const supabase = req.app.get('supabase');
     res.json({
         status: 'online',
         timestamp: new Date().toISOString(),
+        env: process.env.NODE_ENV,
         config: {
             hasSupabaseUrl: !!process.env.SUPABASE_URL,
             hasSupabaseKey: !!process.env.SUPABASE_ANON_KEY,
-            hasAppUrl: !!process.env.APP_URL,
-            mode: process.env.NODE_ENV
+            supabaseInitialized: !!supabase,
+            supabaseUrlPrefix: process.env.SUPABASE_URL ? process.env.SUPABASE_URL.substring(0, 15) + '...' : 'missing',
+            appUrl: process.env.APP_URL || 'not set'
         }
     });
 });
@@ -58,12 +61,13 @@ app.get('/api/health', (req, res) => {
 const authRoutes = require('./backend/routes/auth');
 
 // Supabase Guard Middleware for Auth Routes
-// Utilisation de 3 arguments pour un middleware standard (pas 4 qui est réservé aux erreurs)
 app.use('/api/auth', (req, res, next) => {
-    console.log(`[AUTH-GUARD] Checking Supabase for: ${req.path}`);
     if (!req.app.get('supabase')) {
-        console.error('[AUTH-GUARD] Supabase client is MISSING');
-        return res.status(503).json({ message: "Service d'authentification indisponible (Configuration manquante)." });
+        console.error(`[AUTH-GUARD] ❌ Supabase client is MISSING for ${req.path}`);
+        return res.status(503).json({
+            message: "Service d'authentification indisponible.",
+            debug: "Supabase client not initialized. Check server environment variables."
+        });
     }
     next();
 });

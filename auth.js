@@ -95,7 +95,9 @@ const Auth = {
 
             if (!response.ok) {
                 console.error("API error response:", result);
-                throw new Error(result.message || `Erreur (${response.status}) lors de l'inscription`);
+                let errorMsg = result.message || `Erreur (${response.status})`;
+                if (response.status === 503) errorMsg = "Le service d'authentification est actuellement indisponible.";
+                throw new Error(errorMsg);
             }
 
             if (result.requiresConfirmation || (result.user && !result.session)) {
@@ -137,7 +139,10 @@ const Auth = {
 
             if (!response.ok) {
                 console.error("API error response:", result);
-                throw new Error(result.message || `Erreur (${response.status}): Identifiants incorrects`);
+                let errorMsg = result.message || `Erreur (${response.status})`;
+                if (response.status === 503) errorMsg = "Le service d'authentification est actuellement indisponible. Réessayez plus tard.";
+                if (response.status === 404) errorMsg = "Route d'authentification introuvable. Vérifiez le déploiement.";
+                throw new Error(errorMsg);
             }
 
             this.handleAuthSuccess(result);

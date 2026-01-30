@@ -152,8 +152,12 @@ router.post('/forgot-password', async (req, res) => {
 
         res.json({ message: 'Si cet email existe, un lien de réinitialisation a été envoyé.' });
     } catch (error) {
-        console.error('❌ Forgot Password Error:', error.message);
+        console.error('❌ Forgot Password Error:', error);
         // On renvoie un succès même en cas d'erreur pour ne pas leaker l'existence des emails
+        // SAUF si c'est une erreur de configuration
+        if (error.message && error.message.includes('configuration')) {
+            return res.status(500).json({ message: "Erreur de configuration du serveur." });
+        }
         res.json({ message: 'Si cet email existe, un lien de réinitialisation a été envoyé.' });
     }
 });
