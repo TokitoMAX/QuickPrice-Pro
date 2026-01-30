@@ -77,11 +77,20 @@ const Auth = {
         }
 
         try {
+            console.log('📤 Sending register request to:', `${this.apiBase}/api/auth/register`);
+            console.log('📦 Request data:', { email: data.email, company: data.company });
+
             const response = await fetch(`${this.apiBase}/api/auth/register`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
+            }).catch(fetchError => {
+                console.error('🔥 Fetch itself failed:', fetchError);
+                throw new Error(`Erreur réseau: ${fetchError.message}. Vérifiez votre connexion.`);
             });
+
+            console.log('📥 Response status:', response.status);
+            console.log('📥 Response headers:', Object.fromEntries(response.headers.entries()));
 
             const contentType = response.headers.get("content-type");
             let result;
@@ -109,6 +118,7 @@ const Auth = {
             this.handleAuthSuccess(result);
             return result;
         } catch (error) {
+            console.error('💥 Register error:', error);
             this.showError(error.message);
             throw error;
         }
