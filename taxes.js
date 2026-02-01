@@ -1,5 +1,5 @@
 /**
- * QuickPrice Pro - Territorial Tax Engine
+ * SoloPrice Pro - Territorial Tax Engine
  * Manages specific tax rules for DOM-TOM, France, and Africa contexts.
  */
 const TaxEngine = {
@@ -15,7 +15,7 @@ const TaxEngine = {
     currentContext: 'FR-METRO',
 
     init() {
-        const saved = localStorage.getItem('qp_tax_context');
+        const saved = localStorage.getItem('sp_tax_context');
         if (saved) {
             this.currentContext = saved;
         }
@@ -24,7 +24,7 @@ const TaxEngine = {
     setContext(ctxId) {
         if (this.contexts[ctxId]) {
             this.currentContext = ctxId;
-            localStorage.setItem('qp_tax_context', ctxId);
+            localStorage.setItem('sp_tax_context', ctxId);
             return true;
         }
         return false;

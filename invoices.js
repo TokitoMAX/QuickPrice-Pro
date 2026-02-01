@@ -311,7 +311,7 @@ const Invoices = {
         const container = document.getElementById('margin-guard-container');
         if (!container) return;
 
-        const calcData = Storage.get('qp_calculator_data') || { dailyRate: 400 };
+        const calcData = Storage.get('sp_calculator_data') || { dailyRate: 400 };
         const targetTJM = calcData.dailyRate || 400;
 
         // Estimation simple : on compare le total HT au TJM cible

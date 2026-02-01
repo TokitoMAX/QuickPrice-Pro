@@ -102,7 +102,7 @@ const Scoper = {
     },
 
     getTJM() {
-        const calcData = Storage.get('qp_calculator_data');
+        const calcData = Storage.get('sp_calculator_data');
         return calcData?.dailyRate || 400;
     },
 
@@ -332,7 +332,7 @@ const Scoper = {
         });
 
         if (quoteItems.length > 0) {
-            Storage.set('qp_draft_quote_items', quoteItems);
+            Storage.set('sp_draft_quote_items', quoteItems);
             App.navigateTo('quotes');
             if (typeof Quotes !== 'undefined') {
                 Quotes.showAddForm();

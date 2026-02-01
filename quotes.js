@@ -168,17 +168,17 @@ const Quotes = {
         this.editingId = null;
 
         // Check for draft items (array) from scoper
-        const draftItems = Storage.get('qp_draft_quote_items');
+        const draftItems = Storage.get('sp_draft_quote_items');
         // Check for single draft item from calculator (legacy or simple)
-        const draftItem = Storage.get('qp_draft_quote_item');
+        const draftItem = Storage.get('sp_draft_quote_item');
 
         if (draftItems && Array.isArray(draftItems) && draftItems.length > 0) {
             this.currentItems = draftItems;
-            Storage.set('qp_draft_quote_items', null);
+            Storage.set('sp_draft_quote_items', null);
             App.showNotification('Estimation importée avec succès !', 'success');
         } else if (draftItem) {
             this.currentItems = [draftItem];
-            Storage.set('qp_draft_quote_item', null);
+            Storage.set('sp_draft_quote_item', null);
             App.showNotification('Tarif importé depuis le calculateur !', 'success');
         } else {
             this.currentItems = [{ description: '', quantity: 1, unitPrice: 0 }];
@@ -427,7 +427,7 @@ const Quotes = {
         const container = document.getElementById('margin-guard-container');
         if (!container) return;
 
-        const calcData = Storage.get('qp_calculator_data') || { dailyRate: 400 };
+        const calcData = Storage.get('sp_calculator_data') || { dailyRate: 400 };
         const targetTJM = calcData.dailyRate || 400;
 
         const health = Math.min(100, (subtotal / targetTJM) * 100);

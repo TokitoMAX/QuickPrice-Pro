@@ -196,8 +196,8 @@ const Auth = {
             token: session?.access_token
         };
 
-        localStorage.setItem('qp_token', userData.token);
-        localStorage.setItem('qp_user', JSON.stringify(userData));
+        localStorage.setItem('sp_token', userData.token);
+        localStorage.setItem('sp_user', JSON.stringify(userData));
 
         if (typeof Storage !== 'undefined') Storage.setUser(userData);
 
@@ -214,20 +214,20 @@ const Auth = {
 
     logout() {
         if (window.sbClient) window.sbClient.auth.signOut();
-        localStorage.removeItem('qp_token');
-        localStorage.removeItem('qp_user');
-        sessionStorage.removeItem('qp_in_app');
+        localStorage.removeItem('sp_token');
+        localStorage.removeItem('sp_user');
+        sessionStorage.removeItem('sp_in_app');
 
         App.showNotification('Déconnexion réussie.', 'info');
         window.location.reload();
     },
 
     isLoggedIn() {
-        return !!localStorage.getItem('qp_token');
+        return !!localStorage.getItem('sp_token');
     },
 
     getUser() {
-        const user = localStorage.getItem('qp_user');
+        const user = localStorage.getItem('sp_user');
         return user ? JSON.parse(user) : null;
     }
 };

@@ -7,6 +7,7 @@ const App = {
     // Initialisation de l'application
     init() {
         this.setupNavigation();
+        this.migrateData();
         this.setupMobileOverlay();
         this.checkFreemiumLimits();
         this.renderProBadge();
@@ -14,9 +15,9 @@ const App = {
         if (window.Network) Network.init();
 
         // Router / Landing Logic
-        const savedPage = localStorage.getItem('qp_last_page') || 'dashboard';
+        const savedPage = localStorage.getItem('sp_last_page') || 'dashboard';
         const isLoggedIn = Auth.isLoggedIn();
-        const inApp = sessionStorage.getItem('qp_in_app') === 'true';
+        const inApp = sessionStorage.getItem('sp_in_app') === 'true';
 
         if (isLoggedIn || inApp) {
             this.enterApp(false);
@@ -50,7 +51,7 @@ const App = {
             }
         }
 
-        sessionStorage.setItem('qp_in_app', 'true');
+        sessionStorage.setItem('sp_in_app', 'true');
         this.renderUserInfo();
         this.navigateTo('dashboard');
     },
@@ -67,7 +68,7 @@ const App = {
 
         if (valueEl) valueEl.textContent = this.formatCurrency(pipelineValue);
         if (progressEl) {
-            const calculatorData = Storage.get('qp_calculator_data');
+            const calculatorData = Storage.get('sp_calculator_data');
             const monthlyGoal = calculatorData ? parseFloat(calculatorData.monthlyRevenue) : 5000;
             const progress = Math.min(100, Math.round((pipelineValue / monthlyGoal) * 100));
             progressEl.style.width = `${progress}%`;
@@ -171,6 +172,34 @@ const App = {
     },
 
     // Vérification des limites freemium
+    // Migration de QuickPrice Pro vers SoloPrice Pro
+    migrateData() {
+        const oldKeys = [
+            'qp_user', 'qp_clients', 'qp_quotes', 'qp_invoices', 'qp_services',
+            'qp_leads', 'qp_revenues', 'qp_expenses', 'qp_settings',
+            'qp_tax_context', 'qp_calculator_data', 'qp_profit_profile',
+            'qp_marketplace_missions', 'qp_my_missions', 'qp_my_providers',
+            'qp_calculator_inputs', 'qp_draft_quote_item', 'qp_last_page',
+            'qp_token'
+        ];
+
+        let migrated = false;
+        oldKeys.forEach(oldKey => {
+            const data = localStorage.getItem(oldKey);
+            if (data) {
+                const newKey = oldKey.replace('qp_', 'sp_');
+                if (!localStorage.getItem(newKey)) {
+                    localStorage.setItem(newKey, data);
+                    migrated = true;
+                }
+            }
+        });
+
+        if (migrated) {
+            console.log("🚀 Migration SoloPrice Pro terminée avec succès !");
+        }
+    },
+
     checkFreemiumLimits() {
         const isPro = Storage.isPro();
 

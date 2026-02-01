@@ -1,5 +1,5 @@
 /**
- * QuickPrice Pro - Profitability Engine
+ * SoloPrice Pro - Profitability Engine
  * Helps users ensure they are making money on every project.
  */
 const Profitability = {
@@ -12,7 +12,7 @@ const Profitability = {
     },
 
     init() {
-        const saved = localStorage.getItem('qp_profit_profile');
+        const saved = localStorage.getItem('sp_profit_profile');
         if (saved) {
             this.profile = JSON.parse(saved);
         }
@@ -21,7 +21,7 @@ const Profitability = {
 
     saveProfile(data) {
         this.profile = { ...this.profile, ...data };
-        localStorage.setItem('qp_profit_profile', JSON.stringify(this.profile));
+        localStorage.setItem('sp_profit_profile', JSON.stringify(this.profile));
     },
 
     /**

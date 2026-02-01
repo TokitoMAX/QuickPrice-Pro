@@ -1,4 +1,4 @@
-# Script de déploiement automatique QuickPrice Pro
+# Script de déploiement automatique SoloPrice Pro
 param (
     [switch]$UpdateOnly = $false
 )
@@ -20,7 +20,7 @@ Write-Host "1. Création du dépôt GitHub..." -ForegroundColor Yellow
 try {
     gh --version | Out-Null
     if ($?) {
-        gh repo create quickprice-pro --public --source . --remote origin --push
+        gh repo create soloprice-pro --public --source . --remote origin --push
         Write-Host "✅ Dépôt GitHub créé et poussé !" -ForegroundColor Green
     }
     else {

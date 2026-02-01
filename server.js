@@ -107,7 +107,7 @@ app.use((err, req, res, next) => {
 
 if (process.env.NODE_ENV !== 'production') {
     app.listen(PORT, '0.0.0.0', () => {
-        console.log(`\n🚀  QuickPrice Pro est prêt sur http://localhost:${PORT}`);
+        console.log(`\n🚀  SoloPrice Pro est prêt sur http://localhost:${PORT}`);
         console.log(`Mode: Professional Backend (Supabase Auth)\n`);
     });
 }

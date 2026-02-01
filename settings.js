@@ -444,7 +444,7 @@ Pour tester l'application, vous pouvez générer une clé de test.
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `quickprice-backup-${new Date().toISOString().split('T')[0]}.json`;
+        a.download = `soloprice-backup-${new Date().toISOString().split('T')[0]}.json`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -482,7 +482,7 @@ Pour tester l'application, vous pouvez générer une clé de test.
         if (confirm('Attention : Cette action supprimera toutes vos données. Cette action est irréversible.\n\nSouhaitez-vous continuer ?')) {
             if (confirm('Dernière confirmation : toutes vos données seront supprimées. Continuer ?')) {
                 Storage.clearAll();
-                localStorage.removeItem('qp_marketplace_missions'); // Cleaner le radar aussi
+                localStorage.removeItem('sp_marketplace_missions'); // Cleaner le radar aussi
                 App.showNotification('Données réinitialisées', 'success');
                 window.location.reload();
             }

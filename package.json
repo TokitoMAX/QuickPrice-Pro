@@ -1,7 +1,7 @@
 {
   "name": "soloprice-pro",
   "version": "1.0.0",
-  "description": "**QuickPrice Pro** n'est pas juste un calculateur. C'est le premier **Système d'Exploitation Financier** pour indépendants. Il remplace le stress de l'incertitude par un flux de travail basé sur la confiance.",
+  "description": "**SoloPrice Pro** n'est pas juste un calculateur. C'est le premier **Système d'Exploitation Financier** pour indépendants. Il remplace le stress de l'incertitude par un flux de travail basé sur la confiance.",
   "main": "app.js",
   "scripts": {
     "start": "node server.js",

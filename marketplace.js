@@ -60,7 +60,7 @@ const Marketplace = {
     },
 
     getPublicMissions() {
-        return JSON.parse(localStorage.getItem('qp_marketplace_missions') || '[]');
+        return JSON.parse(localStorage.getItem('sp_marketplace_missions') || '[]');
     },
 
     // ===== MISSIONS RADAR (from others) =====
@@ -225,12 +225,12 @@ const Marketplace = {
 
         const missions = this.getMyMissions();
         missions.push(mission);
-        localStorage.setItem('qp_my_missions', JSON.stringify(missions));
+        localStorage.setItem('sp_my_missions', JSON.stringify(missions));
 
         // ALSO push to public missions (Radar) so it appears there
         const publicMissions = this.getPublicMissions();
         publicMissions.push(mission);
-        localStorage.setItem('qp_marketplace_missions', JSON.stringify(publicMissions));
+        localStorage.setItem('sp_marketplace_missions', JSON.stringify(publicMissions));
 
         this.hidePostMissionForm();
         this.switchTab('my-missions');
@@ -238,7 +238,7 @@ const Marketplace = {
     },
 
     getMyMissions() {
-        return JSON.parse(localStorage.getItem('qp_my_missions') || '[]');
+        return JSON.parse(localStorage.getItem('sp_my_missions') || '[]');
     },
 
     deleteMission(id) {
@@ -247,12 +247,12 @@ const Marketplace = {
         // 1. Supprimer de "Mes Annonces" (Liste privée)
         let missions = this.getMyMissions();
         missions = missions.filter(m => m.id !== id);
-        localStorage.setItem('qp_my_missions', JSON.stringify(missions));
+        localStorage.setItem('sp_my_missions', JSON.stringify(missions));
 
         // 2. Supprimer du "Radar" (Liste publique)
         let publicMissions = this.getPublicMissions();
         publicMissions = publicMissions.filter(m => m.id !== id);
-        localStorage.setItem('qp_marketplace_missions', JSON.stringify(publicMissions));
+        localStorage.setItem('sp_marketplace_missions', JSON.stringify(publicMissions));
 
         this.switchTab('my-missions');
         App.showNotification('Mission supprimée et retirée du Radar.', 'success');
@@ -265,7 +265,7 @@ const Marketplace = {
     // ===== PROVIDERS (Mes Prestataires) =====
     renderProviders(container) {
         // Pour l'instant on gère ça localement, comme une liste de favoris/actifs
-        const providers = JSON.parse(localStorage.getItem('qp_my_providers') || '[]');
+        const providers = JSON.parse(localStorage.getItem('sp_my_providers') || '[]');
 
         if (providers.length === 0) {
             container.innerHTML = `

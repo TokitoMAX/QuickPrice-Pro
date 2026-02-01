@@ -1,8 +1,8 @@
-// QuickPrice Pro - Production Diagnostic Tool
+// SoloPrice Pro - Production Diagnostic Tool
 // Run this in the browser console on your LIVE SITE to diagnose auth issues
 
 (async function () {
-    console.log("🔍 QuickPrice Pro - Production Diagnostics");
+    console.log("🔍 SoloPrice Pro - Production Diagnostics");
     console.log("==========================================\n");
 
     const results = [];

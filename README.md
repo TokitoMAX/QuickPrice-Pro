@@ -6,26 +6,26 @@ L'outil de collaboration qui facilite les échanges entre clients et prestataire
 
 ## 🎯 Mission
 
-QuickPrice Pro est une extension de l'écosystème DomTomConnect conçue pour :
+SoloPrice Pro est une extension de l'écosystème DomTomConnect conçue pour :
 - 🏢 **Clients** : Obtenir des devis transparents de prestataires qualifiés
 - 👨‍💼 **Prestataires** : Répondre aux opportunités avec des tarifs justes
 - 🌐 **Collaboration** : Faciliter les échanges commerciaux dans les DOM-TOM
 
-## 🦄 Pourquoi QuickPrice est unique ? (Vs Concurrents)
+## 🦄 Pourquoi SoloPrice est unique ? (Vs Concurrents)
 
-Là où les autres outils (Excel, facturiers classiques) sont passifs, QuickPrice est **proactif** :
+Là où les autres outils (Excel, facturiers classiques) sont passifs, SoloPrice est **proactif** :
 
 1.  **L'Approche "Objectif d'abord"** 🎯
     *   *Les autres :* "Fais une facture et espère que ça suffit."
-    *   *QuickPrice :* Calcule votre besoin réel d'abord. Le système vous alerte si vous facturez en dessous de votre seuil de rentabilité.
+    *   *SoloPrice :* Calcule votre besoin réel d'abord. Le système vous alerte si vous facturez en dessous de votre seuil de rentabilité.
 
 2.  **Le "Project Scoper" (Estimateur d'Incertitude)** 🛡️
     *   *Les autres :* Vous demandent un prix fixe au doigt mouillé.
-    *   *QuickPrice :* Vous permet de définir une fourchette (Min/Max). L'outil calcule une **marge de sécurité** mathématique pour que vous ne perdiez jamais d'argent sur un projet mal estimé.
+    *   *SoloPrice :* Vous permet de définir une fourchette (Min/Max). L'outil calcule une **marge de sécurité** mathématique pour que vous ne perdiez jamais d'argent sur un projet mal estimé.
 
 3.  **Pipeline & Prévisibilité** 🔮
     *   *Les autres :* Montrent ce que vous avez gagné (le passé).
-    *   *QuickPrice :* Montre l'argent "sur la table" (Devis envoyés) pour vous aider à anticiper les mois difficiles.
+    *   *SoloPrice :* Montre l'argent "sur la table" (Devis envoyés) pour vous aider à anticiper les mois difficiles.
 
 4.  **Flux Unifié** ⚡
     *   Calcul du besoin -> Estimation du projet -> Devis généré -> Conversion en Facture -> Suivi de l'objectif.

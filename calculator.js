@@ -98,11 +98,11 @@ function updateElement(id, value) {
 }
 
 function saveCalculatorInputs(data) {
-    localStorage.setItem('qp_calculator_inputs', JSON.stringify(data));
+    localStorage.setItem('sp_calculator_inputs', JSON.stringify(data));
 }
 
 function loadCalculatorInputs() {
-    const data = JSON.parse(localStorage.getItem('qp_calculator_inputs'));
+    const data = JSON.parse(localStorage.getItem('sp_calculator_inputs'));
     if (data) {
         setInputValue('monthlyRevenue', data.monthlyRevenue);
         setInputValue('workingDays', data.workingDays);
@@ -149,7 +149,7 @@ function useRate(type) {
         };
 
         // Save to storage to be picked up by quotes.js
-        Storage.set('qp_draft_quote_item', draftItem);
+        Storage.set('sp_draft_quote_item', draftItem);
 
         // Navigate to quotes
         App.navigateTo('quotes');

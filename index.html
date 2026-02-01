@@ -35,7 +35,7 @@
 
         async function startApp() {
             // Check for existing user session
-            if (localStorage.getItem('qp_user')) {
+            if (localStorage.getItem('sp_user')) {
                 if (typeof App !== 'undefined' && App.enterApp) {
                     App.enterApp();
                 }
@@ -404,7 +404,7 @@
                     <h2>Activer une Licence</h2>
                 </div>
                 <div class="modal-body">
-                    <p>Entrez votre clé de licence pour activer QuickPrice PRO</p>
+                    <p>Entrez votre clé de licence pour activer SoloPrice PRO</p>
 
                     <div class="form-group">
                         <input type="text" id="license-key-input" class="form-input"

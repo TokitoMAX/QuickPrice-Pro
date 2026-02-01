@@ -7,7 +7,7 @@ const Dashboard = {
 
         const stats = Storage.getStats();
         // Récupérer l'objectif (sauvegardé par le calculateur ou par défaut)
-        const calculatorData = Storage.get('qp_calculator_data');
+        const calculatorData = Storage.get('sp_calculator_data');
         const monthlyGoal = calculatorData ? parseFloat(calculatorData.monthlyRevenue) : 5000;
 
         // Calcul du progrès

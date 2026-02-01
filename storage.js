@@ -4,15 +4,15 @@
 const Storage = {
     // Clés de stockage
     KEYS: {
-        USER: 'qp_user',
-        CLIENTS: 'qp_clients',
-        QUOTES: 'qp_quotes',
-        INVOICES: 'qp_invoices',
-        SERVICES: 'qp_services',
-        LEADS: 'qp_leads', // New Key
-        REVENUES: 'qp_revenues',
-        EXPENSES: 'qp_expenses',
-        SETTINGS: 'qp_settings'
+        USER: 'sp_user',
+        CLIENTS: 'sp_clients',
+        QUOTES: 'sp_quotes',
+        INVOICES: 'sp_invoices',
+        SERVICES: 'sp_services',
+        LEADS: 'sp_leads', // New Key
+        REVENUES: 'sp_revenues',
+        EXPENSES: 'sp_expenses',
+        SETTINGS: 'sp_settings'
     },
 
     // Initialisation
