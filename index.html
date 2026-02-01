@@ -164,7 +164,7 @@
                     <p class="hero-note" style="color: var(--text-muted);">Précis. Puissant. Professionnel.</p>
                 </div>
             </div>
-            <div class="hero-image" style="flex: 1; display: flex; justify-content: flex-end; position: relative;">
+            <div class="hero-image" style="position: relative;">
                 <div class="floating-card"
                     style="background: #0a0a0a; border: 1px solid var(--primary); padding: 2rem; border-radius: 20px; box-shadow: var(--shadow-glow);">
                     <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.5rem;">Objectif Mensuel
@@ -286,6 +286,13 @@
                                 <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
                             </svg></span> <span class="nav-label">Marketplace</span>
                     </a>
+                    <a href="#" class="nav-item" data-nav="profile">
+                        <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg></span> <span class="nav-label">Mon Profil</span>
+                    </a>
                     <a href="#" class="nav-item" data-nav="settings">
                         <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
                                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -298,11 +305,8 @@
                 </nav>
 
                 <div class="sidebar-footer">
-                    <button class="license-button" onclick="App.showLicenseModal()">
-                        Activer une licence
-                    </button>
                     <button class="license-button" onclick="Auth.logout()"
-                        style="margin-top: 0.5rem; background: transparent; border-color: var(--border-light);">
+                        style="background: transparent; border-color: var(--border-light);">
                         Déconnexion
                     </button>
                 </div>
@@ -375,6 +379,11 @@
                 <!-- Settings Page -->
                 <div id="settings-page" class="page">
                     <div id="settings-content"></div>
+                </div>
+
+                <!-- Profile Page -->
+                <div id="profile-page" class="page">
+                    <div id="profile-content"></div>
                 </div>
             </main>
         </div>
@@ -663,6 +672,7 @@
         <script src="leads.js"></script>
         <script src="marketplace.js"></script>
         <script src="invoices.js"></script>
+        <script src="profile.js"></script>
         <script src="settings.js"></script>
         <script src="pdf-generator.js"></script>
         <script src="taxes.js"></script>

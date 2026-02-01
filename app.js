@@ -155,6 +155,7 @@ const App = {
             quotes: 'Documents',
             network: 'Mon Cercle',
             marketplace: 'Marketplace',
+            profile: 'Mon Profil',
             settings: 'Réglages'
         };
 
@@ -188,7 +189,8 @@ const App = {
         }
         if (page === 'marketplace' && typeof Marketplace !== 'undefined') Marketplace.render('marketplace-content', ...args);
         if (page === 'scoper' && typeof Scoper !== 'undefined') Scoper.render();
-        if (page === 'settings' && typeof Settings !== 'undefined') Settings.render(...args);
+        if (page === 'profile' && typeof Profile !== 'undefined') Profile.render();
+        if (page === 'settings' && typeof Settings !== 'undefined') Settings.render();
         if (page === 'services' && typeof Services !== 'undefined') {
             this.navigateTo('settings', 'services'); // Redirect to Settings with services tab
         }
@@ -322,7 +324,7 @@ const App = {
         const isPro = Storage.isPro();
         if (infoContainer) {
             infoContainer.innerHTML = `
-                <div class="user-profile" onclick="App.navigateTo('settings')" style="cursor: pointer;">
+                <div class="user-profile" onclick="App.navigateTo('profile')" style="cursor: pointer;">
                     <div class="user-avatar">${user.company?.name?.charAt(0) || 'U'}</div>
                     <div class="user-details">
                         <span class="user-name">${user.company?.name || user.email}</span>
