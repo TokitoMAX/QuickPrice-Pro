@@ -48,9 +48,9 @@ const Dashboard = {
 
                 <!-- Pipeline Card -->
                 <div class="stat-card pipeline-card">
-                    <span class="stat-label">Pipeline (Devis en cours)</span>
+                    <span class="stat-label">Volume de Devis (Objectif)</span>
                     <div class="stat-value" style="color: var(--primary-light);">${App.formatCurrency(pipelineValue)}</div>
-                    <div class="stat-description">${quotes.filter(q => q.status === 'sent').length} devis en attente</div>
+                    <div class="stat-description">${pipelineValue > 0 ? `${quotes.filter(q => q.status === 'sent').length} devis en attente` : 'Lancez votre prospection !'}</div>
                 </div>
 
                 <div class="stat-card">

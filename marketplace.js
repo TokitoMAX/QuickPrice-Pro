@@ -59,17 +59,7 @@ const Marketplace = {
     },
 
     getPublicMissions() {
-        let missions = JSON.parse(localStorage.getItem('sp_marketplace_missions') || '[]');
-        if (missions.length === 0) {
-            // Missions factices pour le Radar
-            missions = [
-                { id: 'm1', title: 'Refonte Site E-commerce', budget: '2500', zone: 'Guadeloupe (971)', urgency: 'Moyenne', description: 'Besoin d\'un expert Shopify pour refonte visuelle.' },
-                { id: 'm2', title: 'Campagne Publicitaire Meta', budget: '1200', zone: 'Martinique (972)', urgency: 'Haute', description: 'Cherche media buyer pour campagne locale urgente.' },
-                { id: 'm3', title: 'Application de Livraison', budget: '8000', zone: 'Réunion (974)', urgency: 'Basse', description: 'Projet long terme : développement MVP app mobile.' }
-            ];
-            localStorage.setItem('sp_marketplace_missions', JSON.stringify(missions));
-        }
-        return missions;
+        return JSON.parse(localStorage.getItem('sp_marketplace_missions') || '[]');
     },
 
     // ===== MISSIONS RADAR (from others) =====
@@ -308,12 +298,8 @@ const Marketplace = {
 
     // ===== EXPERTS =====
     renderExperts(container) {
-        // Simulation d'experts vérifiés DomTomConnect
-        const experts = [
-            { id: 'exp1', name: 'Jean Expert', specialty: 'Expertise Comptable', zone: 'Guadeloupe (971)', avatar: 'J' },
-            { id: 'exp2', name: 'Marie Strategie', specialty: 'Marketing Digital', zone: 'Martinique (972)', avatar: 'M' },
-            { id: 'exp3', name: 'Lucas Tech', specialty: 'Développement Web', zone: 'Réunion (974)', avatar: 'L' }
-        ];
+        // Liste des experts (dynamique dans le futur)
+        const experts = []; // Initialement vide pour éviter le "fake" content
 
         container.innerHTML = `
             <div class="experts-header" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; gap: 2rem; flex-wrap: wrap;">
@@ -352,36 +338,8 @@ const Marketplace = {
     },
 
     addExpertToCircle(id) {
-        // Retrouver l'expert dans la liste simulée
-        const experts = [
-            { id: 'exp1', name: 'Jean Expert', specialty: 'Expertise Comptable', zone: 'Guadeloupe (971)', avatar: 'J' },
-            { id: 'exp2', name: 'Marie Strategie', specialty: 'Marketing Digital', zone: 'Martinique (972)', avatar: 'M' },
-            { id: 'exp3', name: 'Lucas Tech', specialty: 'Développement Web', zone: 'Réunion (974)', avatar: 'L' }
-        ];
-
-        const expert = experts.find(e => e.id === id);
-        if (!expert) return;
-
-        const myCircle = JSON.parse(localStorage.getItem('sp_network_providers') || '[]');
-
-        // Vérifier si déjà présent
-        if (myCircle.some(p => p.email === expert.id)) {
-            App.showNotification('Cet expert est déjà dans votre cercle.', 'info');
-            return;
-        }
-
-        const newPartner = {
-            id: 'dtc_' + expert.id,
-            name: expert.name,
-            specialty: expert.specialty,
-            city: expert.zone,
-            isVerified: true
-        };
-
-        myCircle.push(newPartner);
-        localStorage.setItem('sp_network_providers', JSON.stringify(myCircle));
-        App.showNotification(`${expert.name} ajouté à votre cercle !`, 'success');
-        this.switchTab('providers');
+        // Dans une version réelle, on récupèrerait les données de l'API
+        App.showNotification('Fonctionnalité d\'ajout en cours de développement.', 'info');
     },
 
     applyForMission(id) {
