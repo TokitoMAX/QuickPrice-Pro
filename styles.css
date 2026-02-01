@@ -2360,7 +2360,66 @@ select.form-input:focus {
     }
 }
 
+/* ============================================
+   MOBILE HEADER
+   ============================================ */
+
+.mobile-header {
+    display: none;
+    /* Hidden by default, shown on mobile */
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: var(--bg-sidebar);
+    border-bottom: 1px solid var(--border);
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1rem;
+    z-index: 100;
+    backdrop-filter: var(--backdrop-blur);
+}
+
+.mobile-page-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--white);
+    flex: 1;
+    text-align: center;
+}
+
+.mobile-home-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: var(--primary-glass);
+    border: 1px solid var(--primary);
+    border-radius: 10px;
+    color: var(--primary-light);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.mobile-home-btn:hover {
+    background: var(--primary);
+    color: white;
+    transform: scale(1.05);
+}
+
+.mobile-home-btn svg {
+    display: block;
+}
+
 @media (max-width: 768px) {
+
+    /* Show mobile header */
+    .mobile-header {
+        display: flex;
+    }
+
     .mobile-menu-toggle {
         display: flex;
     }
@@ -2384,7 +2443,14 @@ select.form-input:focus {
 
     .main-content {
         margin-left: 0 !important;
-        padding: 1.5rem;
+        padding: 1rem;
+        padding-top: 70px;
+        /* Account for mobile header */
+    }
+
+    .page {
+        padding: 0;
+        /* Remove page padding on mobile, use main-content padding */
     }
 
     .page-header {
@@ -2392,12 +2458,31 @@ select.form-input:focus {
         align-items: flex-start;
         gap: 1.5rem;
         margin-bottom: 2rem;
+        padding-bottom: 1rem;
     }
 
     .stats-grid {
         grid-template-columns: 1fr;
         gap: 1rem;
     }
+
+    .quick-actions {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.8rem;
+    }
+
+    .action-card {
+        padding: 1rem;
+    }
+
+    .action-icon {
+        font-size: 1.5rem;
+    }
+
+    .action-label {
+        font-size: 0.8rem;
+    }
+
 
     /* Mobile Sidebar Overlay */
     .sidebar-backdrop {

@@ -309,6 +309,24 @@
                 </div>
             </aside>
 
+            <!-- Mobile Header (visible only on mobile) -->
+            <div class="mobile-header">
+                <button id="mobile-home-btn" class="mobile-home-btn" onclick="App.navigateTo('dashboard')"
+                    aria-label="Retour au tableau de bord">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                    </svg>
+                </button>
+                <span id="mobile-page-title" class="mobile-page-title">Tableau de Bord</span>
+                <button id="mobile-menu-toggle-header" class="mobile-menu-toggle" onclick="App.toggleMobileMenu()">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+
             <!-- Main Content -->
             <main class="main-content">
                 <!-- Dashboard Page -->
@@ -329,6 +347,11 @@
                 <!-- Clients Page -->
                 <div id="clients-page" class="page">
                     <div id="clients-content"></div>
+                </div>
+
+                <!-- Network/Cercle Page -->
+                <div id="network-page" class="page">
+                    <div id="network-content"></div>
                 </div>
 
                 <!-- Marketplace Hub (Consolidated) -->

@@ -138,6 +138,33 @@ const App = {
                     link.classList.add('active');
                 }
             });
+
+            // Update mobile header
+            this.updateMobileHeader(page);
+        }
+    },
+
+    // Update mobile header title and home button visibility
+    updateMobileHeader(page) {
+        const titleMap = {
+            dashboard: 'Tableau de Bord',
+            scoper: 'Estimateur',
+            quotes: 'Documents',
+            network: 'Mon Cercle',
+            marketplace: 'Marketplace',
+            settings: 'Réglages'
+        };
+
+        const mobileTitle = document.getElementById('mobile-page-title');
+        const homeBtn = document.getElementById('mobile-home-btn');
+
+        if (mobileTitle) {
+            mobileTitle.textContent = titleMap[page] || 'SoloPrice Pro';
+        }
+
+        // Show home button on all pages except dashboard
+        if (homeBtn) {
+            homeBtn.style.display = page === 'dashboard' ? 'none' : 'flex';
         }
     },
 
