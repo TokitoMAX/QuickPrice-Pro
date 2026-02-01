@@ -1,11 +1,11 @@
-// QuickPrice Pro - Invoices Module
+// SoloPrice Pro - Invoices Module
 
 const Invoices = {
     editingId: null,
     currentItems: [],
 
-    render() {
-        const container = document.getElementById('invoices-content');
+    render(containerId = 'invoices-content') {
+        const container = document.getElementById(containerId);
         if (!container) return;
 
         const invoices = Storage.getInvoices();
@@ -100,7 +100,7 @@ const Invoices = {
 
         const clients = Storage.getClients();
         if (clients.length === 0) {
-            App.showNotification('⚠️ Veuillez d\'abord créer un client', 'error');
+            App.showNotification('Veuillez d\'abord créer un client', 'error');
             App.navigateTo('clients');
             return;
         }
@@ -471,7 +471,7 @@ const Invoices = {
         if (typeof PDFGenerator !== 'undefined') {
             PDFGenerator.generateInvoice(invoice, client, user);
         } else {
-            App.showNotification('⚠️ Module PDF en cours de chargement...', 'error');
+            App.showNotification('Module PDF en cours de chargement...', 'error');
         }
     },
 

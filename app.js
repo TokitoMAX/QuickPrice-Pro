@@ -1,4 +1,4 @@
-// QuickPrice Pro - Application Manager
+// SoloPrice Pro - Application Manager
 // Gestion du routing et de la navigation SPA
 
 const App = {
@@ -7,9 +7,11 @@ const App = {
     // Initialisation de l'application
     init() {
         this.setupNavigation();
+        this.setupMobileOverlay();
         this.checkFreemiumLimits();
         this.renderProBadge();
         this.renderUserInfo();
+        if (window.Network) Network.init();
 
         // Router / Landing Logic
         const savedPage = localStorage.getItem('qp_last_page') || 'dashboard';
@@ -25,6 +27,7 @@ const App = {
             const appWrapper = document.getElementById('app-wrapper');
             if (landing) landing.style.display = 'block';
             if (appWrapper) appWrapper.style.display = 'none';
+            this.updateLandingStats();
         }
 
         // Event listener pour fermeture de modales
@@ -52,12 +55,44 @@ const App = {
         this.navigateTo('dashboard');
     },
 
+    updateLandingStats() {
+        if (typeof Storage === 'undefined') return;
+        const quotes = Storage.getQuotes() || [];
+        const pipelineValue = quotes
+            .filter(q => q.status === 'sent')
+            .reduce((sum, q) => sum + (q.total || 0), 0);
+
+        const valueEl = document.getElementById('landing-pipeline-value');
+        const progressEl = document.getElementById('landing-pipeline-progress');
+
+        if (valueEl) valueEl.textContent = this.formatCurrency(pipelineValue);
+        if (progressEl) {
+            const calculatorData = Storage.get('qp_calculator_data');
+            const monthlyGoal = calculatorData ? parseFloat(calculatorData.monthlyRevenue) : 5000;
+            const progress = Math.min(100, Math.round((pipelineValue / monthlyGoal) * 100));
+            progressEl.style.width = `${progress}%`;
+        }
+    },
+
+    setupMobileOverlay() {
+        if (!document.querySelector('.sidebar-backdrop')) {
+            const overlay = document.createElement('div');
+            overlay.className = 'sidebar-backdrop';
+            overlay.onclick = () => {
+                this.toggleMobileMenu();
+            };
+            document.body.appendChild(overlay);
+        }
+    },
+
     toggleMobileMenu() {
         const sidebar = document.querySelector('.sidebar');
-        sidebar.classList.toggle('active');
-
+        const overlay = document.querySelector('.sidebar-backdrop');
         const toggle = document.getElementById('mobile-menu-toggle');
+
+        sidebar.classList.toggle('active');
         toggle.classList.toggle('active');
+        if (overlay) overlay.classList.toggle('active');
     },
 
     // Configuration de la navigation
@@ -71,11 +106,13 @@ const App = {
         });
     },
 
-    // Navigation entre pages
-    navigateTo(page) {
+    // Navigation entre pages avec support d'arguments pour le rendu
+    navigateTo(page, ...args) {
         // Fermer le menu mobile si ouvert
         const sidebar = document.querySelector('.sidebar');
+        const overlay = document.querySelector('.sidebar-backdrop');
         if (sidebar) sidebar.classList.remove('active');
+        if (overlay) overlay.classList.remove('active');
         const toggle = document.getElementById('mobile-menu-toggle');
         if (toggle) toggle.classList.remove('active');
 
@@ -90,6 +127,9 @@ const App = {
             pageElement.classList.add('active');
             this.currentPage = page;
 
+            // Render specific page content with args
+            this.renderPageContent(page, ...args);
+
             // Mettre à jour l'état actif de la navigation
             document.querySelectorAll('[data-nav]').forEach(link => {
                 link.classList.remove('active');
@@ -97,44 +137,37 @@ const App = {
                     link.classList.add('active');
                 }
             });
+        }
+    },
 
-            // Charger le contenu de la page
-            this.loadPage(page);
+    // Nouveau helper pour le rendu des pages
+    renderPageContent(page, ...args) {
+        if (page === 'dashboard' && typeof Dashboard !== 'undefined') Dashboard.render();
+        if (page === 'quotes' && typeof Quotes !== 'undefined') Quotes.render();
+        if (page === 'invoices' && typeof Invoices !== 'undefined') {
+            this.navigateTo('quotes'); // Redirect to Documents
+            setTimeout(() => Quotes.switchTab('invoices'), 100);
+        }
+        if (page === 'network' && typeof Network !== 'undefined') Network.render();
+        if (page === 'clients' && typeof Clients !== 'undefined') {
+            this.navigateTo('network'); // Redirect to Cercle
+            setTimeout(() => Network.switchTab('clients'), 100);
+        }
+        if (page === 'leads' && typeof Leads !== 'undefined') {
+            this.navigateTo('marketplace'); // Redirect to Marketplace
+            setTimeout(() => Marketplace.switchTab('leads'), 100);
+        }
+        if (page === 'marketplace' && typeof Marketplace !== 'undefined') Marketplace.render();
+        if (page === 'scoper' && typeof Scoper !== 'undefined') Scoper.render();
+        if (page === 'settings' && typeof Settings !== 'undefined') Settings.render(...args);
+        if (page === 'services' && typeof Services !== 'undefined') {
+            this.navigateTo('settings', 'services'); // Redirect to Settings with services tab
         }
     },
 
     // Chargement du contenu de chaque page
     loadPage(page) {
-        switch (page) {
-            case 'dashboard':
-                if (typeof Dashboard !== 'undefined') Dashboard.render();
-                break;
-            case 'calculator':
-                // Déjà chargé dans calculator.js
-                if (typeof loadCalculatorInputs === 'function') loadCalculatorInputs();
-                break;
-            case 'services':
-                if (typeof Services !== 'undefined') Services.render();
-                break;
-            case 'scoper':
-                if (typeof Scoper !== 'undefined') Scoper.render();
-                break;
-            case 'clients':
-                if (typeof Clients !== 'undefined') Clients.render();
-                break;
-            case 'leads':
-                if (typeof Leads !== 'undefined') Leads.render();
-                break;
-            case 'quotes':
-                if (typeof Quotes !== 'undefined') Quotes.render();
-                break;
-            case 'invoices':
-                if (typeof Invoices !== 'undefined') Invoices.render();
-                break;
-            case 'settings':
-                if (typeof Settings !== 'undefined') Settings.render();
-                break;
-        }
+        this.renderPageContent(page);
     },
 
     // Vérification des limites freemium
@@ -187,13 +220,14 @@ const App = {
         if (!user) return;
 
         const infoContainer = document.getElementById('user-info-sidebar');
+        const isPro = Storage.isPro();
         if (infoContainer) {
             infoContainer.innerHTML = `
                 <div class="user-profile">
                     <div class="user-avatar">${user.company?.name?.charAt(0) || 'U'}</div>
                     <div class="user-details">
                         <span class="user-name">${user.company?.name || user.email}</span>
-                        <span class="user-status">${user.isPro ? '<span class="pro-badge-small">PRO</span>' : 'Version Gratuite'}</span>
+                        <span class="user-status">${isPro ? '<span class="pro-badge-small">PRO</span>' : 'Version Gratuite'}</span>
                     </div>
                 </div>
             `;
@@ -256,7 +290,7 @@ const App = {
             return;
         }
 
-        // Validation simple de la clé (format: QPPRO-XXXXX-XXXXX-XXXXX)
+        // Validation simple de la clé (format: SPPRO-XXXXX-XXXXX-XXXXX)
         const isValid = this.validateLicenseKey(licenseKey);
 
         if (isValid) {
@@ -275,8 +309,8 @@ const App = {
 
     // Validation de clé de licence
     validateLicenseKey(key) {
-        // Format attendu: QPPRO-XXXXX-XXXXX-XXXXX
-        const pattern = /^QPPRO-[A-Z0-9]{5}-[A-Z0-9]{5}-[A-Z0-9]{5}$/;
+        // Format attendu: SPPRO-XXXXX-XXXXX-XXXXX
+        const pattern = /^[A-Z]{2,5}PRO-[A-Z0-9]{5}-[A-Z0-9]{5}-[A-Z0-9]{5}$/;
         return pattern.test(key);
     },
 
@@ -288,7 +322,7 @@ const App = {
             ).join('');
         };
 
-        return `QPPRO-${randomSegment()}-${randomSegment()}-${randomSegment()}`;
+        return `SPPRO-${randomSegment()}-${randomSegment()}-${randomSegment()}`;
     },
 
     // Notification système
@@ -303,7 +337,7 @@ const App = {
             right: 20px;
             background: ${type === 'error' ? 'linear-gradient(135deg, #ef4444, #dc2626)' :
                 type === 'success' ? 'linear-gradient(135deg, #10b981, #059669)' :
-                    'linear-gradient(135deg, #6366f1, #4f46e5)'};
+                    'linear-gradient(135deg, #111827, #000000)'};
             color: white;
             padding: 1rem 1.5rem;
             border-radius: 12px;

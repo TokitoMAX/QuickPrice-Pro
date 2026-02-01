@@ -1,4 +1,4 @@
-// QuickPrice Pro - PDF Generator (Simple version sans bibliothèque externe)
+// SoloPrice Pro - PDF Generator
 
 const PDFGenerator = {
     generateInvoice(invoice, client, user) {
@@ -12,29 +12,49 @@ const PDFGenerator = {
             <head>
                 <meta charset="utf-8">
                 <title>Facture ${invoice.number}</title>
+                <link rel="preconnect" href="https://fonts.googleapis.com">
+                <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+                <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
                 <style>
-                    body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 40px; }
-                    .header { display: flex; justify-content: space-between; margin-bottom: 50px; border-bottom: 2px solid #eee; padding-bottom: 20px; }
-                    .company-info h1 { margin: 0; color: #2c3e50; font-size: 24px; }
-                    .invoice-details { text-align: right; }
-                    .invoice-details h2 { margin: 0; color: #2c3e50; }
-                    .client-section { display: flex; justify-content: space-between; margin-bottom: 40px; }
-                    .box { width: 45%; }
-                    .box h3 { border-bottom: 1px solid #ccc; padding-bottom: 5px; margin-bottom: 10px; font-size: 14px; text-transform: uppercase; color: #7f8c8d; }
-                    table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
-                    th { background: #f8f9fa; padding: 12px; text-align: left; border-bottom: 2px solid #ddd; font-weight: 600; color: #2c3e50; }
-                    td { padding: 12px; border-bottom: 1px solid #eee; }
-                    .totals { width: 40%; margin-left: auto; }
-                    .total-row { display: flex; justify-content: space-between; padding: 10px 0; }
-                    .final-total { font-size: 18px; font-weight: bold; border-top: 2px solid #2c3e50; color: #2c3e50; }
-                    .footer { margin-top: 60px; text-align: center; font-size: 12px; color: #7f8c8d; border-top: 1px solid #eee; padding-top: 20px; }
-                    .status-stamp {
-                        position: absolute; top: 150px; right: 40px;
-                        font-size: 20px; font-weight: bold; color: #c0392b; border: 3px solid #c0392b;
-                        padding: 10px; transform: rotate(-15deg); opacity: 0.5;
-                    }
-                    .status-stamp.paid { color: #27ae60; border-color: #27ae60; }
+                    :root { --primary: #10b981; --primary-dark: #059669; --text: #000000; --text-light: #4b5563; --border: #e5e7eb; --bg-light: #f9fafb; }
+                    * { box-sizing: border-box; }
+                    body { font-family: 'Inter', system-ui, sans-serif; color: var(--text); line-height: 1.5; max-width: 850px; margin: 0 auto; padding: 50px; background: #fff; }
+                    .header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 60px; border-bottom: 1px solid var(--border); padding-bottom: 30px; }
+                    .header-logo { max-height: 80px; max-width: 250px; object-fit: contain; }
+                    .company-logo-type { font-size: 24px; font-weight: 800; color: var(--primary); letter-spacing: -0.02em; }
+                    .company-details { font-size: 13px; color: var(--text-light); margin-top: 10px; }
+                    .invoice-meta { text-align: right; }
+                    .invoice-title { font-size: 24px; font-weight: 800; color: var(--primary); margin: 0 0 10px 0; text-transform: uppercase; letter-spacing: 2px; }
+                    .meta-grid { display: grid; grid-template-columns: auto auto; gap: 5px 20px; font-size: 13px; color: var(--text-light); }
+                    .meta-label { font-weight: 600; color: var(--text); }
                     
+                    .info-section { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; margin-bottom: 50px; }
+                    .address-box h3 { font-size: 11px; font-weight: 700; color: var(--text-light); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 5px; }
+                    .address-box p { font-size: 14px; margin: 0; }
+                    .address-box strong { font-size: 15px; color: var(--text); display: block; margin-bottom: 4px; }
+                    
+                    table { width: 100%; border-collapse: collapse; margin-bottom: 40px; }
+                    th { background: var(--bg-light); padding: 12px 15px; text-align: left; font-size: 11px; font-weight: 700; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); }
+                    td { padding: 15px 15px; border-bottom: 1px solid var(--border); font-size: 14px; vertical-align: top; }
+                    .item-desc { font-weight: 600; color: var(--text); margin-bottom: 4px; }
+                    .item-subdesc { font-size: 12px; color: var(--text-light); }
+                    
+                    .totals-container { display: flex; justify-content: flex-end; }
+                    .totals-table { width: 280px; }
+                    .total-row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 14px; }
+                    .total-row.grand { border-top: 2px solid var(--primary); margin-top: 10px; padding-top: 12px; font-size: 18px; font-weight: 800; color: var(--primary); }
+                    
+                    .status-stamp {
+                        position: absolute; top: 120px; left: 50%; transform: translateX(-50%) rotate(-12deg);
+                        font-size: 48px; font-weight: 900; color: rgba(16, 185, 129, 0.2); border: 8px solid rgba(16, 185, 129, 0.2);
+                        padding: 10px 30px; border-radius: 12px; pointer-events: none;
+                    }
+                    
+                    .legal-section { margin-top: 60px; padding: 25px; background: var(--bg-light); border-radius: 12px; font-size: 12px; color: var(--text-light); }
+                    .legal-section h4 { font-size: 13px; color: var(--text); margin-top: 0; margin-bottom: 10px; }
+                    
+                    .footer { margin-top: 40px; text-align: center; font-size: 10px; color: var(--text-light); border-top: 1px solid var(--border); padding-top: 20px; }
+
                     @media print {
                         body { padding: 0; }
                         .no-print { display: none; }
@@ -42,40 +62,38 @@ const PDFGenerator = {
                 </style>
             </head>
             <body>
-                ${invoice.status === 'paid' ? '<div class="status-stamp paid">PAYÉE</div>' : ''}
+                ${invoice.status === 'paid' ? '<div class="status-stamp">PAYÉE</div>' : ''}
                 
                 <div class="header">
-                    <div class="company-info">
-                        <h1>${user.company.name || 'Votre Entreprise'}</h1>
-                        <p>
+                    <div class="company-brand">
+                        ${user.company.logo ? `<img src="${user.company.logo}" class="header-logo">` : `<div class="company-logo-type">${user.company.name || 'QuickPrice User'}</div>`}
+                        <div class="company-details">
                             ${user.company.address || ''}<br>
-                            ${user.company.email || ''}<br>
-                            ${user.company.phone || ''}<br>
-                            ${user.company.siret ? `SIRET: ${user.company.siret}` : ''}
-                        </p>
+                            ${user.company.email || ''} | ${user.company.phone || ''}
+                        </div>
                     </div>
-                    <div class="invoice-details">
-                        <h2>FACTURE</h2>
-                        <p>
-                            <strong>N°:</strong> ${invoice.number}<br>
-                            <strong>Date:</strong> ${date}<br>
-                            <strong>Échéance:</strong> ${dueDate}
-                        </p>
+                    <div class="invoice-meta">
+                        <h1 class="invoice-title">Facture</h1>
+                        <div class="meta-grid">
+                            <span class="meta-label">Référence</span> <span>${invoice.number}</span>
+                            <span class="meta-label">Date</span> <span>${date}</span>
+                            <span class="meta-label">Échéance</span> <span>${dueDate}</span>
+                        </div>
                     </div>
                 </div>
 
-                <div class="client-section">
-                    <div class="box">
+                <div class="info-section">
+                    <div class="address-box">
                         <h3>Émetteur</h3>
                         <p>
-                            <strong>${user.company.name || 'Votre Nom'}</strong><br>
-                            ${user.company.address || ''}
+                            <strong>${user.company.name}</strong>
+                            ${user.company.siret ? `SIRET : ${user.company.siret}` : ''}
                         </p>
                     </div>
-                    <div class="box">
-                        <h3>Facturé à</h3>
+                    <div class="address-box">
+                        <h3>Destinataire</h3>
                         <p>
-                            <strong>${client.name}</strong><br>
+                            <strong>${client.name}</strong>
                             ${client.address || ''}<br>
                             ${client.zipCode || ''} ${client.city || ''}<br>
                             ${client.email || ''}
@@ -86,50 +104,59 @@ const PDFGenerator = {
                 <table>
                     <thead>
                         <tr>
-                            <th>Description</th>
-                            <th style="width: 100px; text-align: right;">Qté</th>
-                            <th style="width: 120px; text-align: right;">Prix Unit.</th>
-                            <th style="width: 120px; text-align: right;">Total</th>
+                            <th style="min-width: 300px;">Prestation</th>
+                            <th style="text-align: right;">Quantité</th>
+                            <th style="text-align: right;">Prix Unitaire</th>
+                            <th style="text-align: right;">Total HT</th>
                         </tr>
                     </thead>
                     <tbody>
                         ${invoice.items.map(item => `
                         <tr>
-                            <td>${item.description}</td>
+                            <td>
+                                <div class="item-desc">${item.description}</div>
+                            </td>
                             <td style="text-align: right;">${item.quantity}</td>
                             <td style="text-align: right;">${App.formatCurrency(item.unitPrice)}</td>
-                            <td style="text-align: right;">${App.formatCurrency(item.quantity * item.unitPrice)}</td>
+                            <td style="text-align: right; font-weight: 600;">${App.formatCurrency(item.quantity * item.unitPrice)}</td>
                         </tr>
                         `).join('')}
                     </tbody>
                 </table>
 
-                <div class="totals">
-                    <div class="total-row">
-                        <span>Sous-total HT</span>
-                        <span>${App.formatCurrency(invoice.subtotal)}</span>
-                    </div>
-                    <div class="total-row">
-                        <span>TVA (${settings.taxRate}%)</span>
-                        <span>${App.formatCurrency(invoice.tax)}</span>
-                    </div>
-                    <div class="total-row final-total">
-                        <span>Total TTC</span>
-                        <span>${App.formatCurrency(invoice.total)}</span>
+                <div class="totals-container">
+                    <div class="totals-table">
+                        <div class="total-row">
+                            <span class="text-light">Sous-total HT</span>
+                            <span style="font-weight: 600;">${App.formatCurrency(invoice.subtotal)}</span>
+                        </div>
+                        <div class="total-row">
+                            <span class="text-light">TVA (${settings.taxRate}%)</span>
+                            <span style="font-weight: 600;">${App.formatCurrency(invoice.tax)}</span>
+                        </div>
+                        <div class="total-row grand">
+                            <span>TOTAL TTC</span>
+                            <span>${App.formatCurrency(invoice.total)}</span>
+                        </div>
                     </div>
                 </div>
 
-                <div style="margin-top: 40px; font-size: 14px;">
-                    <p><strong>Conditions de paiement :</strong> ${invoice.dueDate ? 'Paiement avant l\'échéance' : 'Paiement à réception'}</p>
-                    <p style="font-size: 12px; color: #666;">En cas de retard de paiement, indemnité forfaitaire pour frais de recouvrement : 40€ (art. L.441-6 du Code de Commerce).</p>
+                <div class="legal-section">
+                    <h4>Informations de paiement</h4>
+                    <p>
+                        Règlement souhaité par virement bancaire.<br>
+                        <strong>Échéance :</strong> ${dueDate}<br>
+                        <em>Pénalités de retard : 3 fois le taux d'intérêt légal + 40€ d'indemnité forfaitaire (Art. L441-6).</em>
+                    </p>
+                    ${user.company.footer_mentions ? `<div style="margin-top: 15px; border-top: 1px solid var(--border); padding-top: 10px;">${user.company.footer_mentions}</div>` : ''}
                 </div>
 
                 <div class="footer">
-                    <p>Facture générée par QuickPrice Pro</p>
+                    Document généré par <strong>SoloPrice Pro</strong> &bull; www.soloprice-pro.fr
                 </div>
 
                 <script>
-                    window.onload = function() { window.print(); }
+                    window.onload = function() { setTimeout(() => window.print(), 500); }
                 </script>
             </body>
             </html>
@@ -145,13 +172,16 @@ const PDFGenerator = {
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
 
-        App.showNotification('Impression lancée.', 'success');
+        App.showNotification('Facture prête pour impression.', 'success');
     },
 
     generateQuote(quote, client, user) {
         const settings = Storage.get(Storage.KEYS.SETTINGS);
         const date = new Date(quote.createdAt).toLocaleDateString('fr-FR');
-        const validUntil = new Date(new Date(quote.createdAt).getTime() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString('fr-FR');
+
+        // Dynamic validity
+        const validityDays = settings.quoteValidityDays || 30;
+        const validUntil = new Date(new Date(quote.createdAt).getTime() + validityDays * 24 * 60 * 60 * 1000).toLocaleDateString('fr-FR');
 
         const htmlContent = `
             <!DOCTYPE html>
@@ -159,24 +189,44 @@ const PDFGenerator = {
             <head>
                 <meta charset="utf-8">
                 <title>Devis ${quote.number}</title>
+                <link rel="preconnect" href="https://fonts.googleapis.com">
+                <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+                <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
                 <style>
-                    body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 40px; }
-                    .header { display: flex; justify-content: space-between; margin-bottom: 50px; border-bottom: 2px solid #eee; padding-bottom: 20px; }
-                    .company-info h1 { margin: 0; color: #2c3e50; font-size: 24px; }
-                    .invoice-details { text-align: right; }
-                    .invoice-details h2 { margin: 0; color: #2c3e50; }
-                    .client-section { display: flex; justify-content: space-between; margin-bottom: 40px; }
-                    .box { width: 45%; }
-                    .box h3 { border-bottom: 1px solid #ccc; padding-bottom: 5px; margin-bottom: 10px; font-size: 14px; text-transform: uppercase; color: #7f8c8d; }
-                    table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
-                    th { background: #f8f9fa; padding: 12px; text-align: left; border-bottom: 2px solid #ddd; font-weight: 600; color: #2c3e50; }
-                    td { padding: 12px; border-bottom: 1px solid #eee; }
-                    .totals { width: 40%; margin-left: auto; }
-                    .total-row { display: flex; justify-content: space-between; padding: 10px 0; }
-                    .final-total { font-size: 18px; font-weight: bold; border-top: 2px solid #2c3e50; color: #2c3e50; }
-                    .footer { margin-top: 60px; text-align: center; font-size: 12px; color: #7f8c8d; border-top: 1px solid #eee; padding-top: 20px; }
-                    .signature-box { margin-top: 60px; page-break-inside: avoid; border: 1px solid #eee; padding: 20px; width: 60%; margin-left: auto; }
-                    .signature-box p { margin-bottom: 40px; font-weight: bold; }
+                    :root { --primary: #10b981; --primary-dark: #059669; --text: #000000; --text-light: #4b5563; --border: #e5e7eb; --bg-light: #f9fafb; }
+                    * { box-sizing: border-box; }
+                    body { font-family: 'Inter', system-ui, sans-serif; color: var(--text); line-height: 1.5; max-width: 850px; margin: 0 auto; padding: 50px; background: #fff; }
+                    .header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 60px; border-bottom: 1px solid var(--border); padding-bottom: 30px; }
+                    .header-logo { max-height: 80px; max-width: 250px; object-fit: contain; }
+                    .company-logo-type { font-size: 24px; font-weight: 800; color: var(--primary); letter-spacing: -0.02em; }
+                    .company-details { font-size: 13px; color: var(--text-light); margin-top: 10px; }
+                    .invoice-meta { text-align: right; }
+                    .invoice-title { font-size: 24px; font-weight: 800; color: var(--primary); margin: 0 0 10px 0; text-transform: uppercase; letter-spacing: 2px; }
+                    .meta-grid { display: grid; grid-template-columns: auto auto; gap: 5px 20px; font-size: 13px; color: var(--text-light); }
+                    .meta-label { font-weight: 600; color: var(--text); }
+                    
+                    .info-section { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; margin-bottom: 50px; }
+                    .address-box h3 { font-size: 11px; font-weight: 700; color: var(--text-light); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 5px; }
+                    .address-box p { font-size: 14px; margin: 0; }
+                    .address-box strong { font-size: 15px; color: var(--text); display: block; margin-bottom: 4px; }
+                    
+                    table { width: 100%; border-collapse: collapse; margin-bottom: 40px; }
+                    th { background: var(--bg-light); padding: 12px 15px; text-align: left; font-size: 11px; font-weight: 700; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); }
+                    td { padding: 15px 15px; border-bottom: 1px solid var(--border); font-size: 14px; vertical-align: top; }
+                    .item-desc { font-weight: 600; color: var(--text); margin-bottom: 4px; }
+                    
+                    .totals-container { display: flex; justify-content: flex-end; }
+                    .totals-table { width: 280px; }
+                    .total-row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 14px; }
+                    .total-row.grand { border-top: 2px solid var(--primary); margin-top: 10px; padding-top: 12px; font-size: 18px; font-weight: 800; color: var(--primary); }
+                    
+                    .signature-area { display: grid; grid-template-columns: 1.5fr 1fr; gap: 40px; margin-top: 50px; page-break-inside: avoid; }
+                    .signature-box { border: 1px solid var(--border); border-radius: 12px; padding: 25px; position: relative; min-height: 180px; background: var(--bg-light); }
+                    .signature-label { font-size: 11px; font-weight: 700; color: var(--text-light); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 80px; display: block; }
+                    .signature-mention { font-size: 10px; color: var(--text-light); text-align: center; font-style: italic; }
+                    
+                    .footer { font-size: 10px; color: var(--text-light); border-top: 1px solid var(--border); padding-top: 20px; text-align: center; margin-top: 40px; }
+
                     @media print {
                         body { padding: 0; }
                         .no-print { display: none; }
@@ -185,37 +235,35 @@ const PDFGenerator = {
             </head>
             <body>
                 <div class="header">
-                    <div class="company-info">
-                        <h1>${user.company.name || 'Votre Entreprise'}</h1>
-                        <p>
+                    <div class="company-brand">
+                        ${user.company.logo ? `<img src="${user.company.logo}" class="header-logo">` : `<div class="company-logo-type">${user.company.name || 'QuickPrice User'}</div>`}
+                        <div class="company-details">
                             ${user.company.address || ''}<br>
-                            ${user.company.email || ''}<br>
-                            ${user.company.phone || ''}<br>
-                            ${user.company.siret ? `SIRET: ${user.company.siret}` : ''}
-                        </p>
+                            ${user.company.email || ''} | ${user.company.phone || ''}
+                        </div>
                     </div>
-                    <div class="invoice-details">
-                        <h2>DEVIS</h2>
-                        <p>
-                            <strong>N°:</strong> ${quote.number}<br>
-                            <strong>Date:</strong> ${date}<br>
-                            <strong>Valide jusqu'au:</strong> ${validUntil}
-                        </p>
+                    <div class="invoice-meta">
+                        <h1 class="invoice-title">Devis</h1>
+                        <div class="meta-grid">
+                            <span class="meta-label">Référence</span> <span>${quote.number}</span>
+                            <span class="meta-label">Date</span> <span>${date}</span>
+                            <span class="meta-label">Échéance</span> <span>${validUntil}</span>
+                        </div>
                     </div>
                 </div>
 
-                <div class="client-section">
-                    <div class="box">
-                        <h3>Émis par</h3>
+                <div class="info-section">
+                    <div class="address-box">
+                        <h3>Prestataire</h3>
                         <p>
-                            <strong>${user.company.name || 'Votre Nom'}</strong><br>
-                            ${user.company.address || ''}
+                            <strong>${user.company.name}</strong>
+                            ${user.company.siret ? `SIRET : ${user.company.siret}` : ''}
                         </p>
                     </div>
-                    <div class="box">
-                        <h3>adressé à</h3>
+                    <div class="address-box">
+                        <h3>Client</h3>
                         <p>
-                            <strong>${client.name}</strong><br>
+                            <strong>${client.name}</strong>
                             ${client.address || ''}<br>
                             ${client.zipCode || ''} ${client.city || ''}<br>
                             ${client.email || ''}
@@ -226,51 +274,61 @@ const PDFGenerator = {
                 <table>
                     <thead>
                         <tr>
-                            <th>Description</th>
-                            <th style="width: 100px; text-align: right;">Qté</th>
-                            <th style="width: 120px; text-align: right;">Prix Unit.</th>
-                            <th style="width: 120px; text-align: right;">Total</th>
+                            <th style="min-width: 300px;">Désignation des prestations</th>
+                            <th style="text-align: right;">Quantité</th>
+                            <th style="text-align: right;">Prix Unitaire</th>
+                            <th style="text-align: right;">Total HT</th>
                         </tr>
                     </thead>
                     <tbody>
                         ${quote.items.map(item => `
                         <tr>
-                            <td>${item.description}</td>
+                            <td>
+                                <div class="item-desc">${item.description}</div>
+                            </td>
                             <td style="text-align: right;">${item.quantity}</td>
                             <td style="text-align: right;">${App.formatCurrency(item.unitPrice)}</td>
-                            <td style="text-align: right;">${App.formatCurrency(item.quantity * item.unitPrice)}</td>
+                            <td style="text-align: right; font-weight: 600;">${App.formatCurrency(item.quantity * item.unitPrice)}</td>
                         </tr>
                         `).join('')}
                     </tbody>
                 </table>
 
-                <div class="totals">
-                    <div class="total-row">
-                        <span>Sous-total HT</span>
-                        <span>${App.formatCurrency(quote.subtotal)}</span>
-                    </div>
-                    <div class="total-row">
-                        <span>TVA (${settings.taxRate}%)</span>
-                        <span>${App.formatCurrency(quote.tax)}</span>
-                    </div>
-                    <div class="total-row final-total">
-                        <span>Total TTC</span>
-                        <span>${App.formatCurrency(quote.total)}</span>
+                <div class="totals-container">
+                    <div class="totals-table">
+                        <div class="total-row">
+                            <span class="text-light">Sous-total HT</span>
+                            <span style="font-weight: 600;">${App.formatCurrency(quote.subtotal)}</span>
+                        </div>
+                        <div class="total-row">
+                            <span class="text-light">TVA (${settings.taxRate}%)</span>
+                            <span style="font-weight: 600;">${App.formatCurrency(quote.tax)}</span>
+                        </div>
+                        <div class="total-row grand">
+                            <span>TOTAL TTC</span>
+                            <span>${App.formatCurrency(quote.total)}</span>
+                        </div>
                     </div>
                 </div>
 
-                <div class="signature-box">
-                    <p>Bon pour accord</p>
-                    <div style="font-size: 12px; color: #666; margin-bottom: 20px;">Date et signature précédées de la mention "Bon pour accord"</div>
-                    <div style="height: 50px; border-bottom: 1px dotted #ccc;"></div>
+                <div class="signature-area">
+                    <div style="font-size: 13px; color: var(--text-light);">
+                        <p><strong>Conditions de vente :</strong></p>
+                        <p>Ce devis est valable pour une durée de ${validityDays} jours à compter de sa date d'émission. Le début des travaux est conditionné par le retour de ce devis signé accompagné du versement de l'acompte convenu.</p>
+                        ${user.company.footer_mentions ? `<div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid var(--border);">${user.company.footer_mentions}</div>` : ''}
+                    </div>
+                    <div class="signature-box">
+                        <span class="signature-label">Bon pour accord</span>
+                        <div class="signature-mention">Date, signature et cachet</div>
+                    </div>
                 </div>
 
                 <div class="footer">
-                    <p>Devis généré par QuickPrice Pro</p>
+                    Devis généré par <strong>SoloPrice Pro</strong> &bull; www.soloprice-pro.fr
                 </div>
 
                 <script>
-                    window.onload = function() { window.print(); }
+                    window.onload = function() { setTimeout(() => window.print(), 500); }
                 </script>
             </body>
             </html>
@@ -280,13 +338,13 @@ const PDFGenerator = {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.target = '_blank'; // Open in new tab which triggers print
-        a.download = `Devis_${quote.number}.html`; // Fallback name
+        a.target = '_blank';
+        a.download = `Devis_${quote.number}.html`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
 
-        App.showNotification('Devis généré.', 'success');
+        App.showNotification('Devis prêt pour impression.', 'success');
     }
 };

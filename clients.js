@@ -1,10 +1,10 @@
-// QuickPrice Pro - Clients Module
+// SoloPrice Pro - Clients Module
 
 const Clients = {
     editingId: null,
 
-    render() {
-        const container = document.getElementById('clients-content');
+    render(containerId = 'clients-content') {
+        const container = document.getElementById(containerId);
         if (!container) return;
 
         const clients = Storage.getClients();
@@ -46,6 +46,9 @@ const Clients = {
                                     <td>${App.formatDate(client.createdAt)}</td>
                                     <td>
                                         <div class="action-buttons">
+                                            <button class="btn-icon" onclick="Clients.showDetail('${client.id}')" title="Voir détails et historique">
+                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                            </button>
                                             <button class="btn-icon" onclick="Clients.createQuoteFor('${client.id}')" title="Créer un devis">
                                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
                                             </button>
@@ -138,6 +141,11 @@ const Clients = {
                         </div>
 
                         <div class="form-group full-width">
+                            <label class="form-label">Notes</label>
+                            <textarea name="notes" class="form-input" rows="3"></textarea>
+                        </div>
+
+                        <div class="form-group full-width">
                             <label class="form-label">Prestations habituelles pour ce client</label>
                             <div class="services-selection-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.5rem; margin-top: 0.5rem; max-height: 200px; overflow-y: auto; padding: 1rem; background: var(--dark); border-radius: 8px; border: 1px solid var(--border);">
                                 ${Storage.getServices().map(service => `
@@ -174,7 +182,7 @@ const Clients = {
         const header = form.previousElementSibling.querySelector('h3');
         header.textContent = 'Modifier le Client';
 
-        ['name', 'email', 'phone', 'siret', 'address', 'zipCode', 'city'].forEach(field => {
+        ['name', 'email', 'phone', 'siret', 'address', 'zipCode', 'city', 'notes'].forEach(field => {
             const input = form.elements[field];
             if (input && client[field]) {
                 input.value = client[field];
@@ -204,6 +212,7 @@ const Clients = {
             address: formData.get('address'),
             zipCode: formData.get('zipCode'),
             city: formData.get('city'),
+            notes: formData.get('notes'),
             defaultServiceIds: Array.from(formData.getAll('defaultServiceIds'))
         };
 
@@ -270,6 +279,123 @@ const Clients = {
         const container = document.getElementById('client-form-container');
         container.innerHTML = '';
         this.editingId = null;
+    },
+
+    // Detail View Logic - Overhauled Professional CRM Experience
+    showDetail(id) {
+        this.editingId = id;
+        const client = Storage.getClient(id);
+        if (!client) return;
+
+        const modal = document.getElementById('client-detail-modal');
+        const nameEl = document.getElementById('detail-client-name');
+        const detailContent = modal.querySelector('.modal-body');
+
+        nameEl.textContent = client.name;
+
+        // Fetch activity
+        const quotes = Storage.getQuotes().filter(q => q.clientId === id).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        const invoices = Storage.getInvoices().filter(i => i.clientId === id).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+        // Merge activities into a timeline
+        const activities = [
+            ...quotes.map(q => ({ type: 'quote', date: q.createdAt, data: q, icon: '', label: 'Devis créé' })),
+            ...invoices.map(i => ({ type: 'invoice', date: i.createdAt, data: i, icon: '', label: 'Facture créée' }))
+        ].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+        detailContent.innerHTML = `
+            <div class="crm-detail-grid" style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 2rem;">
+                
+                <!-- Left Column: Contact & Metadata -->
+                <div class="crm-sidebar-info">
+                    <div class="detail-section">
+                        <h4 style="font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 1rem; letter-spacing: 1px;">Coordonnées</h4>
+                        <div class="info-card" style="background: rgba(255,255,255,0.03); padding: 1rem; border-radius: 12px; border: 1px solid var(--border);">
+                            <div class="detail-info-row" style="margin-bottom: 0.8rem;">
+                                <div class="label" style="font-size: 0.75rem; color: var(--text-muted);">Email</div>
+                                <div class="value" style="font-weight: 600;">${client.email || 'Non renseigné'}</div>
+                            </div>
+                            <div class="detail-info-row" style="margin-bottom: 0.8rem;">
+                                <div class="label" style="font-size: 0.75rem; color: var(--text-muted);">Téléphone</div>
+                                <div class="value" style="font-weight: 600;">${client.phone || '-'}</div>
+                            </div>
+                            <div class="detail-info-row" style="margin-bottom: 0.8rem;">
+                                <div class="label" style="font-size: 0.75rem; color: var(--text-muted);">Adresse</div>
+                                <div class="value" style="font-weight: 600; font-size: 0.9rem;">${client.address || '-'}<br>${client.zipCode || ''} ${client.city || ''}</div>
+                            </div>
+                            <div class="detail-info-row">
+                                <div class="label" style="font-size: 0.75rem; color: var(--text-muted);">SIRET</div>
+                                <div class="value" style="font-weight: 600; font-family: monospace;">${client.siret || '-'}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="detail-section" style="margin-top: 2rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <h4 style="font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 1px;">Notes CRM</h4>
+                            <button class="button-secondary small" onclick="Clients.saveNotes()" style="padding: 2px 8px; font-size: 0.7rem;">Enregistrer</button>
+                        </div>
+                        <textarea id="client-detail-notes" class="form-input" style="width: 100%; min-height: 120px; font-size: 0.9rem; line-height: 1.4; background: rgba(0,0,0,0.2);" placeholder="Prenez des notes sur ce client (projets, préférences, rappels)...">${client.notes || ''}</textarea>
+                    </div>
+                </div>
+
+                <!-- Right Column: Activity Timeline -->
+                <div class="crm-main-activity">
+                    <h4 style="font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 1rem; letter-spacing: 1px;">Fil d'activité</h4>
+                    
+                    <div class="crm-timeline" style="position: relative; padding-left: 2rem;">
+                        <div class="timeline-line" style="position: absolute; left: 7px; top: 0; bottom: 0; width: 2px; background: var(--border);"></div>
+                        
+                        ${activities.length > 0 ? activities.map(act => `
+                            <div class="timeline-item" style="position: relative; margin-bottom: 1.5rem;">
+                                <div class="timeline-dot" style="position: absolute; left: -2rem; width: 16px; height: 16px; border-radius: 50%; background: var(--dark); border: 2px solid var(--primary); z-index: 1;"></div>
+                                <div class="timeline-content" style="background: rgba(255,255,255,0.03); padding: 1rem; border-radius: 12px; border: 1px solid var(--border); transition: all 0.2s ease;">
+                                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.3rem;">
+                                        <div style="font-weight: 700; font-size: 0.95rem;">${act.icon} ${act.label}</div>
+                                        <div style="font-size: 0.75rem; color: var(--text-muted);">${App.formatDate(act.date)}</div>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <div style="font-size: 0.85rem; color: var(--text-muted);">${act.type === 'quote' ? 'Devis' : 'Facture'} #${act.data.number}</div>
+                                        <div style="font-weight: 700; color: var(--primary-light);">${App.formatCurrency(act.data.total)}</div>
+                                    </div>
+                                    <div style="margin-top: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
+                                        <span class="status-badge status-${act.data.status || 'draft'}" style="font-size: 0.7rem; padding: 2px 8px;">${act.data.status || 'Brouillon'}</span>
+                                        <button class="link-button" style="font-size: 0.75rem;" onclick="App.navigateTo('${act.type === 'quote' ? 'quotes' : 'quotes'}')">Voir le document</button>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('') : `
+                            <div class="empty-timeline" style="padding: 2rem; text-align: center; color: var(--text-muted); background: rgba(255,255,255,0.02); border-radius: 12px; border: 1px dashed var(--border);">
+                                <p style="font-size: 0.9rem;">Aucune activité facturable pour le moment.</p>
+                            </div>
+                        `}
+                    </div>
+                </div>
+
+            </div>
+            
+            <div class="modal-actions" style="border-top: 1px solid var(--border); padding-top: 1.5rem; margin-top: 1.5rem;">
+                <button class="button-secondary" onclick="Clients.closeDetail()">Fermer</button>
+                <div style="flex: 1;"></div>
+                <button class="button-primary" onclick="Clients.createQuoteFor('${id}')">Créer un Devis</button>
+                <button class="button-primary" onclick="Clients.createInvoiceFor('${id}')">Créer une Facture</button>
+            </div>
+        `;
+
+        modal.classList.add('active');
+    },
+
+    closeDetail() {
+        const modal = document.getElementById('client-detail-modal');
+        modal.classList.remove('active');
+        this.editingId = null;
+    },
+
+    saveNotes() {
+        if (!this.editingId) return;
+        const notesEl = document.getElementById('client-detail-notes');
+        Storage.updateClient(this.editingId, { notes: notesEl.value });
+        App.showNotification('Note client mise à jour.', 'success');
     },
 
     escapeHtml(text) {

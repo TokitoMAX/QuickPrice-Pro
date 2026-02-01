@@ -1,8 +1,11 @@
-// QuickPrice Pro - Project Scoper Module
-// Outil d'estimation intelligente de projets
+// SoloPrice Pro - Project Scoper Module
+// Outil d'estimation intelligente de projets (Value Pricing & Risk Management)
 
 const Scoper = {
     tasks: [],
+    settings: {
+        hideHours: true
+    },
 
     render() {
         const container = document.getElementById('scoper-content');
@@ -12,91 +15,104 @@ const Scoper = {
             <div class="page-header">
                 <div>
                     <h1 class="page-title">Estimateur de Projet</h1>
-                    <p class="page-subtitle">Calculez une estimation juste basée sur l'incertitude</p>
+                    <p class="page-subtitle">Ingénierie de prix basée sur la valeur et le risque.</p>
                 </div>
-                <!-- <button class="button-secondary" onclick="Scoper.clear()">
-                    Tout effacer
-                </button> -->
             </div>
 
-            <div class="calculator-container" style="grid-template-columns: 1.5fr 1fr;">
+            <div class="calculator-container" style="display: grid; grid-template-columns: 1.6fr 1fr; gap: 2rem;">
                 
                 <!-- Task List Input -->
-                <div class="calculator-inputs">
-                    <div class="section-header-inline">
-                        <h3>Liste des Tâches</h3>
+                <div class="calculator-inputs" style="background: #0a0a0a; border: 1px solid var(--border); padding: 2rem; border-radius: var(--radius-lg);">
+                    <div class="section-header-inline" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                        <h3 style="font-size: 1.2rem; font-weight: 700;">Décomposition du Projet</h3>
                         <button class="button-secondary small" onclick="Scoper.addTask()">
-                            Ajouter une tâche
+                            Ajouter une ligne
                         </button>
                     </div>
 
                     <div id="scoper-tasks" class="scoper-tasks-list">
-                        ${this.tasks.length === 0 ? '<div class="empty-state text-sm"><p>Ajoutez des tâches pour commencer l\'estimation</p></div>' : ''}
+                        <!-- Rempli par renderTasks -->
                     </div>
                 </div>
 
                 <!-- Results & Analysis -->
-                <div class="results-panel">
-                    <div class="results-header">
-                        <h3 class="results-title">Estimation</h3>
+                <div class="results-panel" style="background: #050505; border: 1px solid var(--primary-glass); padding: 2rem; border-radius: var(--radius-lg); box-shadow: var(--shadow-glow);">
+                    <div class="results-header" style="margin-bottom: 2rem;">
+                        <h3 class="results-title" style="font-size: 1.1rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Analyse Financière</h3>
                     </div>
 
-                    <div class="result-cards">
-                        <div class="result-card primary">
-                            <div class="result-label">Temps Estimé (Sécurisé)</div>
-                            <div class="result-value" id="scoper-total-time">0h</div>
-                            <div class="result-description" id="scoper-range">Entre 0h et 0h</div>
+                    <div class="result-cards" style="display: grid; gap: 1rem; margin-bottom: 2.5rem;">
+                        <div class="result-card primary" style="background: rgba(16, 185, 129, 0.05); border: 1px solid var(--primary); padding: 1.5rem; border-radius: 12px;">
+                            <div class="result-label" style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">Montant à Facturer (TTC)</div>
+                            <div class="result-value" id="scoper-total-price" style="font-size: 2.5rem; font-weight: 800; color: var(--primary);">0€</div>
+                            <div class="result-description" id="scoper-tax-info" style="font-size: 0.8rem; opacity: 0.7;">Zone: France (20%)</div>
                         </div>
 
-                        <div class="result-card">
-                            <div class="result-label">Montant Suggéré</div>
-                            <div class="result-value" id="scoper-total-price">0€</div>
-                            <div class="result-description">Basé sur votre TJM</div>
+                        <div class="result-card" style="background: #111; border: 1px solid var(--border); padding: 1rem; border-radius: 12px;">
+                            <div class="result-label" style="font-size: 0.75rem; color: var(--text-muted);">Temps de Production Est.</div>
+                            <div class="result-value" id="scoper-total-time" style="font-size: 1.4rem; font-weight: 700; color: var(--white);">0h</div>
+                            <div class="result-description" id="scoper-range" style="font-size: 0.75rem;">Sécurité incluse</div>
                         </div>
                     </div>
 
-                    <div class="breakdown-section">
-                        <h4 class="breakdown-title">Paramètres</h4>
+                    <div class="breakdown-section" style="background: transparent; border-top: 1px solid var(--border); padding-top: 1.5rem;">
+                        <h4 class="breakdown-title" style="margin-bottom: 1.5rem; font-weight: 600;">Stratégie & Rentabilité</h4>
+                        
                         <div class="input-group">
-                            <label class="form-label">TJM (Tarif Journalier)</label>
+                            <label class="form-label">Ton TJM Cible (€)</label>
                             <input type="number" id="scoper-tjm" class="form-input" value="${this.getTJM()}" onchange="Scoper.calculate()">
                         </div>
+
                         <div class="input-group">
-                            <label class="form-label">Marge d'incertitude (%)</label>
+                            <label class="form-label">Marge de Sécurité (%)</label>
                             <input type="number" id="scoper-buffer" class="form-input" value="20" onchange="Scoper.calculate()">
                         </div>
+
+                        <div class="input-group" style="margin-top: 1rem; padding: 1rem; background: rgba(255,255,255,0.02); border-radius: 8px; border: 1px solid var(--border);">
+                            <label class="checkbox-container" style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                                <input type="checkbox" id="scoper-hide-hours" ${this.settings.hideHours ? 'checked' : ''} onchange="Scoper.updateSettings('hideHours', this.checked)">
+                                <span style="font-size: 0.85rem; font-weight: 500;">Masquer le détail des heures sur le devis</span>
+                            </label>
+                            <p class="text-xs text-muted" style="margin-top: 5px; margin-left: 25px;">Focus sur la valeur perçue.</p>
+                        </div>
+
+                        <div id="scoper-profitability-indicator" style="margin-top: 1.5rem;">
+                            <!-- Rentabilité interne -->
+                        </div>
+
+                        <div id="scoper-tax-container" style="margin-top: 1rem;"></div>
                     </div>
 
-                    <div class="calculator-actions">
-                        <button class="button-primary full-width" onclick="Scoper.createQuote()" ${this.tasks.length === 0 ? 'disabled' : ''} id="btn-create-quote">
-                            Créer le Devis
+                    <div class="calculator-actions" style="margin-top: 2rem;">
+                        <button class="button-primary full-width" onclick="Scoper.createQuote()" id="btn-create-quote" style="padding: 1rem; font-size: 1rem;">
+                            Générer le Devis Officiel
                         </button>
                     </div>
                 </div>
             </div>
         `;
 
-        if (this.tasks.length > 0) {
-            this.renderTasks();
-        } else {
-            // Add a default empty task
-            this.addTask();
+        this.renderTasks();
+
+        if (typeof TaxEngine !== 'undefined') {
+            TaxEngine.renderSelector('scoper-tax-container', () => this.calculate());
         }
+
+        this.calculate();
     },
 
     getTJM() {
         const calcData = Storage.get('qp_calculator_data');
-        if (calcData && calcData.hoursPerDay && calcData.monthlyRevenue) {
-            // Recalculate TJM roughly if not customized
-            // For simplicity, let's try to get it from the last calculator run result displayed if possible, 
-            // but here we just re-estimate or default to 350
-            return 400;
-        }
-        return 400;
+        return calcData?.dailyRate || 400;
+    },
+
+    updateSettings(key, value) {
+        this.settings[key] = value;
+        this.calculate();
     },
 
     addTask() {
-        this.tasks.push({ name: '', min: 1, max: 2 });
+        this.tasks.push({ name: '', min: 1, max: 2, manualPrice: null });
         this.renderTasks();
         this.calculate();
     },
@@ -107,134 +123,215 @@ const Scoper = {
         this.calculate();
     },
 
+    updateTask(index, field, value) {
+        if (field === 'name') this.tasks[index].name = value;
+        else if (field === 'manualPrice') {
+            this.tasks[index].manualPrice = value === '' ? null : parseFloat(value);
+        } else {
+            this.tasks[index][field] = parseFloat(value) || 0;
+        }
+        this.calculate();
+    },
+
     renderTasks() {
         const container = document.getElementById('scoper-tasks');
         if (!container) return;
 
         if (this.tasks.length === 0) {
-            container.innerHTML = '<div class="empty-state text-sm"><p>Ajoutez des tâches pour commencer l\'estimation</p></div>';
+            container.innerHTML = `
+                <div class="empty-state" style="padding: 3rem; text-align: center; background: rgba(255,255,255,0.02); border-radius: 12px; border: 2px dashed var(--border);">
+                    <p class="text-muted">Aucune tâche définie.</p>
+                    <button class="button-secondary small" onclick="Scoper.addTask()" style="margin-top: 1rem;">Commencer l'estimation</button>
+                </div>
+            `;
             return;
         }
 
-        container.innerHTML = this.tasks.map((task, index) => `
-            <div class="scoper-task-row">
-                <input type="text" placeholder="Nom de la tâche" class="form-input task-name" value="${task.name}" onchange="Scoper.updateTask(${index}, 'name', this.value)">
-                <div class="task-times">
-                    <div class="time-input">
-                        <label>Min (h)</label>
-                        <input type="number" class="form-input" value="${task.min}" min="0.5" step="0.5" onchange="Scoper.updateTask(${index}, 'min', this.value)">
+        container.innerHTML = this.tasks.map((task, index) => {
+            // Calculated price as fallback/ghost
+            const tjm = parseFloat(document.getElementById('scoper-tjm')?.value) || this.getTJM();
+            const buffer = parseFloat(document.getElementById('scoper-buffer')?.value) || 20;
+            const hours = task.max * (1 + buffer / 100);
+            const calculatedPrice = (hours / 7) * tjm;
+
+            return `
+                <div class="scoper-task-row" data-index="${index}">
+                    <div class="task-main">
+                        <input type="text" placeholder="Nom de la prestation (ex: Design UI)" class="form-input task-name" value="${task.name}" onchange="Scoper.updateTask(${index}, 'name', this.value)">
                     </div>
-                    <div class="time-input">
-                        <label>Max (h)</label>
-                        <input type="number" class="form-input" value="${task.max}" min="0.5" step="0.5" onchange="Scoper.updateTask(${index}, 'max', this.value)">
+                    
+                    <div class="task-details">
+                        <div class="time-inputs">
+                            <div class="time-field">
+                                <label>Optimiste (h)</label>
+                                <input type="number" class="form-input mini" value="${task.min}" step="0.5" onchange="Scoper.updateTask(${index}, 'min', this.value)">
+                            </div>
+                            <div class="time-field">
+                                <label>Réaliste (h)</label>
+                                <input type="number" class="form-input mini" value="${task.max}" step="0.5" onchange="Scoper.updateTask(${index}, 'max', this.value)">
+                            </div>
+                        </div>
+
+                        <div class="price-override">
+                            <label>Prix Forfaitaire (€)</label>
+                            <input type="number" 
+                                   class="form-input" 
+                                   placeholder="${Math.round(calculatedPrice)}€" 
+                                   value="${task.manualPrice !== null ? task.manualPrice : ''}" 
+                                   onchange="Scoper.updateTask(${index}, 'manualPrice', this.value)">
+                        </div>
+
+                        <button class="btn-icon btn-danger" onclick="Scoper.removeTask(${index})" title="Supprimer">✕</button>
                     </div>
                 </div>
-                <button class="btn-icon btn-danger" onclick="Scoper.removeTask(${index})">Supprimer</button>
-            </div>
-        `).join('');
+            `;
+        }).join('');
 
-        // Improve styling for rows
-        const style = document.createElement('style');
-        if (!document.getElementById('scoper-styles')) {
-            style.id = 'scoper-styles';
+        // Inject Styles
+        if (!document.getElementById('scoper-styles-v2')) {
+            const style = document.createElement('style');
+            style.id = 'scoper-styles-v2';
             style.textContent = `
                 .scoper-task-row {
-                    display: grid;
-                    grid-template-columns: 2fr 1.5fr auto;
-                    gap: 1rem;
-                    background: var(--dark);
-                    padding: 1rem;
-                    border-radius: 10px;
-                    margin-bottom: 0.8rem;
-                    align-items: center;
+                    background: var(--bg-card);
                     border: 1px solid var(--border);
+                    border-radius: 12px;
+                    padding: 1.2rem;
+                    margin-bottom: 1rem;
+                    transition: transform 0.2s;
                 }
-                .task-times {
+                .scoper-task-row:hover { border-color: var(--primary-glass); }
+                
+                .task-main { margin-bottom: 1rem; }
+                .task-main .task-name { font-weight: 600; font-size: 1rem; width: 100%; }
+                
+                .task-details {
                     display: flex;
-                    gap: 0.5rem;
+                    justify-content: space-between;
+                    align-items: flex-end;
+                    gap: 1.5rem;
                 }
-                .time-input label {
-                    font-size: 0.7rem;
-                    color: var(--text-muted);
-                    display: block;
-                    margin-bottom: 2px;
-                }
-                .full-width { width: 100%; }
-                .small { padding: 0.4rem 0.8rem; font-size: 0.8rem; }
+                
+                .time-inputs { display: flex; gap: 0.8rem; }
+                .time-field label { display: block; font-size: 0.7rem; color: var(--text-muted); margin-bottom: 4px; }
+                .form-input.mini { width: 70px; text-align: center; }
+                
+                .price-override { flex: 1; }
+                .price-override label { display: block; font-size: 0.7rem; font-weight: 600; color: var(--primary); margin-bottom: 4px; }
+                .price-override input { width: 100%; border-color: var(--primary-glass); background: rgba(var(--primary-rgb), 0.05); }
+                
+                .btn-icon.btn-danger { padding: 0.5rem; border-radius: 6px; }
             `;
             document.head.appendChild(style);
         }
     },
 
-    updateTask(index, field, value) {
-        if (field === 'name') this.tasks[index].name = value;
-        else this.tasks[index][field] = parseFloat(value) || 0;
-
-        this.calculate();
-    },
-
     calculate() {
-        const tjm = parseFloat(document.getElementById('scoper-tjm').value) || 0;
-        const buffer = parseFloat(document.getElementById('scoper-buffer').value) || 0;
+        const tjm = parseFloat(document.getElementById('scoper-tjm')?.value) || 400;
+        const buffer = parseFloat(document.getElementById('scoper-buffer')?.value) || 20;
 
-        let totalMin = 0;
-        let totalMax = 0;
+        let totalHoursInternal = 0;
+        let totalCalculatedHT = 0;
+        let totalFinalHT = 0;
 
         this.tasks.forEach(t => {
-            totalMin += t.min;
-            totalMax += t.max;
+            const safeHours = t.max * (1 + buffer / 100);
+            totalHoursInternal += safeHours;
+
+            const taskCalculatedHT = (safeHours / 7) * tjm;
+            totalCalculatedHT += taskCalculatedHT;
+
+            totalFinalHT += t.manualPrice !== null ? t.manualPrice : taskCalculatedHT;
         });
 
-        // PERT-like estimate or just Safe Estimate (Max + Buffer)
-        // Let's do a "Safe Estimate" = Max + (Max - Min)*0.2 (Uncertainty)
-        // Or simple: Average of inputs + buffer
+        // Tax Calculation
+        let totalTTC = totalFinalHT;
+        let taxLabel = "HT";
+        if (typeof TaxEngine !== 'undefined') {
+            const taxResult = TaxEngine.calculate(totalFinalHT);
+            totalTTC = taxResult.ttc;
+            taxLabel = `TTC (incl. ${TaxEngine.getCurrent().name})`;
+            document.getElementById('scoper-tax-info').textContent = taxLabel;
+        }
 
-        const avg = (totalMin + totalMax) / 2;
-        const uncertainty = totalMax - totalMin;
+        // Display results
+        const priceEl = document.getElementById('scoper-total-price');
+        if (priceEl) priceEl.textContent = App.formatCurrency(totalTTC);
 
-        // Logic: We aim for the upper bound to be safe, plus a buffer percentage
-        const safeHours = totalMax * (1 + buffer / 100);
+        const timeEl = document.getElementById('scoper-total-time');
+        if (timeEl) timeEl.textContent = `${Math.ceil(totalHoursInternal)}h`;
 
-        const price = (safeHours / 7) * tjm; // Assuming 7h days
+        const rangeEl = document.getElementById('scoper-range');
+        if (rangeEl) {
+            const minH = this.tasks.reduce((s, t) => s + t.min, 0);
+            const maxH = this.tasks.reduce((s, t) => s + t.max, 0);
+            rangeEl.textContent = `Production: ${minH}h à ${maxH}h (+${buffer}% sécu)`;
+        }
 
-        document.getElementById('scoper-total-time').textContent = `${Math.ceil(safeHours)}h`;
-        document.getElementById('scoper-range').textContent = `Min: ${totalMin}h - Max: ${totalMax}h`;
-        document.getElementById('scoper-total-price').textContent = App.formatCurrency(price);
+        this.renderProfitability(totalFinalHT, totalCalculatedHT);
 
         const btn = document.getElementById('btn-create-quote');
         if (btn) btn.disabled = this.tasks.length === 0;
     },
 
-    createQuote() {
-        const tjm = parseFloat(document.getElementById('scoper-tjm').value) || 0;
-        const buffer = parseFloat(document.getElementById('scoper-buffer').value) || 0;
+    renderProfitability(finalHT, targetHT) {
+        const container = document.getElementById('scoper-profitability-indicator');
+        if (!container) return;
 
-        // Prepare quote items
+        if (this.tasks.length === 0) {
+            container.innerHTML = '';
+            return;
+        }
+
+        const ratio = targetHT > 0 ? (finalHT / targetHT) * 100 : 100;
+        let color = 'var(--text-muted)';
+        let message = 'Basé sur ton TJM standard';
+
+        if (ratio > 110) {
+            color = 'var(--success)';
+            message = `Prix Premium (+${Math.round(ratio - 100)}% de valeur ajoutée)`;
+        } else if (ratio < 90) {
+            color = 'var(--danger)';
+            message = `Attention : Prix inférieur à ton TJM cible (-${Math.round(100 - ratio)}%)`;
+        } else {
+            color = 'var(--primary)';
+            message = 'Prix aligné sur ton TJM cible';
+        }
+
+        container.innerHTML = `
+            <div style="padding: 1rem; background: rgba(255,255,255,0.03); border-radius: 10px; border-left: 4px solid ${color};">
+                <div style="font-size: 0.75rem; font-weight: 600; color: ${color}; text-transform: uppercase; letter-spacing: 0.5px;">Indicateur de Santé</div>
+                <div style="font-size: 0.9rem; margin-top: 4px;">${message}</div>
+            </div>
+        `;
+    },
+
+    createQuote() {
+        const tjm = parseFloat(document.getElementById('scoper-tjm')?.value) || 400;
+        const buffer = parseFloat(document.getElementById('scoper-buffer')?.value) || 20;
+
         const quoteItems = [];
 
         this.tasks.forEach(task => {
             if (!task.name) return;
-            // Estimate for this task (taking the max + pro-rated buffer)
-            const hours = task.max * (1 + buffer / 100);
-            const days = hours / 7;
-            const price = days * tjm; // This would be the total price for this task
 
-            // We can add it as days or flat fee. Let's do flat fee based on estimate
+            const hours = task.max * (1 + buffer / 100);
+            const calculatedPrice = (hours / 7) * tjm;
+            const finalPrice = task.manualPrice !== null ? task.manualPrice : calculatedPrice;
+
+            let description = task.name;
+            if (!this.settings.hideHours) {
+                description += ` (Est. ${Math.ceil(hours)}h)`;
+            }
+
             quoteItems.push({
-                description: `${task.name} (Est. ${task.max}h)`,
-                quantity: 1, // Flat fee
-                unitPrice: price
+                description: description,
+                quantity: 1,
+                unitPrice: finalPrice
             });
         });
 
         if (quoteItems.length > 0) {
-            // Store as draft items
-            // Since `qp_draft_quote_item` expects a single object in our previous logic,
-            // we might want to update quotes.js to handle an array OR modify scoper to merge.
-            // Let's try to update quotes.js to handle arrays first, OR just check if I can pass array.
-            // Checking quotes.js... it does `this.currentItems = [draftItem]`. It supports one item.
-            // Let's improve the storage key to be `qp_draft_quote_items` (plural) to support multiple.
-
             Storage.set('qp_draft_quote_items', quoteItems);
             App.navigateTo('quotes');
             if (typeof Quotes !== 'undefined') {

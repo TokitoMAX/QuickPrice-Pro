@@ -1,7 +1,16 @@
+// SoloPrice Pro - Services Catalog Module
 const Services = {
-    render() {
+    render(containerId = 'services-content') {
         // Rediriger vers les paramètres car le catalogue y a été déplacé
-        App.navigateTo('settings');
+        if (containerId === 'services-content') {
+            App.navigateTo('settings');
+            return;
+        }
+
+        const container = document.getElementById(containerId);
+        if (!container) return;
+
+        container.innerHTML = this.renderGroupedServices(Storage.getServices());
     },
 
     renderGroupedServices(services) {

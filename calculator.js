@@ -1,4 +1,4 @@
-// QuickPrice Pro - Calculator Module
+// SoloPrice Pro - Calculator Module
 // Handles TJM and Hourly Rate calculations
 
 function initCalculator() {
@@ -163,4 +163,88 @@ function useRate(type) {
 // Global Exports
 window.calculatePrice = calculatePrice;
 window.useRate = useRate;
-window.loadCalculatorInputs = initCalculator; // Alias for app.js loading
+window.loadCalculatorInputs = initCalculator;
+
+function renderCalculatorUI(containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    container.innerHTML = `
+        <div class="calculator-container" style="grid-template-columns: 1fr; gap: 2rem;">
+            <div class="calculator-inputs" style="padding: 1.5rem; background: var(--bg-sidebar);">
+                <div class="input-group">
+                    <label class="input-label">
+                        <span class="label-text">Objectif Revenu Net Mensuel</span>
+                        <span class="label-hint">Ce que vous voulez "dans votre poche" après charges et impôts.</span>
+                    </label>
+                    <input type="number" id="monthlyRevenue" class="input-field" placeholder="ex: 3000" value="3000">
+                </div>
+
+                <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="input-group">
+                        <label class="input-label"><span class="label-text">Jours travaillés / mois</span></label>
+                        <input type="number" id="workingDays" class="input-field" value="20">
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label"><span class="label-text">Heures / jour</span></label>
+                        <input type="number" id="hoursPerDay" class="input-field" value="7">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">
+                        <span class="label-text">Charges Fixes Mensuelles</span>
+                        <span class="label-hint">Logiciels, loyer, assurance, etc.</span>
+                    </label>
+                    <input type="number" id="monthlyCharges" class="input-field" placeholder="ex: 500" value="500">
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">
+                        <span class="label-text">Taux de Cotisations / Impôts (%)</span>
+                        <span class="label-hint">Ex: 22% pour auto-entrepreneur (services).</span>
+                    </label>
+                    <input type="number" id="taxRate" class="input-field" placeholder="ex: 22" value="22">
+                </div>
+            </div>
+
+            <div class="results-panel" id="resultsPanel" style="padding: 1.5rem;">
+                <div class="result-cards" style="grid-template-columns: 1fr 1fr; display: grid; gap: 1rem;">
+                    <div class="result-card primary">
+                        <div class="result-label">Taux Journalier (TJM)</div>
+                        <div class="result-value" id="dailyRate" style="font-size: 1.8rem;">0 €/j</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-label">Taux Horaire</div>
+                        <div class="result-value" id="hourlyRate" style="font-size: 1.8rem;">0 €/h</div>
+                    </div>
+                </div>
+                
+                <div class="breakdown-section" style="margin-top: 1rem; padding: 1rem;">
+                    <div class="breakdown-items">
+                        <div class="breakdown-item">
+                            <span class="breakdown-label">Net souhaité</span>
+                            <span class="breakdown-value" id="breakdownNet">0 €</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span class="breakdown-label">Charges</span>
+                            <span class="breakdown-value" id="breakdownCharges">0 €</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span class="breakdown-label">Cotisations</span>
+                            <span class="breakdown-value" id="breakdownTax">0 €</span>
+                        </div>
+                        <div class="breakdown-item total">
+                            <span class="breakdown-label">CA Mensuel Requis</span>
+                            <span class="breakdown-value" id="breakdownTotal">0 €</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    initCalculator();
+}
+
+window.renderCalculatorUI = renderCalculatorUI;

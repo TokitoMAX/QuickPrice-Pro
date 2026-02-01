@@ -1,4 +1,4 @@
-// QuickPrice Pro - Authentication Module
+// SoloPrice Pro - Authentication Module
 console.log("auth.js loading...");
 
 const Auth = {

@@ -1,8 +1,8 @@
-// QuickPrice Pro - Leads Module (Radar à Prospects)
+// SoloPrice Pro - Leads Module (Radar à Prospects)
 
 const Leads = {
-    render() {
-        const container = document.getElementById('leads-content');
+    render(containerId = 'leads-content') {
+        const container = document.getElementById(containerId);
         if (!container) return;
 
         const leads = Storage.getLeads();

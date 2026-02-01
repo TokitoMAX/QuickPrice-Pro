@@ -1,4 +1,4 @@
-// QuickPrice Pro - Dashboard Module
+// SoloPrice Pro - Dashboard Module
 
 const Dashboard = {
     render() {
@@ -33,44 +33,40 @@ const Dashboard = {
                 <p class="page-subtitle">Vue d'ensemble de votre activité</p>
             </div>
 
-            <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
-                <!-- Goal Card with Ring -->
-                <div class="goal-card">
-                    <div class="goal-info">
-                        <h3>Objectif Mensuel</h3>
-                        <div class="goal-current">${App.formatCurrency(stats.monthlyRevenue)}</div>
-                        <div class="goal-target">sur ${App.formatCurrency(monthlyGoal)}</div>
+            <div class="stats-grid dashboard-stats">
+                <!-- Goal Card -->
+                <div class="stat-card goal-card">
+                    <span class="stat-label">Objectif Mensuel</span>
+                    <div class="stat-value">${App.formatCurrency(stats.monthlyRevenue)}</div>
+                    <div class="stat-description" style="color: var(--text-muted); font-size: 0.85rem;">
+                        Progrès: <strong>${progress}%</strong> sur ${App.formatCurrency(monthlyGoal)}
                     </div>
-                    <div class="goal-ring-container">
-                        <div class="progress-ring" style="--progress: ${progress}%">
-                            <span class="progress-text">${progress}%</span>
-                        </div>
+                    <div class="progress-bar-container" style="height: 4px; background: var(--border); border-radius: 2px; margin-top: 0.5rem; overflow: hidden;">
+                        <div class="progress-bar-fill" style="height: 100%; width: ${progress}%; background: var(--primary); box-shadow: 0 0 10px var(--primary-glass);"></div>
                     </div>
                 </div>
 
                 <!-- Pipeline Card -->
                 <div class="stat-card pipeline-card">
-                    <div class="stat-header">
-                        <span class="stat-label">Pipeline (Devis en cours)</span>
-                    </div>
-                    <div class="stat-value pipeline-value">${App.formatCurrency(pipelineValue)}</div>
+                    <span class="stat-label">Pipeline (Devis en cours)</span>
+                    <div class="stat-value" style="color: var(--primary-light);">${App.formatCurrency(pipelineValue)}</div>
                     <div class="stat-description">${quotes.filter(q => q.status === 'sent').length} devis en attente</div>
                 </div>
 
                 <div class="stat-card">
-                    <div class="stat-header">
-                        <span class="stat-label">Portefeuille Clients</span>
-                    </div>
+                    <span class="stat-label">Cercle</span>
                     <div class="stat-value">${stats.totalClients}</div>
-                    <div class="stat-description">Base client</div>
+                    <div class="stat-description">Clients & Partenaires</div>
                 </div>
 
-                <div class="stat-card ${stats.unpaidCount > 0 ? 'warning' : ''}">
-                    <div class="stat-header">
-                        <span class="stat-label">Factures en attente</span>
-                    </div>
-                    <div class="stat-value" style="color: ${stats.unpaidCount > 0 ? 'var(--warning)' : ''}">${App.formatCurrency(stats.unpaidAmount)}</div>
-                    <div class="stat-description">${stats.unpaidCount} facture(s)</div>
+                <!-- Strategic Context Card -->
+                <div class="stat-card context-card">
+                    <span class="stat-label">Zone / Fiscalité</span>
+                    <div class="stat-value" style="font-size: 1.2rem; color: var(--secondary);">${typeof TaxEngine !== 'undefined' ? TaxEngine.getCurrent().name : 'Standard'}</div>
+                    <div class="stat-description" style="font-size: 0.8rem;">${typeof TaxEngine !== 'undefined' ? TaxEngine.getCurrent().description : 'TVA 20%'}</div>
+                    <button class="button-secondary small" style="margin-top: auto; padding: 0.4rem; font-size: 0.8rem;" onclick="App.navigateTo('settings', 'billing')">
+                        Changer de Zone
+                    </button>
                 </div>
             </div>
 
@@ -78,7 +74,7 @@ const Dashboard = {
                 <div class="dashboard-section">
                     <div class="section-header-inline">
                         <h2 class="section-title-small">Derniers Devis</h2>
-                        <a href="#" data-nav="quotes" class="link-button">Voir tout →</a>
+                        <a href="#" data-nav="quotes" class="link-button">Voir tout</a>
                     </div>
                     
                     ${recentQuotes.length > 0 ? `
@@ -156,19 +152,23 @@ const Dashboard = {
                 </div>
 
                 <div class="dashboard-section">
-                    <h2 class="section-title-small">Actions Rapides</h2>
+                    <h2 class="section-title-small">Démarrer une action</h2>
                     <div class="quick-actions">
-                        <button class="action-card" onclick="App.navigateTo('clients'); if(typeof Clients !== 'undefined') Clients.showAddForm();">
-                            <span class="action-label">Nouveau Client</span>
+                        <button class="action-card" onclick="App.navigateTo('scoper');" style="background: var(--gradient-1); color: white;">
+                             <span class="action-icon" style="font-size: 2rem; margin-bottom: 0.5rem;">🎯</span>
+                            <span class="action-label" style="font-weight: 700;">Estimer un Projet</span>
                         </button>
-                        <button class="action-card" onclick="App.navigateTo('quotes'); if(typeof Quotes !== 'undefined') Quotes.showAddForm();">
-                            <span class="action-label">Nouveau Devis</span>
+                        <button class="action-card" onclick="App.navigateTo('network');">
+                             <span class="action-icon">🤝</span>
+                            <span class="action-label">Ajouter au Cercle</span>
                         </button>
-                        <button class="action-card" onclick="App.navigateTo('invoices');">
-                            <span class="action-label">Gérer Factures</span>
+                        <button class="action-card" onclick="App.navigateTo('quotes');">
+                             <span class="action-icon">📄</span>
+                            <span class="action-label">Voir Documents</span>
                         </button>
                         <button class="action-card" onclick="App.navigateTo('settings')">
-                            <span class="action-label">Paramètres</span>
+                             <span class="action-icon">⚙️</span>
+                            <span class="action-label">Réglages</span>
                         </button>
                     </div>
                 </div>

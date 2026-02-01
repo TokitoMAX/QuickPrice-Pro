@@ -1,4 +1,4 @@
-# QuickPrice Pro
+# SoloPrice Pro
 
 **Powered by DomTomConnect**
 

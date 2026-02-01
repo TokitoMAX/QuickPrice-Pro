@@ -1,11 +1,16 @@
-// QuickPrice Pro - Quotes Module
+// SoloPrice Pro - Quotes Module
 
 const Quotes = {
     editingId: null,
     currentItems: [],
 
-    render() {
-        const container = document.getElementById('quotes-content');
+    init() {
+        console.log('Quotes module initialized');
+    },
+
+
+    render(containerId = 'quotes-content') {
+        const container = document.getElementById(containerId);
         if (!container) return;
 
         const quotes = Storage.getQuotes();
@@ -13,11 +18,49 @@ const Quotes = {
 
         container.innerHTML = `
             <div class="page-header">
-                <div>
-                    <h1 class="page-title">Devis</h1>
-                    <p class="page-subtitle">${quotes.length} devis ${!limits.canAddQuote ? `(limite: ${limits.maxQuotes})` : ''}</p>
-                </div>
-                <button class="button-primary" onclick="Quotes.showAddForm()" ${!limits.canAddQuote ? 'disabled' : ''}>
+                <h1 class="page-title">Mes Documents</h1>
+                <p class="page-subtitle">Gérez vos devis, factures et documents commerciaux.</p>
+            </div>
+
+            <div class="settings-tabs">
+                <button class="settings-tab active" onclick="Quotes.switchTab('quotes')">Devis</button>
+                <button class="settings-tab" onclick="Quotes.switchTab('invoices')">Factures</button>
+            </div>
+
+            <div id="documents-dynamic-content" style="margin-top: 2rem;">
+                <!-- Rempli par switchTab -->
+            </div>
+        `;
+
+        this.switchTab('quotes');
+    },
+
+    switchTab(tabId) {
+        document.querySelectorAll('.settings-tab').forEach(t => t.classList.remove('active'));
+        const activeTab = document.querySelector(`.settings-tab[onclick*="${tabId}"]`);
+        if (activeTab) activeTab.classList.add('active');
+
+        const container = document.getElementById('documents-dynamic-content');
+        if (!container) return;
+
+        if (tabId === 'quotes') {
+            this.renderQuotes(container);
+        } else if (tabId === 'invoices') {
+            container.innerHTML = '<div id="invoices-embedded-container"></div>';
+            if (typeof Invoices !== 'undefined') {
+                Invoices.render('invoices-embedded-container');
+            }
+        }
+    },
+
+    renderQuotes(container) {
+        const quotes = Storage.getQuotes();
+        const limits = App.checkFreemiumLimits();
+
+        container.innerHTML = `
+            <div class="section-header-inline">
+                <h3 class="section-title-small">${quotes.length} Devis</h3>
+                <button class="button-primary small" onclick="Quotes.showAddForm()" ${!limits.canAddQuote ? 'disabled' : ''}>
                     Nouveau Devis
                 </button>
             </div>
@@ -55,6 +98,9 @@ const Quotes = {
                                                 <button class="btn-icon" onclick="Quotes.fastSend('${quote.id}')" title="Envoyer par email">
                                                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
                                                 </button>
+                                                <button class="btn-icon" onclick="Quotes.openQuickClientAdd()" title="Ajouter un client">
+                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="17" y1="11" x2="23" y2="11"></line></svg>
+                                                </button>
                                                 <button class="btn-icon" onclick="Quotes.changeStatus('${quote.id}')" title="Changer le statut">
                                                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 1-9 9 9 9 0 0 1-9-9 9 9 0 0 1 9-9 9 9 0 0 1 9 9z"></path><path d="M12 8v4l3 3"></path></svg>
                                                 </button>
@@ -66,8 +112,8 @@ const Quotes = {
                                                 <button class="btn-icon" onclick="Quotes.duplicate('${quote.id}')" title="Dupliquer">
                                                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                                                 </button>
-                                                <button class="btn-icon" onclick="Quotes.downloadPDF('${quote.id}')" title="Générer PDF">
-                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                                                <button class="btn-icon" onclick="Quotes.downloadPDF('${quote.id}')" title="Télécharger PDF">
+                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
                                                 </button>
                                                 <button class="btn-icon btn-danger" onclick="Quotes.delete('${quote.id}')" title="Supprimer">
                                                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
@@ -140,6 +186,7 @@ const Quotes = {
 
         const container = document.getElementById('quote-form-container');
         container.innerHTML = this.renderForm(clients, null, preselectedClientId);
+        this.updateTotals();
         container.scrollIntoView({ behavior: 'smooth' });
 
         // Auto-populate services for new quote
@@ -153,6 +200,14 @@ const Quotes = {
             select.addEventListener('change', (e) => {
                 this.addDefaultServicesForClient(e.target.value);
             });
+        }
+
+        // Render Tax Selector
+        if (typeof TaxEngine !== 'undefined') {
+            if (quote && quote.taxContext) {
+                TaxEngine.setContext(quote.taxContext);
+            }
+            TaxEngine.renderSelector('quote-tax-selector-container', () => this.updateTotals());
         }
     },
 
@@ -199,6 +254,10 @@ const Quotes = {
                                 <option value="refused" ${quote?.status === 'refused' ? 'selected' : ''}>Refusé</option>
                             </select>
                         </div>
+                        
+                        <div class="form-group full-width" id="quote-tax-selector-container">
+                            <!-- TaxEngine will render here -->
+                        </div>
                     </div>
 
                     <div class="form-section">
@@ -227,6 +286,9 @@ const Quotes = {
                             <div class="total-row total">
                                 <span>Total TTC :</span>
                                 <span id="total-display">0€</span>
+                            </div>
+                            <div class="total-row tax-context-info">
+                                <span id="tax-info-display" class="text-xs text-muted"></span>
                             </div>
                         </div>
                     </div>
@@ -341,10 +403,20 @@ const Quotes = {
             subtotal += itemTotal;
         });
 
-        const tax = subtotal * (settings.taxRate / 100);
-        const total = subtotal + tax;
+        let tax = subtotal * (settings.taxRate / 100);
+        let total = subtotal + tax;
+        let taxLabel = `TVA (${settings.taxRate}%) :`;
+
+        if (typeof TaxEngine !== 'undefined') {
+            const taxResult = TaxEngine.calculate(subtotal);
+            tax = taxResult.vat;
+            total = taxResult.ttc;
+            taxLabel = `TVA (${TaxEngine.getCurrent().vat}%) :`;
+            document.getElementById('tax-info-display').textContent = TaxEngine.getCurrent().description;
+        }
 
         document.getElementById('subtotal-display').textContent = App.formatCurrency(subtotal);
+        document.getElementById('tax-display').previousElementSibling.textContent = taxLabel;
         document.getElementById('tax-display').textContent = App.formatCurrency(tax);
         document.getElementById('total-display').textContent = App.formatCurrency(total);
 
@@ -400,10 +472,18 @@ const Quotes = {
             return;
         }
 
-        const settings = Storage.get(Storage.KEYS.SETTINGS);
         const subtotal = items.reduce((sum, item) => sum + (item.quantity * item.unitPrice), 0);
-        const tax = subtotal * (settings.taxRate / 100);
-        const total = subtotal + tax;
+        const settings = Storage.get(Storage.KEYS.SETTINGS);
+        let tax = subtotal * (settings.taxRate / 100);
+        let total = subtotal + tax;
+        let taxContext = null;
+
+        if (typeof TaxEngine !== 'undefined') {
+            const taxResult = TaxEngine.calculate(subtotal);
+            tax = taxResult.vat;
+            total = taxResult.ttc;
+            taxContext = TaxEngine.currentContext;
+        }
 
         const quoteData = {
             clientId: formData.get('clientId'),
@@ -411,7 +491,8 @@ const Quotes = {
             items: items,
             subtotal: subtotal,
             tax: tax,
-            total: total
+            total: total,
+            taxContext: taxContext
         };
 
         if (this.editingId) {

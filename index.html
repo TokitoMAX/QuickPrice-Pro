@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QuickPrice Pro - Collaboration DomTomConnect | Devis & Tarifs DOM-TOM</title>
+    <title>SoloPrice Pro - Collaboration DomTomConnect | Devis & Tarifs DOM-TOM</title>
     <meta name="description"
         content="Outil de collaboration DomTomConnect pour faciliter les échanges entre clients et prestataires DOM-TOM. Créez des devis, calculez vos tarifs, gérez vos projets.">
     <link rel="stylesheet" href="styles.css">
@@ -60,8 +60,8 @@
     <div id="landing-page" class="landing-container">
         <nav class="landing-nav container">
             <div class="logo">
-                <span class="logo-text">QuickPrice Pro</span>
-                <span style="font-size: 0.7rem; color: var(--text-muted); margin-left: 0.5rem;">by DomTomConnect</span>
+                <span class="logo-text">SoloPrice</span>
+                <span class="logo-badge">Pro</span>
             </div>
             <div class="landing-actions">
                 <button type="button" class="button-secondary landing-auth-btn" onclick="showAuthModal('login')">Se
@@ -155,32 +155,27 @@
 
         <header class="landing-hero container">
             <div class="hero-content">
-                <h1 class="hero-title">Collaborez en toute transparence. <br><span class="gradient-text">Créez des devis
-                        en quelques clics.</span></h1>
-                <p class="hero-subtitle">L'outil de collaboration DomTomConnect qui facilite les échanges entre clients
-                    et prestataires. Calculez vos tarifs, analysez vos projets, et créez des devis professionnels
-                    instantanément.</p>
+                <h1 class="hero-title">SoloPrice <span class="gradient-text">Pro</span></h1>
+                <p class="hero-subtitle">L'outil de chiffrage haute-performance pour experts. <br>Éliminez
+                    l'incertitude. Dominez votre rentabilité.</p>
                 <div class="hero-buttons">
-                    <button class="cta-button big" onclick="showAuthModal('register')">
-                        <span>Commencer Gratuitement</span>
-                        <span class="arrow">→</span>
+                    <button class="button-primary big" onclick="showAuthModal('register')">
+                        Commencer l'Expérience
                     </button>
-                    <p class="hero-note"><button type="button" class="link-button" onclick="showAuthModal('login')">Se
-                            connecter</button> ou <button type="button" class="link-button"
-                            onclick="showAuthModal('register')">créer un compte</button></p>
+                    <p class="hero-note" style="color: var(--text-muted);">Précis. Puissant. Professionnel.</p>
                 </div>
             </div>
-            <div class="hero-image">
-                <div class="floating-card glass">
-                    <div class="card-text">
-                        <span class="label">Objectif de CA</span>
-                        <span class="value">5 000 €</span>
-                    </div>
-                </div>
-                <div class="floating-card glass delayed">
-                    <div class="card-text">
-                        <span class="label">TJM Recommandé</span>
-                        <span class="value">450 €</span>
+            <div class="hero-image" style="flex: 1; display: flex; justify-content: flex-end; position: relative;">
+                <div class="floating-card"
+                    style="background: #0a0a0a; border: 1px solid var(--primary); padding: 2rem; border-radius: 20px; box-shadow: var(--shadow-glow);">
+                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.5rem;">Cercle (Pipeline)
+                        Actuel</div>
+                    <div id="landing-pipeline-value"
+                        style="font-size: 2.5rem; font-weight: 800; color: var(--primary);">0 €</div>
+                    <div
+                        style="margin-top: 1rem; height: 6px; background: #1f2937; border-radius: 3px; overflow: hidden;">
+                        <div id="landing-pipeline-progress"
+                            style="width: 0%; height: 100%; background: var(--primary);"></div>
                     </div>
                 </div>
             </div>
@@ -215,17 +210,14 @@
         <footer class="landing-footer">
             <div class="container footer-content">
                 <div class="footer-logo">
-                    QuickPrice Pro
-                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">Powered by
-                        DomTomConnect</div>
+                    SoloPrice <span style="color:var(--primary)">Pro</span>
+                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">Solution de gestion
+                        par DomTomConnect</div>
                 </div>
-                <div class="footer-links">
-                    <a href="#" onclick="App.enterApp()">Application</a>
-                    <a href="#" onclick="App.enterApp()">Tarifs</a>
-                </div>
+
             </div>
             <div class="footer-bottom container">
-                <p>&copy; 2026 QuickPrice Pro by DomTomConnect. Facilitons la collaboration dans les DOM-TOM.</p>
+                <p>&copy; 2026 SoloPrice Pro by DomTomConnect. Facilitons la collaboration dans les DOM-TOM.</p>
             </div>
         </footer>
     </div>
@@ -248,7 +240,8 @@
                         <span></span>
                     </button>
                     <div class="logo">
-                        <span class="logo-text">QuickPrice</span>
+                        <span class="logo-text">SoloPrice</span>
+                        <span class="logo-badge">Pro</span>
                     </div>
                 </div>
                 <div class="user-info-sidebar" id="user-info-sidebar">
@@ -256,25 +249,52 @@
                 </div>
 
                 <nav class="sidebar-nav">
-                    <a href="#" data-nav="dashboard" class="nav-item active">
-                        <span class="nav-label">Tableau de bord</span>
+                    <a href="#" class="nav-item active" data-nav="dashboard">
+                        <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="14" width="7" height="7"></rect>
+                                <rect x="3" y="14" width="7" height="7"></rect>
+                            </svg></span> <span class="nav-label">Accueil</span>
                     </a>
-                    <!-- Tools moved to specific contexts -->
-                    <a href="#" data-nav="clients" class="nav-item">
-                        <span class="nav-label">Clients</span>
+                    <a href="#" class="nav-item" data-nav="scoper">
+                        <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path
+                                    d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z">
+                                </path>
+                                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                                <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                            </svg></span> <span class="nav-label">Estimateur</span>
                     </a>
-                    <a href="#" data-nav="leads" class="nav-item">
-                        <span class="nav-label">Prospection</span>
+                    <a href="#" class="nav-item" data-nav="quotes">
+                        <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10 9 9 9 8 9"></polyline>
+                            </svg></span> <span class="nav-label">Documents</span>
                     </a>
-                    <!-- Scoper moved to Quotes context -->
-                    <a href="#" data-nav="invoices" class="nav-item">
-                        <span class="nav-label">Factures</span>
+                    <a href="#" class="nav-item" data-nav="marketplace">
+                        <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                            </svg></span> <span class="nav-label">Marketplace</span>
                     </a>
-                    <a href="#" data-nav="quotes" class="nav-item">
-                        <span class="nav-label">Devis</span>
-                    </a>
-                    <a href="#" data-nav="settings" class="nav-item">
-                        <span class="nav-label">Paramètres</span>
+                    <a href="#" class="nav-item" data-nav="settings">
+                        <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="3"></circle>
+                                <path
+                                    d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+                                </path>
+                            </svg></span> <span class="nav-label">Réglages</span>
                     </a>
                 </nav>
 
@@ -301,113 +321,9 @@
                     <div id="scoper-content"></div>
                 </div>
 
-                <!-- Calculator Page -->
+                <!-- Calculator Page (Embedded in Settings) -->
                 <div id="calculator-page" class="page">
-                    <div class="page-header">
-                        <h1 class="page-title">Calculateur de Tarifs</h1>
-                        <p class="page-subtitle">Calculez vos tarifs optimaux en fonction de vos objectifs</p>
-                    </div>
-
-                    <div class="calculator-container">
-                        <div class="calculator-inputs">
-                            <div class="input-group">
-                                <label for="monthlyRevenue" class="input-label">
-                                    <span class="label-text">Revenu mensuel souhaité (€)</span>
-                                    <span class="label-hint">Net après charges</span>
-                                </label>
-                                <input type="number" id="monthlyRevenue" class="input-field" value="3000" min="0"
-                                    step="100">
-                            </div>
-
-                            <div class="input-group">
-                                <label for="workingDays" class="input-label">
-                                    <span class="label-text">Jours travaillés par mois</span>
-                                    <span class="label-hint">En moyenne</span>
-                                </label>
-                                <input type="number" id="workingDays" class="input-field" value="20" min="1" max="31">
-                            </div>
-
-                            <div class="input-group">
-                                <label for="hoursPerDay" class="input-label">
-                                    <span class="label-text">Heures facturables par jour</span>
-                                    <span class="label-hint">Temps productif seulement</span>
-                                </label>
-                                <input type="number" id="hoursPerDay" class="input-field" value="6" min="1" max="12">
-                            </div>
-
-                            <div class="input-group">
-                                <label for="monthlyCharges" class="input-label">
-                                    <span class="label-text">Charges mensuelles (€)</span>
-                                    <span class="label-hint">Loyer, logiciels, équipement...</span>
-                                </label>
-                                <input type="number" id="monthlyCharges" class="input-field" value="500" min="0"
-                                    step="50">
-                            </div>
-
-                            <div class="input-group">
-                                <label for="taxRate" class="input-label">
-                                    <span class="label-text">Taux de charges sociales (%)</span>
-                                    <span class="label-hint">22% pour micro-entrepreneur</span>
-                                </label>
-                                <input type="number" id="taxRate" class="input-field" value="22" min="0" max="100">
-                            </div>
-
-                            <button class="calculate-button" onclick="calculatePrice()">
-                                Calculer
-                            </button>
-                        </div>
-
-                        <div class="results-panel" id="resultsPanel">
-                            <div class="results-header">
-                                <h3 class="results-title">Vos Tarifs Recommandés</h3>
-                            </div>
-
-                            <div class="result-cards">
-                                <div class="result-card primary">
-                                    <div class="result-label">Tarif Horaire Minimum</div>
-                                    <div class="result-value" id="hourlyRate">—</div>
-                                </div>
-
-                                <div class="result-card">
-                                    <div class="result-label">Tarif Journalier (TJM)</div>
-                                    <div class="result-value" id="dailyRate">—</div>
-                                </div>
-
-                                <div class="result-card">
-                                    <div class="result-label">Revenu Annuel</div>
-                                    <div class="result-value" id="annualRevenue">—</div>
-                                </div>
-                            </div>
-
-                            <div class="calculator-actions">
-                                <button class="button-secondary" onclick="useRate('daily')">
-                                    Préparer un devis
-                                </button>
-                            </div>
-
-                            <div class="breakdown-section">
-                                <h4 class="breakdown-title">Répartition</h4>
-                                <div class="breakdown-items">
-                                    <div class="breakdown-item">
-                                        <span class="breakdown-label">Revenu net</span>
-                                        <span class="breakdown-value" id="breakdownNet">—</span>
-                                    </div>
-                                    <div class="breakdown-item">
-                                        <span class="breakdown-label">Charges sociales</span>
-                                        <span class="breakdown-value" id="breakdownTax">—</span>
-                                    </div>
-                                    <div class="breakdown-item">
-                                        <span class="breakdown-label">Charges pro</span>
-                                        <span class="breakdown-value" id="breakdownCharges">—</span>
-                                    </div>
-                                    <div class="breakdown-item total">
-                                        <span class="breakdown-label">Total à facturer</span>
-                                        <span class="breakdown-value" id="breakdownTotal">—</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <div id="calculator-content"></div>
                 </div>
 
                 <!-- Clients Page -->
@@ -415,11 +331,10 @@
                     <div id="clients-content"></div>
                 </div>
 
-                <!-- Leads Page -->
-                <div id="leads-page" class="page">
-                    <div id="leads-content"></div>
+                <!-- Marketplace Hub (Consolidated) -->
+                <div id="marketplace-page" class="page">
+                    <div id="marketplace-content"></div>
                 </div>
-
                 <!-- SERVICES PAGE -->
                 <div id="services-page" class="page">
                     <div id="services-content"></div>
@@ -430,18 +345,9 @@
                     <div id="invoices-content"></div>
                 </div>
 
-                <!-- Quotes Page -->
+                <!-- Quotes Page (Documents) -->
                 <div id="quotes-page" class="page">
-                    <div id="quotes-content">
-                        <div class="page-header">
-                            <h1 class="page-title">Devis</h1>
-                            <p class="page-subtitle">Fonctionnalité en cours de développement</p>
-                        </div>
-                        <div class="empty-state">
-                            <p>Le module de devis sera disponible prochainement</p>
-                            <p class="text-sm">Utilisez les factures en attendant</p>
-                        </div>
-                    </div>
+                    <div id="quotes-content"></div>
                 </div>
 
                 <!-- Settings Page -->
@@ -456,13 +362,13 @@
             <div class="modal-content">
                 <button class="modal-close" onclick="App.closeModal()">✕</button>
                 <div class="modal-header">
-                    <h2>Passer à QuickPrice PRO</h2>
+                    <h2>Passer à SoloPrice PRO</h2>
                 </div>
                 <div class="modal-body">
                     <p class="upgrade-message">Vous avez atteint la limite de la version gratuite.</p>
 
                     <div class="upgrade-benefits">
-                        <h3>Avec QuickPrice PRO :</h3>
+                        <h3>Avec SoloPrice PRO :</h3>
                         <ul>
                             <li>Clients illimités</li>
                             <li>Factures et devis illimités</li>
@@ -529,7 +435,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h3>Nouveau Client Rapide</h3>
-                    <button class="btn-close" type="button" onclick="closeAllModals()">✕</button>
+                    <button class="btn-close" type="button" onclick="Clients.closeQuickAdd()">✕</button>
                 </div>
                 <form id="quick-client-form" onsubmit="Clients.handleQuickAdd(event)">
                     <div class="form-grid">
@@ -556,6 +462,73 @@
             </div>
         </div>
 
+        <!-- Network Add Partner Modal -->
+        <div id="network-add-modal" class="modal-overlay">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Ajouter un Partenaire</h3>
+                    <button class="btn-close" type="button" onclick="Network.hideAddModal()">✕</button>
+                </div>
+                <form onsubmit="Network.addProvider(event)">
+                    <div class="form-grid">
+                        <div class="form-group full-width">
+                            <label class="form-label">Nom / Entreprise *</label>
+                            <input type="text" name="name" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Spécialité *</label>
+                            <input type="text" name="specialty" class="form-input" required
+                                placeholder="Ex: Développeur React">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email</label>
+                            <input type="email" name="email" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Téléphone</label>
+                            <input type="tel" name="phone" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Ville</label>
+                            <input type="text" name="city" class="form-input">
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="button-secondary" onclick="Network.hideAddModal()">Annuler</button>
+                        <button type="submit" class="button-primary">Enregistrer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Client Detail Modal -->
+        <div id="client-detail-modal" class="modal-overlay">
+            <div class="modal-content large">
+                <div class="modal-header">
+                    <h3 id="detail-client-name">Détails du Client</h3>
+                    <button class="btn-close" type="button" onclick="Clients.closeDetail()">✕</button>
+                </div>
+                <div class="modal-body">
+                    <div class="client-detail-grid">
+                        <div class="client-info-card">
+                            <h4>Informations Générales</h4>
+                            <div id="client-detail-info"></div>
+                        </div>
+                        <div class="client-history-card">
+                            <h4>Historique Activité</h4>
+                            <div id="client-detail-history"></div>
+                        </div>
+                    </div>
+                    <div class="client-notes-section">
+                        <h4>Notes CRM</h4>
+                        <textarea id="client-detail-notes" class="form-input" rows="4"
+                            placeholder="Ajouter des notes sur la relation avec ce client..."></textarea>
+                        <button class="button-secondary sm" onclick="Clients.saveNotes()"
+                            style="margin-top: 0.5rem;">Saisir Note</button>
+                    </div>
+                </div>
+            </div>
+        </div>
         <!-- Scripts -->
         <script>console.log("Loading modules...");</script>
         <script>
@@ -660,14 +633,17 @@
         </script>
         <script src="storage.js"></script>
         <script src="auth.js"></script>
+        <script src="network.js"></script>
         <script src="app.js"></script>
         <script src="services.js"></script>
         <script src="dashboard.js"></script>
         <script src="clients.js"></script>
         <script src="leads.js"></script>
+        <script src="marketplace.js"></script>
         <script src="invoices.js"></script>
         <script src="settings.js"></script>
         <script src="pdf-generator.js"></script>
+        <script src="taxes.js"></script>
         <script src="quotes.js"></script>
         <script src="scoper.js"></script>
         <script src="calculator.js"></script>

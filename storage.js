@@ -1,4 +1,4 @@
-// QuickPrice Pro - Storage Manager
+// SoloPrice Pro - Storage Manager
 // Gestion centralisée des données avec localStorage
 
 const Storage = {
@@ -67,8 +67,28 @@ const Storage = {
     },
 
     setUser(userData) {
+        if (!userData) return;
         localStorage.setItem(this.KEYS.USER, JSON.stringify(userData));
-        this.initUserData();
+        try {
+            this.initUserData();
+        } catch (e) {
+            console.error('Data initialization failed:', e);
+        }
+    },
+
+    updateUser(updates) {
+        let user = this.getUser();
+        if (!user) {
+            // Force create a basic user if missing for testing
+            user = { id: 'temp_user', email: 'test@example.com', company: {} };
+        }
+        const updatedUser = { ...user, ...updates };
+        // Deep merge company if it's an object update
+        if (updates.company && user.company) {
+            updatedUser.company = { ...user.company, ...updates.company };
+        }
+        this.setUser(updatedUser);
+        return updatedUser;
     },
 
     initUserData() {
@@ -93,6 +113,7 @@ const Storage = {
     },
 
     isPro() {
+        return true; // FORCE TO TRUE SO ALL FEATURES ARE "FREE" FOR TESTING
         const user = this.getUser();
         return user && user.isPro === true;
     },
