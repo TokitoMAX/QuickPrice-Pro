@@ -20,7 +20,7 @@ const Network = {
         this.render();
     },
 
-    render() {
+    render(startTab = 'clients') {
         const container = document.getElementById('network-content');
         if (!container) return;
 
@@ -31,17 +31,17 @@ const Network = {
             </div>
 
             <div class="settings-tabs">
-                <button class="settings-tab active" onclick="Network.switchTab('clients')">Mes Clients</button>
+                <button class="settings-tab" onclick="Network.switchTab('clients')">Mes Clients</button>
                 <button class="settings-tab" onclick="Network.switchTab('leads')">Mes Prospects</button>
-                <button class="settings-tab" onclick="Network.switchTab('partners')">Partenaires Réseau</button>
+                <button class="settings-tab" onclick="Network.switchTab('partners')">Mes Partenaires</button>
             </div>
             <div id="cercle-dynamic-content" style="margin-top: 2rem;">
                 <!-- Rempli par switchTab -->
             </div>
         `;
 
-        // Par défaut sur clients
-        this.switchTab('clients');
+        // Utiliser l'onglet demandé
+        this.switchTab(startTab);
     },
 
     switchTab(tabId) {
@@ -92,14 +92,20 @@ const Network = {
                 </div>
                 <div class="partners-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 1rem;">
                     ${this.providers.map(p => `
-                        <div class="network-card glass">
-                            <div class="provider-avatar">${p.name.charAt(0)}</div>
-                            <div class="provider-info">
-                                <h3>${p.name}</h3>
-                                <p class="provider-specialty">${p.specialty}</p>
+                        <div class="network-card glass" style="background: #0a0a0a; border: 1px solid var(--border); padding: 1.5rem; border-radius: 12px; border-left: 4px solid ${p.isVerified ? 'var(--primary)' : 'var(--border)'};">
+                            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                                <div class="provider-avatar" style="width: 45px; height: 45px; background: ${p.isVerified ? 'var(--primary-glass)' : 'var(--dark)'}; color: ${p.isVerified ? 'var(--primary-light)' : 'var(--text-muted)'}; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; border: 1px solid var(--border);">${p.name.charAt(0)}</div>
+                                <div class="provider-info">
+                                    <h3 style="margin: 0; font-size: 1.1rem; color: var(--white);">${p.name} ${p.isVerified ? '<span class="pro-badge-small">VÉRIFIÉ</span>' : ''}</h3>
+                                    <p class="provider-specialty" style="margin: 2px 0 0 0; color: var(--text-muted); font-size: 0.85rem;">${p.specialty}</p>
+                                </div>
                             </div>
-                            <div class="provider-actions">
-                                <button class="button-secondary sm" onclick="Network.deleteProvider('${p.id}')">Supprimer</button>
+                            <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.2rem;">
+                                <div>📍 ${p.city || 'Non renseigné'}</div>
+                            </div>
+                            <div class="provider-actions" style="display: flex; gap: 0.5rem; border-top: 1px solid var(--border); padding-top: 1rem;">
+                                <button class="button-secondary sm" style="flex: 1; font-size: 0.75rem;" onclick="Network.contactProvider('${p.id}')">Contacter</button>
+                                <button class="button-secondary sm" style="flex: 1; font-size: 0.75rem; border-color: var(--danger-glass); color: var(--danger-light);" onclick="Network.deleteProvider('${p.id}')">Supprimer</button>
                             </div>
                         </div>
                     `).join('')}

@@ -176,16 +176,14 @@ const App = {
             this.navigateTo('quotes'); // Redirect to Documents
             setTimeout(() => Quotes.switchTab('invoices'), 100);
         }
-        if (page === 'network' && typeof Network !== 'undefined') Network.render();
+        if (page === 'network' && typeof Network !== 'undefined') Network.render(...args);
         if (page === 'clients' && typeof Clients !== 'undefined') {
-            this.navigateTo('network'); // Redirect to Cercle
-            setTimeout(() => Network.switchTab('clients'), 100);
+            this.navigateTo('network', 'clients'); // Redirect to Cercle > Clients
         }
         if (page === 'leads' && typeof Leads !== 'undefined') {
-            this.navigateTo('marketplace'); // Redirect to Marketplace
-            setTimeout(() => Marketplace.switchTab('leads'), 100);
+            this.navigateTo('network', 'leads'); // Redirect to Cercle > Prospects
         }
-        if (page === 'marketplace' && typeof Marketplace !== 'undefined') Marketplace.render();
+        if (page === 'marketplace' && typeof Marketplace !== 'undefined') Marketplace.render('marketplace-content', ...args);
         if (page === 'scoper' && typeof Scoper !== 'undefined') Scoper.render();
         if (page === 'settings' && typeof Settings !== 'undefined') Settings.render(...args);
         if (page === 'services' && typeof Services !== 'undefined') {

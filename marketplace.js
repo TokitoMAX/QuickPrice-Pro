@@ -7,9 +7,11 @@ const Marketplace = {
 
     missions: [],
 
-    render(containerId = 'marketplace-content') {
+    render(containerId = 'marketplace-content', startTab = null) {
         const container = document.getElementById(containerId);
         if (!container) return;
+
+        if (startTab) this.activeTab = startTab;
 
         container.innerHTML = `
             <div class="page-header">
@@ -25,10 +27,9 @@ const Marketplace = {
             <div id="mission-form-container"></div>
 
             <div class="settings-tabs" style="margin-bottom: 2rem;">
-                <button class="settings-tab ${this.activeTab === 'missions' ? 'active' : ''}" onclick="Marketplace.switchTab('missions')">Missions (Radar)</button>
-                <button class="settings-tab ${this.activeTab === 'my-missions' ? 'active' : ''}" onclick="Marketplace.switchTab('my-missions')">Mes Annonces</button>
-                <button class="settings-tab ${this.activeTab === 'providers' ? 'active' : ''}" onclick="Marketplace.switchTab('providers')">Mes Prestataires</button>
-                <button class="settings-tab ${this.activeTab === 'experts' ? 'active' : ''}" onclick="Marketplace.switchTab('experts')">Experts Vérifiés</button>
+                <button class="settings-tab" onclick="Marketplace.switchTab('missions')">Radar Opportunités</button>
+                <button class="settings-tab" onclick="Marketplace.switchTab('my-missions')">Mes Annonces</button>
+                <button class="settings-tab" onclick="Marketplace.switchTab('experts')">Annuaire Experts</button>
             </div>
 
             <div id="marketplace-dynamic-content" class="marketplace-container">
@@ -52,15 +53,23 @@ const Marketplace = {
             this.renderMissions(container);
         } else if (tabId === 'my-missions') {
             this.renderMyMissions(container);
-        } else if (tabId === 'providers') {
-            this.renderProviders(container);
         } else if (tabId === 'experts') {
             this.renderExperts(container);
         }
     },
 
     getPublicMissions() {
-        return JSON.parse(localStorage.getItem('sp_marketplace_missions') || '[]');
+        let missions = JSON.parse(localStorage.getItem('sp_marketplace_missions') || '[]');
+        if (missions.length === 0) {
+            // Missions factices pour le Radar
+            missions = [
+                { id: 'm1', title: 'Refonte Site E-commerce', budget: '2500', zone: 'Guadeloupe (971)', urgency: 'Moyenne', description: 'Besoin d\'un expert Shopify pour refonte visuelle.' },
+                { id: 'm2', title: 'Campagne Publicitaire Meta', budget: '1200', zone: 'Martinique (972)', urgency: 'Haute', description: 'Cherche media buyer pour campagne locale urgente.' },
+                { id: 'm3', title: 'Application de Livraison', budget: '8000', zone: 'Réunion (974)', urgency: 'Basse', description: 'Projet long terme : développement MVP app mobile.' }
+            ];
+            localStorage.setItem('sp_marketplace_missions', JSON.stringify(missions));
+        }
+        return missions;
     },
 
     // ===== MISSIONS RADAR (from others) =====
@@ -306,37 +315,35 @@ const Marketplace = {
             { id: 'exp3', name: 'Lucas Tech', specialty: 'Développement Web', zone: 'Réunion (974)', avatar: 'L' }
         ];
 
-        if (experts.length === 0) {
-            container.innerHTML = `
-                <div class="empty-state" style="text-align: center; padding: 4rem 2rem;">
-                    <div style="font-size: 3rem; margin-bottom: 1.5rem;">💎</div>
-                    <h3 style="color: var(--white); margin-bottom: 1rem;">Rejoignez les Experts Vérifiés</h3>
-                    <p style="color: var(--text-muted); margin-bottom: 2rem; max-width: 500px; margin-left: auto; margin-right: auto;">
-                        Aucun expert n'est affiché pour le moment. Vous êtes un professionnel qualifié ? Postulez pour rejoindre notre réseau exclusif.
-                    </p>
-                    <button class="button-primary" onclick="Marketplace.becomeExpert()">Devenir un Expert Vérifié (Postuler)</button>
-                </div>
-            `;
-            return;
-        }
-
         container.innerHTML = `
-            <div class="section-header-inline">
-                <h3 class="section-title-small">Prestataires Qualifiés</h3>
-                <button class="button-secondary small">Inviter un Partenaire</button>
+            <div class="experts-header" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; gap: 2rem; flex-wrap: wrap;">
+                <div style="flex: 1; min-width: 300px;">
+                    <h3 class="section-title-small">Annuaire des Experts Vérifiés</h3>
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">Retrouvez des professionnels qualifiés et recommandés par DomTomConnect.</p>
+                </div>
+                <div style="background: var(--primary-glass); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--primary); max-width: 400px;">
+                    <h4 style="margin: 0 0 0.5rem 0; color: var(--primary-light);">Vous êtes un expert ?</h4>
+                    <p style="font-size: 0.8rem; margin-bottom: 1rem; opacity: 0.9;">Boostez votre visibilité et recevez des missions qualifiées en rejoignant le réseau.</p>
+                    <button class="button-primary small" onclick="Marketplace.becomeExpert()" style="width: 100%;">Postuler au programme Expert</button>
+                </div>
             </div>
+
             <div class="partners-grid">
-                ${experts.map(e => `
+                ${experts.length === 0 ? `
+                    <div class="empty-state" style="grid-column: 1 / -1; padding: 2rem;">
+                         <p class="text-muted">Chargement des profils vérifiés...</p>
+                    </div>
+                ` : experts.map(e => `
                     <div class="network-card glass" style="background: #0a0a0a; border: 1px solid var(--border); padding: 1.5rem; border-radius: 12px; display: flex; align-items: center; gap: 1.5rem; transition: all 0.3s ease;">
                         <div class="provider-avatar" style="width: 50px; height: 50px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.2rem; border: 2px solid white;">${e.avatar}</div>
-                        <div class="provider-info">
-                            <h3 style="margin: 0; font-size: 1.1rem;">${e.name} <span class="pro-badge-small" style="background: var(--primary); margin-left: 5px;">VÉRIFIÉ</span></h3>
+                        <div class="provider-info" style="flex: 1;">
+                            <h3 style="margin: 0; font-size: 1.1rem; color: var(--white);">${e.name} <span class="pro-badge-small" style="background: var(--primary); margin-left: 5px;">VÉRIFIÉ</span></h3>
                             <p style="margin: 0.2rem 0; color: var(--text-muted); font-size: 0.9rem;">${e.specialty}</p>
                             <p style="margin: 0; font-size: 0.8rem; opacity: 0.7;">📍 ${e.zone}</p>
                         </div>
-                        <div style="margin-left: auto; display: flex; gap: 0.5rem;">
-                            <button class="button-secondary small" style="padding: 0.4rem;" onclick="Marketplace.contactExpert('${e.name}')">Message</button>
-                            <button class="button-primary small" style="padding: 0.4rem;" onclick="Marketplace.addExpertToCircle('${e.id}')">+ Mon Cercle</button>
+                        <div style="display: flex; gap: 0.5rem; flex-direction: column;">
+                            <button class="button-secondary small" style="padding: 0.4rem; font-size: 0.75rem;" onclick="Marketplace.contactExpert('${e.name}')">Message</button>
+                            <button class="button-primary small" style="padding: 0.4rem; font-size: 0.75rem;" onclick="Marketplace.addExpertToCircle('${e.id}')">+ Cercle</button>
                         </div>
                     </div>
                 `).join('')}
