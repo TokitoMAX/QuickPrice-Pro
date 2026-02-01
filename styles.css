@@ -2483,6 +2483,58 @@ select.form-input:focus {
         font-size: 0.8rem;
     }
 
+    /* Estimateur (Scoper) Mobile */
+    .calculator-container {
+        grid-template-columns: 1fr !important;
+        gap: 1.5rem !important;
+    }
+
+    .scoper-task-row .task-details {
+        flex-direction: column;
+        align-items: stretch !important;
+    }
+
+    .scoper-task-row .time-inputs {
+        width: 100%;
+    }
+
+    .scoper-task-row .price-override {
+        width: 100%;
+    }
+
+    /* Settings Mobile */
+    .profile-section-split {
+        grid-template-columns: 1fr !important;
+    }
+
+    .settings-tabs {
+        scrollbar-width: thin;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .settings-tabs::-webkit-scrollbar {
+        height: 2px;
+    }
+
+    .settings-tabs::-webkit-scrollbar-thumb {
+        background: var(--primary);
+        border-radius: 2px;
+    }
+
+    /* Hide identity card preview on mobile to save space */
+    .profile-preview-container {
+        display: none;
+    }
+
+    /* Marketplace Mobile */
+    .page-header {
+        gap: 1rem;
+    }
+
+    .page-header .button-primary {
+        width: 100%;
+    }
+
 
     /* Mobile Sidebar Overlay */
     .sidebar-backdrop {
