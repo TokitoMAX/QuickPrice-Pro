@@ -58,6 +58,10 @@ const App = {
 
     updateLandingStats() {
         if (typeof Storage === 'undefined') return;
+
+        const calculatorData = Storage.get('sp_calculator_data');
+        const monthlyGoal = calculatorData ? parseFloat(calculatorData.monthlyRevenue) : 5000;
+
         const quotes = Storage.getQuotes() || [];
         const pipelineValue = quotes
             .filter(q => q.status === 'sent')
@@ -66,11 +70,10 @@ const App = {
         const valueEl = document.getElementById('landing-pipeline-value');
         const progressEl = document.getElementById('landing-pipeline-progress');
 
-        if (valueEl) valueEl.textContent = this.formatCurrency(pipelineValue);
+        if (valueEl) valueEl.textContent = this.formatCurrency(monthlyGoal);
         if (progressEl) {
-            const calculatorData = Storage.get('sp_calculator_data');
-            const monthlyGoal = calculatorData ? parseFloat(calculatorData.monthlyRevenue) : 5000;
-            const progress = Math.min(100, Math.round((pipelineValue / monthlyGoal) * 100));
+            // Sur la landing, on montre un état "objectif" inspirant
+            const progress = pipelineValue > 0 ? Math.min(100, Math.round((pipelineValue / monthlyGoal) * 100)) : 75; // 75% par défaut pour le style si 0
             progressEl.style.width = `${progress}%`;
         }
     },
