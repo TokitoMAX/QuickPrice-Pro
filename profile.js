@@ -1,5 +1,5 @@
 // SoloPrice Pro - Profile Module
-// Handles user identity, branding, and license management
+// Handles user identity and license management
 
 const Profile = {
     render() {
@@ -15,9 +15,8 @@ const Profile = {
                 <p class="page-subtitle">Gérez votre identité professionnelle et votre licence SoloPrice Pro.</p>
             </div>
 
-            <div class="profile-layout" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+            <div class="profile-layout">
                 
-                <!-- Left: Professional Profile Form -->
                 <div class="profile-section">
                     <div class="glass-card" style="padding: 2rem; border-radius: 20px; border: 1px solid var(--border);">
                         <h2 class="section-title-small" style="margin-bottom: 1.5rem;">Identité Entreprise</h2>
@@ -25,27 +24,27 @@ const Profile = {
                             <div class="form-grid">
                                 <div class="form-group full-width">
                                     <label class="form-label">Nom Commercial / Entreprise *</label>
-                                    <input type="text" name="name" class="form-input" value="${user.company?.name || ''}" required oninput="Profile.updatePreview()">
+                                    <input type="text" name="name" class="form-input" value="${user.company?.name || ''}" required>
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Email Professionnel *</label>
-                                    <input type="email" name="email" class="form-input" value="${user.company?.email || ''}" required oninput="Profile.updatePreview()">
+                                    <input type="email" name="email" class="form-input" value="${user.company?.email || user.email || ''}" required>
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Téléphone</label>
-                                    <input type="tel" name="phone" class="form-input" value="${user.company?.phone || ''}" oninput="Profile.updatePreview()">
+                                    <input type="tel" name="phone" class="form-input" value="${user.company?.phone || ''}">
                                 </div>
                                 <div class="form-group full-width">
                                     <label class="form-label">Adresse Siège Social *</label>
-                                    <input type="text" name="address" class="form-input" value="${user.company?.address || ''}" required oninput="Profile.updatePreview()">
+                                    <input type="text" name="address" class="form-input" value="${user.company?.address || ''}" required>
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">SIRET</label>
-                                    <input type="text" name="siret" class="form-input" value="${user.company?.siret || ''}" oninput="Profile.updatePreview()">
+                                    <input type="text" name="siret" class="form-input" value="${user.company?.siret || ''}">
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Mentions Légales (Pied de page)</label>
-                                    <input type="text" name="footer_mentions" class="form-input" value="${user.company?.footer_mentions || ''}" oninput="Profile.updatePreview()" placeholder="Ex: TVA Intracom FR...">
+                                    <input type="text" name="footer_mentions" class="form-input" value="${user.company?.footer_mentions || ''}" placeholder="Ex: TVA Intracom FR...">
                                 </div>
                                 
                                 <div class="form-group full-width">
@@ -72,7 +71,6 @@ const Profile = {
                         </form>
                     </div>
 
-                    <!-- License Section Below Form -->
                     <div class="license-status-card" style="margin-top: 2rem; padding: 1.5rem; border-radius: 16px; border: 1px solid ${isPro ? 'var(--primary-glass)' : 'var(--border)'}; background: ${isPro ? 'rgba(16, 185, 129, 0.03)' : 'var(--bg-sidebar)'};">
                          <div style="display: flex; justify-content: space-between; align-items: center;">
                             <div>
@@ -88,75 +86,8 @@ const Profile = {
                     </div>
                 </div>
 
-                <!-- Right: Branding Preview -->
-                <div class="branding-preview-section">
-                    <div class="sticky-top" style="position: sticky; top: 2rem;">
-                        <h2 class="section-title-small" style="margin-bottom: 1.5rem;">Aperçu de Marque</h2>
-                        <div id="identity-card-preview" class="identity-card premium-glass" style="width: 100%;">
-                            <div class="card-glow"></div>
-                            <div class="card-header">
-                                <div id="card-logo" class="card-logo">
-                                    <!-- Placeholder or Logo image -->
-                                </div>
-                                <div class="card-badge">${isPro ? 'PRO ACCOUNT' : 'FREE USER'}</div>
-                            </div>
-                            <div class="card-body">
-                                <div id="card-name" class="card-name"></div>
-                                <div id="card-address" class="card-info"><i class="fas fa-map-marker-alt"></i> <span></span></div>
-                                <div id="card-contact" class="card-info"><i class="fas fa-envelope"></i> <span></span></div>
-                            </div>
-                            <div class="card-footer">
-                                <div id="card-siret" class="card-siret"></div>
-                                <div class="card-verify"><i class="fas fa-check-circle"></i> Identité Vérifiée</div>
-                            </div>
-                        </div>
-                        
-                        <div class="preview-tip" style="margin-top: 2.5rem; padding: 1.5rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px;">
-                            <h4 style="margin-bottom: 1rem; font-size: 0.95rem;">💡 Pourquoi compléter ce profil ?</h4>
-                            <ul style="font-size: 0.85rem; color: var(--text-muted); padding-left: 1.2rem; display: grid; gap: 0.75rem;">
-                                <li><strong>Crédibilité</strong> : Votre logo et SIRET apparaissent sur vos PDF.</li>
-                                <li><strong>Gain de Temps</strong> : Vos coordonnées sont pré-remplies partout.</li>
-                                <li><strong>Conformité</strong> : Les mentions légales sont obligatoires pour vos factures.</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
             </div>
         `;
-
-        this.updatePreview();
-    },
-
-    updatePreview() {
-        const form = document.getElementById('company-form');
-        if (!form) return;
-
-        const name = form.querySelector('[name="name"]').value || 'Votre Entreprise';
-        const address = form.querySelector('[name="address"]').value || 'Votre adresse ici';
-        const email = form.querySelector('[name="email"]').value || 'votre@email.com';
-        const siret = form.querySelector('[name="siret"]').value;
-        const logo = document.getElementById('logo-base64').value;
-
-        const cardName = document.getElementById('card-name');
-        const cardAddress = document.getElementById('card-address');
-        const cardContact = document.getElementById('card-contact');
-        const cardSiret = document.getElementById('card-siret');
-        const cardLogo = document.getElementById('card-logo');
-
-        if (cardName) cardName.textContent = name;
-        if (cardAddress) cardAddress.querySelector('span').textContent = address;
-        if (cardContact) cardContact.querySelector('span').textContent = email;
-        if (cardSiret) cardSiret.textContent = siret ? `SIRET: ${siret}` : 'SIRET: non défini';
-
-        if (cardLogo) {
-            if (logo) {
-                cardLogo.innerHTML = `<img src="${logo}" style="width:100%; height:100%; object-fit:contain;">`;
-            } else {
-                const initial = name.charAt(0).toUpperCase();
-                cardLogo.innerHTML = `<div class="logo-placeholder">${initial}</div>`;
-            }
-        }
     },
 
     save(e) {
@@ -195,7 +126,6 @@ const Profile = {
             document.getElementById('logo-base64').value = base64;
             document.getElementById('logo-preview').innerHTML = `<img src="${base64}" style="width:100%; height:100%; object-fit:contain;">`;
             App.showNotification('Logo chargé. N\'oubliez pas d\'enregistrer.', 'info');
-            this.updatePreview();
         };
         reader.readAsDataURL(file);
     },
@@ -204,7 +134,6 @@ const Profile = {
         document.getElementById('logo-base64').value = '';
         document.getElementById('logo-preview').innerHTML = '<i class="fas fa-image" style="font-size: 24px; color: #ccc;"></i>';
         App.showNotification('Logo supprimé. N\'oubliez pas d\'enregistrer.', 'info');
-        this.updatePreview();
     }
 };
 

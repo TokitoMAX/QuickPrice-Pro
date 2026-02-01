@@ -2,7 +2,7 @@
 // Handles technical settings, taxes, and data management
 
 const Settings = {
-    render(activeTabId = 'tjm') {
+    render(activeTabId = 'tariffs') {
         const container = document.getElementById('settings-content');
         if (!container) return;
 
@@ -14,36 +14,32 @@ const Settings = {
                 <p class="page-subtitle">Configurez vos outils de chiffrage et vos taxes.</p>
             </div>
  
-            <div class="settings-tabs" style="display: flex; gap: 1rem; margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; overflow-x: auto;">
-                <button class="settings-tab ${activeTabId === 'tjm' ? 'active' : ''}" onclick="Settings.switchTab('tjm')">Mon TJM / Tarif</button>
-                <button class="settings-tab ${activeTabId === 'services' ? 'active' : ''}" onclick="Settings.switchTab('services')">Catalogue Services</button>
-                <button class="settings-tab ${activeTabId === 'billing' ? 'active' : ''}" onclick="Settings.switchTab('billing')">TVA & Numérotation</button>
-                <button class="settings-tab ${activeTabId === 'data' ? 'active' : ''}" onclick="Settings.switchTab('data')">Export & Données</button>
+            <div class="settings-tabs" style="display: flex; gap: 0.5rem; margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; overflow-x: auto; -webkit-overflow-scrolling: touch;">
+                <button class="settings-tab ${activeTabId === 'tariffs' ? 'active' : ''}" onclick="Settings.switchTab('tariffs')">Tarifs & Prestations</button>
+                <button class="settings-tab ${activeTabId === 'billing' ? 'active' : ''}" onclick="Settings.switchTab('billing')">Facturation</button>
+                <button class="settings-tab ${activeTabId === 'data' ? 'active' : ''}" onclick="Settings.switchTab('data')">Système & Données</button>
             </div>
  
             <div class="settings-content-wrapper">
-                <!-- Tab: TJM -->
-                <div id="settings-tab-tjm" class="settings-tab-content ${activeTabId === 'tjm' ? 'active' : ''}">
-                    <div class="settings-section">
-                        <h2 class="section-title-small">Objectifs de Rentabilité</h2>
-                        <p class="section-subtitle">Définissez vos objectifs de revenus pour calculer vos tarifs optimaux.</p>
+                <!-- Tab: Tariffs (Combined TJM + Services) -->
+                <div id="settings-tab-tariffs" class="settings-tab-content ${activeTabId === 'tariffs' ? 'active' : ''}">
+                    <!-- Combined Section 1: TJM -->
+                    <div class="settings-section glass-card" style="padding: 1.5rem; margin-bottom: 2rem;">
+                        <h2 class="section-title-small">1. Objectif de Revenu & TJM</h2>
+                        <p class="section-subtitle">Ajustez vos objectifs pour calculer votre tarif journalier idéal.</p>
                         <div id="calculator-embed-container" style="margin-top: 1.5rem;">
-                            <div class="empty-state">
-                                <button class="button-primary" onclick="App.navigateTo('calculator')">Ouvrir le calculateur</button>
-                            </div>
+                            <!-- Calculator UI will render here -->
                         </div>
                     </div>
-                </div>
 
-                <!-- Tab: Services -->
-                <div id="settings-tab-services" class="settings-tab-content ${activeTabId === 'services' ? 'active' : ''}">
-                    <div class="settings-section">
-                        <h2 class="section-title-small">Gestion du Catalogue</h2>
-                        <p class="section-subtitle">Gérez vos prestations habituelles pour les ajouter rapidement à vos devis.</p>
+                    <!-- Combined Section 2: Services -->
+                    <div class="settings-section glass-card" style="padding: 1.5rem;">
+                        <h2 class="section-title-small">2. Catalogue de Prestations</h2>
+                        <p class="section-subtitle">Gérez vos services pour une facturation rapide.</p>
                         <div id="settings-services-container">
                             ${typeof Services !== 'undefined' && Storage.getServices().length > 0 ?
                 `<div class="page-actions" style="margin: 1.5rem 0;">
-                                    <button class="button-primary" onclick="Services.showAddForm()">
+                                    <button class="button-primary small" onclick="Services.showAddForm()">
                                         Ajouter une prestation
                                     </button>
                                 </div>
@@ -51,9 +47,9 @@ const Settings = {
                                 <div class="services-settings-list">
                                     ${Services.renderGroupedServices(Storage.getServices())}
                                 </div>` : `
-                                <div class="empty-state" style="padding: 3rem; text-align: center; background: rgba(255,255,255,0.02); border-radius: 12px; margin-top: 1.5rem;">
-                                    <p class="text-muted">Votre catalogue est vide.</p>
-                                    <button class="button-primary" onclick="Services.showAddForm()" style="margin-top: 1rem;">Créer ma première prestation</button>
+                                <div class="empty-state" style="padding: 2rem; text-align: center;">
+                                    <p class="text-sm text-muted">Votre catalogue est vide.</p>
+                                    <button class="button-primary small" onclick="Services.showAddForm()" style="margin-top: 1rem;">Créer un service</button>
                                     <div id="service-form-container"></div>
                                 </div>
                                 `}
@@ -142,7 +138,7 @@ const Settings = {
         const activeContent = document.getElementById(`settings-tab-${tabId}`);
         if (activeContent) activeContent.classList.add('active');
 
-        if (tabId === 'tjm' && typeof renderCalculatorUI === 'function') {
+        if (tabId === 'tariffs' && typeof renderCalculatorUI === 'function') {
             document.getElementById('calculator-embed-container').innerHTML = '';
             renderCalculatorUI('calculator-embed-container');
         }

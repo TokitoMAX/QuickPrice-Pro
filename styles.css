@@ -102,23 +102,47 @@ body {
 /* Settings Tabs */
 .settings-tabs {
     display: flex;
-    gap: 1rem;
+    gap: 0.75rem;
     margin-bottom: 2rem;
     border-bottom: 1px solid var(--border);
     padding-bottom: 1rem;
-    overflow-x: auto;
+}
+
+@media (max-width: 768px) {
+    .settings-tabs {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
+        border-bottom: none;
+        padding-bottom: 0;
+    }
 }
 
 .settings-tab {
     background: transparent;
-    border: none;
+    border: 1px solid transparent;
     color: var(--text-muted);
     font-weight: 600;
-    padding: 0.5rem 1rem;
+    padding: 0.6rem 1.2rem;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     white-space: nowrap;
-    border-radius: var(--radius-sm);
+    border-radius: 10px;
+}
+
+@media (max-width: 768px) {
+    .settings-tab {
+        white-space: normal;
+        font-size: 0.8rem;
+        padding: 0.75rem 0.5rem;
+        background: var(--bg-card);
+        border-color: var(--border);
+        text-align: center;
+    }
+
+    .settings-tab:last-child:nth-child(odd) {
+        grid-column: span 2;
+    }
 }
 
 .settings-tab:hover {
@@ -129,6 +153,7 @@ body {
 .settings-tab.active {
     color: var(--primary-light);
     background: var(--primary-glass);
+    border-color: var(--primary-glass);
 }
 
 .settings-tab-content {
@@ -962,8 +987,18 @@ section {
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: 6rem 1rem;
+    padding: 4rem 1rem;
     min-height: auto;
+}
+
+@media (min-width: 1024px) {
+    .landing-hero {
+        flex-direction: row;
+        justify-content: space-between;
+        text-align: left;
+        padding: 6rem 0;
+        min-height: 80vh;
+    }
 }
 
 .hero-content {
@@ -972,11 +1007,24 @@ section {
     margin-bottom: 3rem;
 }
 
+@media (min-width: 1024px) {
+    .hero-content {
+        max-width: 600px;
+        margin-bottom: 0;
+    }
+}
+
 .hero-title {
     font-size: 3.5rem;
     line-height: 1.1;
     margin-bottom: 1.5rem;
     font-weight: 800;
+}
+
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2.5rem;
+    }
 }
 
 .hero-subtitle {
@@ -991,6 +1039,27 @@ section {
     flex-direction: column;
     gap: 1.5rem;
     align-items: center;
+}
+
+@media (min-width: 1024px) {
+    .hero-buttons {
+        align-items: flex-start;
+    }
+}
+
+.hero-image {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    position: relative;
+}
+
+@media (min-width: 1024px) {
+    .hero-image {
+        width: auto;
+        justify-content: flex-end;
+        flex: 1;
+    }
 }
 
 .hero-note {
