@@ -201,6 +201,7 @@ const App = {
     // Vérification des limites freemium
     // Migration de QuickPrice Pro vers SoloPrice Pro
     migrateData() {
+        this.migrateNetworkData();
         const oldKeys = [
             'qp_user', 'qp_clients', 'qp_quotes', 'qp_invoices', 'qp_services',
             'qp_leads', 'qp_revenues', 'qp_expenses', 'qp_settings',
@@ -224,6 +225,34 @@ const App = {
 
         if (migrated) {
             console.log("🚀 Migration SoloPrice Pro terminée avec succès !");
+        }
+    },
+
+    // Fusionner les anciennes clés de prestataires/partenaires en une seule
+    migrateNetworkData() {
+        const networkProviders = localStorage.getItem('sp_providers'); // from old network.js
+        const marketplaceProviders = localStorage.getItem('sp_my_providers'); // from old marketplace.js
+        const unifiedKey = 'sp_network_providers';
+
+        if ((networkProviders || marketplaceProviders) && !localStorage.getItem(unifiedKey)) {
+            let unified = [];
+            if (networkProviders) {
+                try {
+                    unified = unified.concat(JSON.parse(networkProviders));
+                } catch (e) { console.error("Migration error (sp_providers):", e); }
+            }
+            if (marketplaceProviders) {
+                try {
+                    const marketProvs = JSON.parse(marketplaceProviders);
+                    marketProvs.forEach(p => {
+                        if (!unified.find(u => u.name === p.name)) {
+                            unified.push(p);
+                        }
+                    });
+                } catch (e) { console.error("Migration error (sp_my_providers):", e); }
+            }
+            localStorage.setItem(unifiedKey, JSON.stringify(unified));
+            console.log('✅ Network/Marketplace data unified.');
         }
     },
 

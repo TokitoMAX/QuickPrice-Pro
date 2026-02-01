@@ -264,8 +264,8 @@ const Marketplace = {
 
     // ===== PROVIDERS (Mes Prestataires) =====
     renderProviders(container) {
-        // Pour l'instant on gère ça localement, comme une liste de favoris/actifs
-        const providers = JSON.parse(localStorage.getItem('sp_my_providers') || '[]');
+        // Unifié avec le module Network
+        const providers = JSON.parse(localStorage.getItem('sp_network_providers') || '[]');
 
         if (providers.length === 0) {
             container.innerHTML = `
@@ -299,7 +299,12 @@ const Marketplace = {
 
     // ===== EXPERTS =====
     renderExperts(container) {
-        const experts = []; // Pas de fake, vide tant qu'on n'a pas ajouté
+        // Simulation d'experts vérifiés DomTomConnect
+        const experts = [
+            { id: 'exp1', name: 'Jean Expert', specialty: 'Expertise Comptable', zone: 'Guadeloupe (971)', avatar: 'J' },
+            { id: 'exp2', name: 'Marie Strategie', specialty: 'Marketing Digital', zone: 'Martinique (972)', avatar: 'M' },
+            { id: 'exp3', name: 'Lucas Tech', specialty: 'Développement Web', zone: 'Réunion (974)', avatar: 'L' }
+        ];
 
         if (experts.length === 0) {
             container.innerHTML = `
@@ -329,11 +334,47 @@ const Marketplace = {
                             <p style="margin: 0.2rem 0; color: var(--text-muted); font-size: 0.9rem;">${e.specialty}</p>
                             <p style="margin: 0; font-size: 0.8rem; opacity: 0.7;">📍 ${e.zone}</p>
                         </div>
-                        <button class="button-secondary small" style="margin-left: auto; padding: 0.4rem;" onclick="Marketplace.contactExpert('${e.name}')">Message</button>
+                        <div style="margin-left: auto; display: flex; gap: 0.5rem;">
+                            <button class="button-secondary small" style="padding: 0.4rem;" onclick="Marketplace.contactExpert('${e.name}')">Message</button>
+                            <button class="button-primary small" style="padding: 0.4rem;" onclick="Marketplace.addExpertToCircle('${e.id}')">+ Mon Cercle</button>
+                        </div>
                     </div>
                 `).join('')}
             </div>
         `;
+    },
+
+    addExpertToCircle(id) {
+        // Retrouver l'expert dans la liste simulée
+        const experts = [
+            { id: 'exp1', name: 'Jean Expert', specialty: 'Expertise Comptable', zone: 'Guadeloupe (971)', avatar: 'J' },
+            { id: 'exp2', name: 'Marie Strategie', specialty: 'Marketing Digital', zone: 'Martinique (972)', avatar: 'M' },
+            { id: 'exp3', name: 'Lucas Tech', specialty: 'Développement Web', zone: 'Réunion (974)', avatar: 'L' }
+        ];
+
+        const expert = experts.find(e => e.id === id);
+        if (!expert) return;
+
+        const myCircle = JSON.parse(localStorage.getItem('sp_network_providers') || '[]');
+
+        // Vérifier si déjà présent
+        if (myCircle.some(p => p.email === expert.id)) {
+            App.showNotification('Cet expert est déjà dans votre cercle.', 'info');
+            return;
+        }
+
+        const newPartner = {
+            id: 'dtc_' + expert.id,
+            name: expert.name,
+            specialty: expert.specialty,
+            city: expert.zone,
+            isVerified: true
+        };
+
+        myCircle.push(newPartner);
+        localStorage.setItem('sp_network_providers', JSON.stringify(myCircle));
+        App.showNotification(`${expert.name} ajouté à votre cercle !`, 'success');
+        this.switchTab('providers');
     },
 
     applyForMission(id) {

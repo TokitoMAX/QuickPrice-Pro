@@ -12,11 +12,11 @@ const Network = {
     },
 
     loadProviders() {
-        this.providers = JSON.parse(localStorage.getItem('sp_providers') || '[]');
+        this.providers = JSON.parse(localStorage.getItem('sp_network_providers') || '[]');
     },
 
     saveProviders() {
-        localStorage.setItem('sp_providers', JSON.stringify(this.providers));
+        localStorage.setItem('sp_network_providers', JSON.stringify(this.providers));
         this.render();
     },
 
@@ -71,8 +71,11 @@ const Network = {
         if (this.providers.length === 0) {
             container.innerHTML = `
                 <div class="empty-state">
-                    <p>Vous n'avez pas encore de prestataires dans votre réseau.</p>
-                    <button class="button-secondary" onclick="Network.showAddModal()">Ajouter mon premier partenaire</button>
+                    <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Vous n'avez pas encore de prestataires dans votre réseau.</p>
+                    <div style="display: flex; gap: 1rem; justify-content: center;">
+                        <button class="button-primary" onclick="Network.showAddModal()">Ajouter manuellement</button>
+                        <button class="button-secondary" onclick="App.navigateTo('marketplace', 'experts')">Découvrir des Experts</button>
+                    </div>
                 </div>
             `;
             return;
@@ -81,8 +84,11 @@ const Network = {
         container.innerHTML = `
             <div class="network-container">
                  <div class="section-header-inline">
-                    <h3 class="section-title-small">Partenaires Personnels</h3>
-                    <button class="button-primary small" onclick="Network.showAddModal()">Ajouter un partenaire</button>
+                    <h3 class="section-title-small">Partenaires Réseau</h3>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button class="button-secondary small" onclick="App.navigateTo('marketplace', 'experts')">Trouver des Experts</button>
+                        <button class="button-primary small" onclick="Network.showAddModal()">+ Nouveau</button>
+                    </div>
                 </div>
                 <div class="partners-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 1rem;">
                     ${this.providers.map(p => `
