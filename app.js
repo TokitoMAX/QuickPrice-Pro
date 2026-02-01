@@ -228,6 +228,19 @@ const App = {
 
     // Fusionner les anciennes clés de prestataires/partenaires en une seule
     migrateNetworkData() {
+        // Cleanup dummy missions if they exist
+        const missions = localStorage.getItem('sp_marketplace_missions');
+        if (missions) {
+            try {
+                const parsed = JSON.parse(missions);
+                // Si les missions contiennent les IDs factices, on vide tout pour repartir sur du propre
+                if (parsed.some(m => ['m1', 'm2', 'm3'].includes(m.id))) {
+                    localStorage.setItem('sp_marketplace_missions', '[]');
+                    console.log('🧹 Dummy missions cleared.');
+                }
+            } catch (e) { console.error("Error clearing dummy missions:", e); }
+        }
+
         const networkProviders = localStorage.getItem('sp_providers'); // from old network.js
         const marketplaceProviders = localStorage.getItem('sp_my_providers'); // from old marketplace.js
         const unifiedKey = 'sp_network_providers';
@@ -306,7 +319,7 @@ const App = {
         const isPro = Storage.isPro();
         if (infoContainer) {
             infoContainer.innerHTML = `
-                <div class="user-profile">
+                <div class="user-profile" onclick="App.navigateTo('settings')" style="cursor: pointer;">
                     <div class="user-avatar">${user.company?.name?.charAt(0) || 'U'}</div>
                     <div class="user-details">
                         <span class="user-name">${user.company?.name || user.email}</span>

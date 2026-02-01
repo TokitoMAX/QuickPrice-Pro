@@ -70,7 +70,7 @@ const Marketplace = {
         if (missions.length === 0) {
             container.innerHTML = `
                 <div class="empty-state" style="text-align: center; padding: 4rem 2rem;">
-                    <div style="font-size: 3rem; margin-bottom: 1.5rem;">📡</div>
+                    <div style="font-size: 3rem; margin-bottom: 1.5rem;"></div>
                     <h3 style="color: var(--white); margin-bottom: 1rem;">Aucune opportunité pour le moment</h3>
                     <p style="color: var(--text-muted); margin-bottom: 2rem; max-width: 500px; margin-left: auto; margin-right: auto;">
                         Les nouvelles missions apparaîtront ici dès qu'elles seront disponibles sur le réseau DomTom Connect.
@@ -93,7 +93,7 @@ const Marketplace = {
                         </div>
                         <div style="font-size: 1.4rem; font-weight: 800; color: var(--primary); margin-bottom: 0.5rem;">Budget : ${m.budget}</div>
                         <div style="font-size: 0.9rem; color: var(--text-muted); display: flex; align-items: center; gap: 6px;">
-                            <span>📍 ${m.zone}</span>
+                            <span>${m.zone}</span>
                             <span style="margin-left: auto; opacity: 0.7;">Publié il y a 2h</span>
                         </div>
                         <button class="button-primary small" style="margin-top: 1.5rem; width: 100%;" onclick="Marketplace.applyForMission(${m.id})">Postuler via DomTom Connect</button>
@@ -131,7 +131,7 @@ const Marketplace = {
                             <span style="font-size: 0.75rem; text-transform: uppercase; font-weight: 800; color: var(--primary);">ACTIVE</span>
                         </div>
                         <div style="font-size: 1.4rem; font-weight: 800; color: var(--primary); margin-bottom: 0.5rem;">Budget : ${this.escapeHtml(m.budget)} €</div>
-                        <div style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.5rem;">📍 ${this.escapeHtml(m.zone)}</div>
+                        <div style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.5rem;">${this.escapeHtml(m.zone)}</div>
                         <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; margin-bottom: 1rem;">${this.escapeHtml(m.description).substring(0, 100)}...</p>
                         <div style="display: flex; gap: 0.5rem; margin-top: auto;">
                             <button class="button-secondary small" style="flex: 1;" onclick="Marketplace.editMission('${m.id}')">Modifier</button>
@@ -154,7 +154,7 @@ const Marketplace = {
         container.innerHTML = `
             <div class="form-card" style="margin-bottom: 2rem; animation: slideDown 0.3s ease; background: #0a0a0a; border: 1px solid var(--border); border-radius: 12px; padding: 2rem;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                    <h3 style="margin: 0; color: var(--white);">📤 Poster une nouvelle mission</h3>
+                    <h3 style="margin: 0; color: var(--white);">Poster une nouvelle mission</h3>
                     <button class="btn-close" onclick="Marketplace.hidePostMissionForm()" style="background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer;">✕</button>
                 </div>
                 <form onsubmit="Marketplace.saveMission(event)">
@@ -269,7 +269,7 @@ const Marketplace = {
         if (providers.length === 0) {
             container.innerHTML = `
                 <div class="empty-state" style="text-align: center; padding: 4rem 2rem;">
-                    <div style="font-size: 3rem; margin-bottom: 1.5rem;">🤝</div>
+                    <div style="font-size: 3rem; margin-bottom: 1.5rem;"></div>
                     <h3 style="color: var(--white); margin-bottom: 1rem;">Vos collaborations actives</h3>
                     <p style="color: var(--text-muted); margin-bottom: 2rem; max-width: 500px; margin-left: auto; margin-right: auto;">
                         Retrouvez ici les experts avec qui vous travaillez. Contactez un expert vérifié pour démarrer une collaboration.
@@ -325,7 +325,7 @@ const Marketplace = {
                         <div class="provider-info" style="flex: 1;">
                             <h3 style="margin: 0; font-size: 1.1rem; color: var(--white);">${e.name} <span class="pro-badge-small" style="background: var(--primary); margin-left: 5px;">VÉRIFIÉ</span></h3>
                             <p style="margin: 0.2rem 0; color: var(--text-muted); font-size: 0.9rem;">${e.specialty}</p>
-                            <p style="margin: 0; font-size: 0.8rem; opacity: 0.7;">📍 ${e.zone}</p>
+                            <p style="margin: 0; font-size: 0.8rem; opacity: 0.7;">${e.zone}</p>
                         </div>
                         <div style="display: flex; gap: 0.5rem; flex-direction: column;">
                             <button class="button-secondary small" style="padding: 0.4rem; font-size: 0.75rem;" onclick="Marketplace.contactExpert('${e.name}')">Message</button>

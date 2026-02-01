@@ -101,7 +101,7 @@ const Network = {
                                 </div>
                             </div>
                             <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.2rem;">
-                                <div>📍 ${p.city || 'Non renseigné'}</div>
+                                <div>${p.city || 'Non renseigné'}</div>
                             </div>
                             <div class="provider-actions" style="display: flex; gap: 0.5rem; border-top: 1px solid var(--border); padding-top: 1rem;">
                                 <button class="button-secondary sm" style="flex: 1; font-size: 0.75rem;" onclick="Network.contactProvider('${p.id}')">Contacter</button>
